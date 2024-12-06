@@ -1,0 +1,16 @@
+defaultCurrency:
+  displayName: '<#ffdc73>Vault'
+  # This is the starting balance for this
+  # currency when a new player joins the server.
+  startBalance: 0.00
+  # The decimal places for this currency.
+  # 2 means 0.00, 3 means 0.000 and so on.
+  # If you set this to 0, the currency will be displayed without decimal places.
+  decimalPlaces: 2
+  # visual currency name in messages and GUIs in plural
+  currencyNamePlural: 'Coins'
+  # visual currency name in messages and GUIs in singular
+  currencyNameSingular: 'Coin'
+  # The max possible money amount.
+  # If a player reaches this value, he can't get any more money.
+  maxBalance: 999,999,999,999,999,999,999,999.99

@@ -1,0 +1,35 @@
+#   ########################################################################################  #
+#
+#   This is the example virtual currency config. You can use this file as a template for your own currency.
+#   This currency will NOT load and is only here for example purposes.
+#   The file name is the ID of the currency.
+#   You can also create multiple folders within 'virtual-currencies' to group your currencies.
+#
+#   IMPORTANT: If you DELETE one file, the target currencies will
+#              be deleted including all stored Data after server restart.
+#
+#   You can use legacy or hex colors in every line for visual text.
+#   If you have any problems, join my discord server (https://discord.gg/t9vS3hgWf8)
+#
+#   ########################################################################################  #
+#
+#
+# Should this currency be the standard currency for 'Vault'?
+# This is used for other plugins like shops/jobs or similar.
+#
+# The visual name in messages and GUIs
+displayName: '<#ffdc73>Gems'
+# This is the starting balance for this
+# currency when a new player joins the server.
+startBalance: 0.00
+# The decimal places for this currency.
+# 2 means 0.00, 3 means 0.000 and so on.
+# If you set this to 0, the currency will be displayed without decimal places.
+decimalPlaces: 0
+# visual currency name in messages and GUIs in plural
+currencyNamePlural: 'Gems'
+# visual currency name in messages and GUIs in singular
+currencyNameSingular: 'Gem'
+# The max possible money amount.
+# If a player reaches this value, he can't get any more money.
+maxBalance: 999,999,999,999,999,999,999,999.99
