@@ -1,21 +1,25 @@
 package io.lightstudios.coins.impl;
 
+import io.lightstudios.coins.LightCoins;
+import io.lightstudios.coins.api.models.CoinsPlayer;
+import io.lightstudios.core.util.LightNumbers;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class VaultImplementer implements Economy {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     @Override
     public String getName() {
-        return "";
+        return "LightCoins";
     }
 
     @Override
@@ -25,22 +29,22 @@ public class VaultImplementer implements Economy {
 
     @Override
     public int fractionalDigits() {
-        return 0;
+        return LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces();
     }
 
     @Override
     public String format(double v) {
-        return "";
+        return LightNumbers.formatForMessages(BigDecimal.valueOf(v), fractionalDigits());
     }
 
     @Override
     public String currencyNamePlural() {
-        return "";
+        return LightCoins.instance.getSettingsConfig().defaultCurrencyNamePlural();
     }
 
     @Override
     public String currencyNameSingular() {
-        return "";
+        return LightCoins.instance.getSettingsConfig().defaultCurrencyNameSingular();
     }
 
     @Override
@@ -50,7 +54,11 @@ public class VaultImplementer implements Economy {
 
     @Override
     public boolean hasAccount(OfflinePlayer offlinePlayer) {
-        return false;
+
+        CoinsPlayer coinsPlayer = LightCoins.instance.getLightCoinsAPI()
+                .getPlayerData().get(offlinePlayer.getUniqueId()).getCoinsPlayer();
+
+        return coinsPlayer != null;
     }
 
     @Override
@@ -70,7 +78,9 @@ public class VaultImplementer implements Economy {
 
     @Override
     public double getBalance(OfflinePlayer offlinePlayer) {
-        return 0;
+        CoinsPlayer coinsPlayer = LightCoins.instance.getLightCoinsAPI()
+                .getPlayerData().get(offlinePlayer.getUniqueId()).getCoinsPlayer();
+        return coinsPlayer.getCoins().doubleValue();
     }
 
     @Override
@@ -90,7 +100,9 @@ public class VaultImplementer implements Economy {
 
     @Override
     public boolean has(OfflinePlayer offlinePlayer, double v) {
-        return false;
+        CoinsPlayer coinsPlayer = LightCoins.instance.getLightCoinsAPI()
+                .getPlayerData().get(offlinePlayer.getUniqueId()).getCoinsPlayer();
+        return coinsPlayer.hasEnough(BigDecimal.valueOf(v));
     }
 
     @Override
@@ -110,7 +122,9 @@ public class VaultImplementer implements Economy {
 
     @Override
     public EconomyResponse withdrawPlayer(OfflinePlayer offlinePlayer, double v) {
-        return null;
+        CoinsPlayer coinsPlayer = LightCoins.instance.getLightCoinsAPI()
+                .getPlayerData().get(offlinePlayer.getUniqueId()).getCoinsPlayer();
+        return coinsPlayer.removeCoins(BigDecimal.valueOf(v));
     }
 
     @Override
@@ -130,7 +144,9 @@ public class VaultImplementer implements Economy {
 
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer offlinePlayer, double v) {
-        return null;
+        CoinsPlayer coinsPlayer = LightCoins.instance.getLightCoinsAPI()
+                .getPlayerData().get(offlinePlayer.getUniqueId()).getCoinsPlayer();
+        return coinsPlayer.addCoins(BigDecimal.valueOf(v));
     }
 
     @Override

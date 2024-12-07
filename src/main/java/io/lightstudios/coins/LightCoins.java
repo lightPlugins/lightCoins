@@ -4,6 +4,7 @@ import io.lightstudios.coins.api.LightCoinsAPI;
 import io.lightstudios.coins.api.models.VirtualCurrency;
 import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
+import io.lightstudios.coins.storage.CoinsTable;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.files.FileManager;
 import io.lightstudios.core.util.files.MultiFileManager;
@@ -17,6 +18,7 @@ public final class LightCoins extends JavaPlugin {
 
     public static LightCoins instance;
     private LightCoinsAPI lightCoinsAPI;
+    private CoinsTable coinsTable;
 
     private MessageConfig messageConfig;
     private SettingsConfig settingsConfig;
@@ -34,6 +36,7 @@ public final class LightCoins extends JavaPlugin {
     @Override
     public void onEnable() {
         this.lightCoinsAPI = new LightCoinsAPI();
+        this.coinsTable = new CoinsTable();
     }
 
     @Override
