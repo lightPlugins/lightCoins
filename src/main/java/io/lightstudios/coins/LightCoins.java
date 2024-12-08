@@ -10,6 +10,7 @@ import io.lightstudios.coins.impl.events.OnPlayerJoin;
 import io.lightstudios.coins.impl.vault.VaultImplementer;
 import io.lightstudios.coins.storage.CoinsTable;
 import io.lightstudios.core.LightCore;
+import io.lightstudios.core.util.ConsolePrinter;
 import io.lightstudios.core.util.files.FileManager;
 import io.lightstudios.core.util.files.MultiFileManager;
 import lombok.Getter;
@@ -31,6 +32,7 @@ public final class LightCoins extends JavaPlugin {
     private LightCoinsAPI lightCoinsAPI;
     private CoinsTable coinsTable;
     private VaultImplementer vaultImplementer;
+    private ConsolePrinter consolePrinter;
 
     private MessageConfig messageConfig;
     private SettingsConfig settingsConfig;
@@ -43,6 +45,7 @@ public final class LightCoins extends JavaPlugin {
     public void onLoad() {
 
         instance = this;
+        this.consolePrinter = new ConsolePrinter("§7[§rLight§eCoins§7] §r");
         this.vaultImplementer = new VaultImplementer();
         // register the vault provider
         registerVaultProvider();
