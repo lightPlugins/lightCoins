@@ -1,6 +1,7 @@
 package io.lightstudios.coins.api.models;
 
 import io.lightstudios.coins.LightCoins;
+import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
 import lombok.Getter;
 import lombok.Setter;

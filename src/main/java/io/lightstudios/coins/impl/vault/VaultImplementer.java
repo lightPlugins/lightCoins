@@ -1,7 +1,10 @@
-package io.lightstudios.coins.impl;
+package io.lightstudios.coins.impl.vault;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsPlayer;
+import io.lightstudios.coins.api.models.PlayerData;
+import io.lightstudios.core.LightCore;
+import io.lightstudios.core.hooks.towny.TownyInterface;
 import io.lightstudios.core.util.LightNumbers;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -9,6 +12,8 @@ import org.bukkit.OfflinePlayer;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class VaultImplementer implements Economy {
 
@@ -221,21 +226,86 @@ public class VaultImplementer implements Economy {
 
     @Override
     public boolean createPlayerAccount(String s) {
-        return false;
+        UUID uuid;
+
+        if (LightCore.instance.getHookManager().isExistTowny()) {
+            TownyInterface townyInterface = LightCore.instance.getHookManager().getTownyInterface();
+            UUID townyObjectUUID = townyInterface.getTownyObjectUUID(s);
+
+            if (townyInterface.isTownyUUID(townyObjectUUID)) {
+                uuid = townyObjectUUID;
+            } else {
+                try {
+                    uuid = UUID.fromString(s);
+                } catch (IllegalArgumentException e) {
+                    LightCore.instance.getConsolePrinter().printError(List.of(
+                            "Failed to create player account for " + s,
+                            "Invalid UUID format.",
+                            "A third-party plugin is trying to create a player account with an invalid UUID.",
+                            "Please report this to the target plugin developer. NOT LightCoins!"
+                    ));
+                    return false;
+                }
+            }
+        } else {
+            try {
+                uuid = UUID.fromString(s);
+            } catch (IllegalArgumentException e) {
+                LightCore.instance.getConsolePrinter().printError(List.of(
+                        "Failed to create player account for " + s,
+                        "Invalid UUID format.",
+                        "A third-party plugin is trying to create a player account with an invalid UUID.",
+                        "Please report this to the target plugin developer. NOT LightCoins!"
+                ));
+                return false;
+            }
+        }
+
+        if (LightCoins.instance.getLightCoinsAPI().getPlayerData().containsKey(uuid)) {
+            LightCore.instance.getConsolePrinter().printInfo("Player data already exists for " + uuid);
+            return false;
+        }
+        PlayerData playerData = new PlayerData();
+        CoinsPlayer coinsPlayer = new CoinsPlayer(uuid);
+        playerData.setUuid(uuid);
+        coinsPlayer.setCoins(LightCoins.instance.getSettingsConfig().defaultCurrencyStartBalance());
+        playerData.setCoinsPlayer(coinsPlayer);
+
+
+        LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
+        LightCoins.instance.getCoinsTable().writeCoins(uuid.toString(), new BigDecimal(10))
+                .thenAccept(result -> {
+                    if (result == 1) {
+                        LightCore.instance.getConsolePrinter().printInfo("New Player data created for " + uuid);
+                    } else {
+                        LightCore.instance.getConsolePrinter().printError("Failed to create player account for " + uuid);
+                    }
+                }).exceptionally(throwable -> {
+                    LightCore.instance.getConsolePrinter().printError(List.of(
+                            "An error occurred while writing player data to the database!",
+                            "Please check the error logs for more information."
+                    ));
+                    throwable.printStackTrace();
+                    return null;
+                });
+
+        return true;
     }
 
     @Override
     public boolean createPlayerAccount(OfflinePlayer offlinePlayer) {
-        return false;
+        return createPlayerAccount(offlinePlayer.getUniqueId().toString());
     }
 
     @Override
     public boolean createPlayerAccount(String s, String s1) {
+        createPlayerAccount(s);
         return false;
     }
 
     @Override
     public boolean createPlayerAccount(OfflinePlayer offlinePlayer, String s) {
+        createPlayerAccount(offlinePlayer);
         return false;
     }
 }

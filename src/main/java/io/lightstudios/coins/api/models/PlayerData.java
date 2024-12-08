@@ -18,7 +18,8 @@ public class PlayerData {
 
     @Nullable
     public VirtualCurrency getVirtualCurrencyByName(String name) {
-        return virtualCurrencies.stream().filter(virtualCurrencies -> virtualCurrencies.getCurrencyName().equalsIgnoreCase(name)).findFirst().orElse(null);
+        return virtualCurrencies.stream().filter(virtualCurrencies
+                -> virtualCurrencies.getCurrencyName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
 }
