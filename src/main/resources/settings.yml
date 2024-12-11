@@ -1,3 +1,4 @@
+language: en
 defaultCurrency:
   displayName: '<#ffdc73>Vault'
   # This is the starting balance for this
@@ -13,4 +14,4 @@ defaultCurrency:
   currencyNameSingular: 'Coin'
   # The max possible money amount.
   # If a player reaches this value, he can't get any more money.
-  maxBalance: 999,999,999,999,999,999,999,999.99
+  maxBalance: 999999999999999999999999.99

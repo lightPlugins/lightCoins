@@ -4,12 +4,16 @@ import io.lightstudios.coins.api.LightCoinsAPI;
 import io.lightstudios.coins.api.models.CoinsPlayer;
 import io.lightstudios.coins.api.models.PlayerData;
 import io.lightstudios.coins.api.models.VirtualCurrency;
+import io.lightstudios.coins.commands.defaults.AddCoinsCommand;
+import io.lightstudios.coins.commands.defaults.CoinsCommand;
+import io.lightstudios.coins.commands.defaults.RemoveCoinsCommand;
 import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
 import io.lightstudios.coins.impl.events.OnPlayerJoin;
 import io.lightstudios.coins.impl.vault.VaultImplementer;
 import io.lightstudios.coins.storage.CoinsTable;
 import io.lightstudios.core.LightCore;
+import io.lightstudios.core.commands.manager.CommandManager;
 import io.lightstudios.core.util.ConsolePrinter;
 import io.lightstudios.core.util.files.FileManager;
 import io.lightstudios.core.util.files.MultiFileManager;
@@ -21,6 +25,7 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -40,6 +45,7 @@ public final class LightCoins extends JavaPlugin {
     private MultiFileManager virtualCurrencyFiles;
 
     private FileManager settings;
+    private FileManager message;
 
     @Override
     public void onLoad() {
@@ -50,6 +56,7 @@ public final class LightCoins extends JavaPlugin {
         // register the vault provider
         registerVaultProvider();
         readAndWriteConfigs();
+        selectLanguage();
         readVirtualCurrencies();
     }
 
@@ -60,6 +67,7 @@ public final class LightCoins extends JavaPlugin {
         // read existing player data from the database and populate the playerData map in LightCoinsAPI
         readPlayerData();
         registerEvents();
+        registerCommands();
     }
 
     @Override
@@ -131,12 +139,39 @@ public final class LightCoins extends JavaPlugin {
     /**
      * Registers the Vault provider for LightCoins
      */
-    public void registerVaultProvider() {
+    private void registerVaultProvider() {
         Economy vaultProvider = this.vaultImplementer;
         Bukkit.getServicesManager().register(Economy.class, vaultProvider, this, ServicePriority.Highest);
         RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
         if(rsp != null) {
             LightCore.instance.getConsolePrinter().printInfo("Successfully registered Vault provider " + rsp.getProvider().getName());
         }
+    }
+
+    private void registerCommands() {
+
+        new CommandManager(new ArrayList<>(List.of(
+                new CoinsCommand(),
+                new AddCoinsCommand(),
+                new RemoveCoinsCommand()
+        )), "coins");
+    }
+
+    private void selectLanguage() {
+        String language = settingsConfig.language();
+
+        switch (language) {
+            case "de":
+                this.message = new FileManager(this, "language/" + "de" + ".yml", true);
+                break;
+            case "pl":
+                this.message = new FileManager(this, "language/" + "pl" + ".yml", true);
+                break;
+            default:
+                this.message = new FileManager(this, "language/" + "en" + ".yml", true);
+                break;
+        }
+
+        this.messageConfig = new MessageConfig(this.message);
     }
 }

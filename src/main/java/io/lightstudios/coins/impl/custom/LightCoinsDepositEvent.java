@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 
-public class LightVaultDepositEvent extends Event implements Cancellable {
+public class LightCoinsDepositEvent extends Event implements Cancellable {
     private static final HandlerList HANDLERS = new HandlerList();
     @Getter
     private final String target;
@@ -25,7 +25,7 @@ public class LightVaultDepositEvent extends Event implements Cancellable {
         return HANDLERS;
     }
 
-    public LightVaultDepositEvent(String target, BigDecimal amount) {
+    public LightCoinsDepositEvent(String target, BigDecimal amount) {
         this.target = target;
         this.amount = amount;
         this.responseType = EconomyResponse.ResponseType.NOT_IMPLEMENTED;

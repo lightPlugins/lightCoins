@@ -32,8 +32,9 @@ public class CoinsPlayer {
 
     public EconomyResponse addCoins(BigDecimal coins) {
 
-        EconomyResponse defaultResponse = checkDefaults(coins);
+        LightCoins.instance.getConsolePrinter().printInfo("Adding coins ...");
 
+        EconomyResponse defaultResponse = checkDefaults(coins);
         if(!defaultResponse.transactionSuccess()) {
             return new EconomyResponse(coins.doubleValue(), this.coins.doubleValue(),
                     defaultResponse.type, defaultResponse.errorMessage);
@@ -41,7 +42,7 @@ public class CoinsPlayer {
 
         if(this.coins.add(coins).compareTo(this.maxCoins) > 0) {
             return new EconomyResponse(coins.doubleValue(), this.coins.doubleValue(),
-                    defaultResponse.type, defaultResponse.errorMessage);
+                    EconomyResponse.ResponseType.FAILURE, "Max coins reached > " + this.maxCoins);
         }
 
         this.coins = this.coins.add(coins);
@@ -58,7 +59,7 @@ public class CoinsPlayer {
                     defaultResponse.type, defaultResponse.errorMessage);
         }
 
-        if(hasEnough(coins)) {
+        if(!hasEnough(coins)) {
             return new EconomyResponse(coins.doubleValue(), this.coins.doubleValue(),
                     EconomyResponse.ResponseType.FAILURE, "Not enough coins.");
         }
@@ -68,8 +69,18 @@ public class CoinsPlayer {
                 EconomyResponse.ResponseType.SUCCESS, "");
     }
 
+    public boolean isTownyAccount() {
+        if(LightCore.instance.getHookManager().isExistTowny()) {
+            return LightCore.instance.getHookManager().getTownyInterface().isTownyUUID(uuid);
+        }
+        return false;
+    }
+
     public String getFormattedCoins() {
         return LightNumbers.formatForMessages(coins, decimalPlaces);
+    }
+    public String getFormattedCurrency() {
+        return coins.compareTo(BigDecimal.ONE) == 0 ? nameSingular : namePlural;
     }
     public String getRawCoins() {
         return LightNumbers.formatForMessages(coins);

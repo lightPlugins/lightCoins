@@ -1,0 +1,23 @@
+version: 1
+prefix: "<dark_gray>[<gray>Light<yellow>Coins<dark_gray>] <reset>"
+noPermission: "<red>You do not have permission to do this! You need <dark_red>#permission#<red>!"
+wrongSyntax: "<red>Wrong command syntax. <gray>Please use <red>#syntax#"
+noNumber: "<red>This is not a number! Please use valid numbers."
+noNegativ: "<red>You can't use negative numbers!"
+playerNotFound: "<red>The player <dark_red>#player#<red> could not be found!"
+somethingWentWrong: "<red>Something went wrong! Infos: #info#"
+#
+coinsShow: "<gray>You have <yellow>#coins#<gray> coins."
+coinsShowTarget: "<gray>You have <yellow>#coins# <gray>#currency#."
+coinsAdd: "<gray>You have added <yellow>#coins# <gray>#currency# to <yellow>#player#<gray>."
+coinsRemove: "<gray>You have removed <yellow>#coins# <gray>#currency# from <yellow>#player#<gray>."
+
+
+
+
+
+
+
+
+
+

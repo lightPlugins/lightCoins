@@ -6,49 +6,57 @@ import io.lightstudios.coins.api.VirtualResponse;
 import io.lightstudios.coins.api.models.CoinsPlayer;
 import io.lightstudios.coins.api.models.PlayerData;
 import io.lightstudios.coins.api.models.VirtualCurrency;
+import io.lightstudios.core.LightCore;
+import io.lightstudios.core.util.files.FileManager;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class MessageConfig {
 
-    public void test() {
+    private final FileConfiguration config;
 
-        LightCoins lightCoins = LightCoins.instance;
-        LightCoinsAPI lightCoinsAPI = lightCoins.getLightCoinsAPI();
-
-        PlayerData playerData = lightCoinsAPI.getPlayerData(UUID.randomUUID());
-
-        if(playerData == null) {
-            System.out.println("Player data is null!");
-            return;
-        }
-
-        VirtualCurrency virtualCurrency = playerData.getVirtualCurrencyByName("coins");
-
-        if(virtualCurrency == null) {
-            System.out.println("Virtual currency is null!");
-            return;
-        }
-
-        CoinsPlayer coinsPlayer = playerData.getCoinsPlayer();
-
-        EconomyResponse vaultResponse = coinsPlayer.addCoins(new BigDecimal(100));
-        VirtualResponse virtualResponse = virtualCurrency.addBalance(new BigDecimal(100));
-
-
-        if(virtualResponse.transactionSuccess()) {
-            System.out.println("Coins added successfully!");
-        } else {
-            System.out.println("Failed to add coins!");
-        }
-
-        if(vaultResponse.transactionSuccess()) {
-            System.out.println("Coins added successfully!");
-        } else {
-            System.out.println("Failed to add coins!");
-        }
-
+    public MessageConfig(FileManager selectedLanguage) {
+        this.config = selectedLanguage.getConfig();
     }
+
+    public int version() { return config.getInt("version"); }
+
+    public String prefix() { return config.getString("prefix"); }
+    public List<String> noPermission() { return toStringList(config.get("noPermission")); }
+    public List<String> wrongSyntax() { return toStringList(config.get("wrongSyntax")); }
+    public List<String> noNumber() { return toStringList(config.get("noNumber")); }
+    public List<String> noNegativ() { return toStringList(config.get("noNegativ")); }
+    public List<String> playerNotFound() { return toStringList(config.get("playerNotFound")); }
+    public List<String> somethingWentWrong() { return toStringList(config.get("somethingWentWrong")); }
+    public List<String> coinsShow() { return toStringList(config.get("coinsShow")); }
+    public List<String> coinsShowTarget() { return toStringList(config.get("coinsShowTarget")); }
+    public List<String> coinsAdd() { return toStringList(config.get("coinsAdd")); }
+    public List<String> coinsRemove() { return toStringList(config.get("coinsRemove")); }
+
+
+
+    private List<String> toStringList(Object input) {
+        if (input instanceof String str) {
+            return Collections.singletonList(str);
+        } else if (input instanceof List<?> list) {
+            return list.stream()
+                    .map(Object::toString)
+                    .collect(Collectors.toList());
+        } else {
+            LightCore.instance.getConsolePrinter().printError(List.of(
+                    "Error in your message file at " + input,
+                    "Input must be a String or a List of Strings",
+                    "example as String: test: 'Test message'",
+                    "example as List: test: - 'Test message'"
+            ));
+            throw new IllegalArgumentException("Input must be a String or a List of Strings");
+        }
+    }
+
 }

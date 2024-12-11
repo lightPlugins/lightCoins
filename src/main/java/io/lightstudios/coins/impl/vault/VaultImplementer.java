@@ -3,14 +3,14 @@ package io.lightstudios.coins.impl.vault;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsPlayer;
 import io.lightstudios.coins.api.models.PlayerData;
-import io.lightstudios.coins.impl.custom.LightVaultDepositEvent;
+import io.lightstudios.coins.impl.custom.LightCoinsDepositEvent;
+import io.lightstudios.coins.impl.custom.LightCoinsWithdrawEvent;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.hooks.towny.TownyInterface;
 import io.lightstudios.core.util.LightNumbers;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
-import org.junit.runners.Parameterized;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -181,6 +181,15 @@ public class VaultImplementer implements Economy {
     @Override
     public EconomyResponse withdrawPlayer(String input, double v) {
 
+        LightCoinsWithdrawEvent withdrawEvent = new LightCoinsWithdrawEvent(input, new BigDecimal(v));
+
+        v = withdrawEvent.getAmount().doubleValue();
+
+        if(withdrawEvent.isCancelled()) {
+            return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
+                    "Withdraw cancelled by LightVaultWithdrawEvent.");
+        }
+
         UUID uuid = checkUUID(input);
 
         if(uuid == null) {
@@ -188,8 +197,9 @@ public class VaultImplementer implements Economy {
                     "Failed to deposit coins. Invalid UUID format.");
         }
 
+
         final BigDecimal formatted = LightNumbers.formatBigDecimal(BigDecimal.valueOf(v));
-        LightVaultDepositEvent depositEvent = new LightVaultDepositEvent(uuid.toString(), formatted);
+        LightCoinsDepositEvent depositEvent = new LightCoinsDepositEvent(uuid.toString(), formatted);
 
         if (depositEvent.isCancelled()) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
@@ -209,6 +219,7 @@ public class VaultImplementer implements Economy {
             CompletableFuture<Map<UUID, BigDecimal>> future = LightCoins.instance.getCoinsTable()
                     .readCoins(uuid.toString());
 
+            double finalV = v;
             return future.thenApply(result -> {
                 if (result != null) {
                     BigDecimal coins = result.get(uuid);
@@ -218,12 +229,12 @@ public class VaultImplementer implements Economy {
                     LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
                     LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
 
-                    return new EconomyResponse(v, newCoinsPlayer.getCoins().doubleValue(),
+                    return new EconomyResponse(finalV, newCoinsPlayer.getCoins().doubleValue(),
                             EconomyResponse.ResponseType.SUCCESS, "Deposit processed successfully.");
                 } else {
                     LightCore.instance.getConsolePrinter().printError(
                             "Failed to retrieve player data from the database.");
-                    return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE,
+                    return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
                             "Failed to retrieve player data from the database.");
                 }
             }).exceptionally(throwable -> {
@@ -233,7 +244,7 @@ public class VaultImplementer implements Economy {
                         "-> We cant find any related player data in the database from uuid " + uuid
                 ));
                 throwable.printStackTrace();
-                return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE,
+                return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
                         "An error occurred while reading player data from the database.");
             }).join();
         }
@@ -279,7 +290,7 @@ public class VaultImplementer implements Economy {
         }
 
         final BigDecimal formatted = LightNumbers.formatBigDecimal(BigDecimal.valueOf(v));
-        LightVaultDepositEvent depositEvent = new LightVaultDepositEvent(uuid.toString(), formatted);
+        LightCoinsDepositEvent depositEvent = new LightCoinsDepositEvent(uuid.toString(), formatted);
 
         if (depositEvent.isCancelled()) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
