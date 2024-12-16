@@ -219,7 +219,7 @@ public class VaultImplementer implements Economy {
             CompletableFuture<Map<UUID, BigDecimal>> future = LightCoins.instance.getCoinsTable()
                     .readCoins(uuid.toString());
 
-            double finalV = v;
+            final double finalV = v;
             return future.thenApply(result -> {
                 if (result != null) {
                     BigDecimal coins = result.get(uuid);
@@ -297,9 +297,12 @@ public class VaultImplementer implements Economy {
                     "Deposit cancelled by LightVaultDepositEvent.");
         }
 
+        v = depositEvent.getAmount().doubleValue();
+
         AtomicReference<CoinsPlayer> coinsPlayerRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
                 .getPlayerData().get(uuid).getCoinsPlayer());
 
+        final double finalV = v;
         if (coinsPlayerRef.get() == null) {
             LightCoins.instance.getConsolePrinter().printInfo(List.of(
                     "Could not find player data in cache for " + uuid,
@@ -319,12 +322,12 @@ public class VaultImplementer implements Economy {
                     LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
                     LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
 
-                    return new EconomyResponse(v, newCoinsPlayer.getCoins().doubleValue(),
+                    return new EconomyResponse(finalV, newCoinsPlayer.getCoins().doubleValue(),
                             EconomyResponse.ResponseType.SUCCESS, "Deposit processed successfully.");
                 } else {
                     LightCore.instance.getConsolePrinter().printError(
                             "Failed to retrieve player data from the database.");
-                    return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE,
+                    return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
                             "Failed to retrieve player data from the database.");
                 }
             }).exceptionally(throwable -> {
@@ -334,7 +337,7 @@ public class VaultImplementer implements Economy {
                         "-> We cant find any related player data in the database from uuid " + uuid
                 ));
                 throwable.printStackTrace();
-                return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE,
+                return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
                         "An error occurred while reading player data from the database.");
             }).join();
         }

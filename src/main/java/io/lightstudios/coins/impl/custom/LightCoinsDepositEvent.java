@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 public class LightCoinsDepositEvent extends Event implements Cancellable {
     private static final HandlerList HANDLERS = new HandlerList();
     @Getter
-    private final String target;
+    private final String uuid;
     @Getter
     private BigDecimal amount;
     private boolean isCancelled;
@@ -25,8 +25,8 @@ public class LightCoinsDepositEvent extends Event implements Cancellable {
         return HANDLERS;
     }
 
-    public LightCoinsDepositEvent(String target, BigDecimal amount) {
-        this.target = target;
+    public LightCoinsDepositEvent(String uuid, BigDecimal amount) {
+        this.uuid = uuid;
         this.amount = amount;
         this.responseType = EconomyResponse.ResponseType.NOT_IMPLEMENTED;
     }

@@ -1,6 +1,9 @@
 package io.lightstudios.coins.api.models;
 
 import io.lightstudios.coins.LightCoins;
+import io.lightstudios.coins.impl.custom.LightCoinsDepositEvent;
+import io.lightstudios.coins.impl.custom.LightCoinsWithdrawEvent;
+import io.lightstudios.coins.synchronisation.TransactionCoins;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
 import lombok.Getter;
@@ -21,6 +24,8 @@ public class CoinsPlayer {
     private String nameSingular;
     private int decimalPlaces;
 
+    private static final TransactionCoins transactionManager = new TransactionCoins();
+
     public CoinsPlayer(UUID uuid) {
         this.uuid = uuid;
         this.maxCoins = LightCoins.instance.getSettingsConfig().defaultCurrencyMaxBalance();
@@ -31,8 +36,6 @@ public class CoinsPlayer {
 
 
     public EconomyResponse addCoins(BigDecimal coins) {
-
-        LightCoins.instance.getConsolePrinter().printInfo("Adding coins ...");
 
         EconomyResponse defaultResponse = checkDefaults(coins);
         if(!defaultResponse.transactionSuccess()) {
@@ -46,6 +49,7 @@ public class CoinsPlayer {
         }
 
         this.coins = this.coins.add(coins);
+        transactionManager.addTransaction(this.uuid, this.coins);
         return new EconomyResponse(coins.doubleValue(), this.coins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
     }
@@ -65,6 +69,7 @@ public class CoinsPlayer {
         }
 
         this.coins = this.coins.subtract(coins);
+        transactionManager.addTransaction(this.uuid, this.coins);
         return new EconomyResponse(coins.doubleValue(), this.coins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
     }
@@ -97,5 +102,4 @@ public class CoinsPlayer {
         }
         return new EconomyResponse(0, 0, EconomyResponse.ResponseType.SUCCESS, "");
     }
-
 }

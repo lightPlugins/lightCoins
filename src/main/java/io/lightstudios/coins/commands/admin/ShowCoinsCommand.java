@@ -1,4 +1,4 @@
-package io.lightstudios.coins.commands.defaults;
+package io.lightstudios.coins.commands.admin;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsPlayer;
@@ -12,11 +12,10 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CoinsCommand implements LightCommand {
+public class ShowCoinsCommand implements LightCommand {
     @Override
     public List<String> getSubcommand() {
         return List.of("show");
@@ -29,12 +28,12 @@ public class CoinsCommand implements LightCommand {
 
     @Override
     public String getSyntax() {
-        return "/coins show";
+        return "/coins show <playername>";
     }
 
     @Override
     public int maxArgs() {
-        return 1;
+        return 2;
     }
 
     @Override
@@ -55,7 +54,36 @@ public class CoinsCommand implements LightCommand {
     @Override
     public boolean performAsPlayer(Player player, String[] args) {
 
-        OfflinePlayer offlinePlayer = Bukkit.getPlayer(player.getUniqueId());
+        if(args.length == 1) {
+            PlayerData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(player);
+
+            if(playerData == null) {
+                LightCore.instance.getMessageSender().sendPlayerMessage(
+                        player,
+                        LightCoins.instance.getMessageConfig().prefix() +
+                                LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
+                                        .replace("#info#", "Could not find your player data")
+                                ).toList());
+                return false;
+            }
+
+            CoinsPlayer coinsPlayer = playerData.getCoinsPlayer();
+
+            String coins = coinsPlayer.getFormattedCoins();
+            String currency = coinsPlayer.getFormattedCurrency();
+
+            LightCore.instance.getMessageSender().sendPlayerMessage(
+                    player,
+                    LightCoins.instance.getMessageConfig().prefix() +
+                            LightCoins.instance.getMessageConfig().coinsShow().stream().map(str -> str
+                                    .replace("#coins#", coins)
+                                    .replace("#currency#", currency)
+                            ).collect(Collectors.joining()));
+
+            return false;
+        }
+
+        OfflinePlayer offlinePlayer = Bukkit.getPlayer(args[1]);
 
         if(offlinePlayer == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -97,8 +125,9 @@ public class CoinsCommand implements LightCommand {
         LightCore.instance.getMessageSender().sendPlayerMessage(
                 player,
                 LightCoins.instance.getMessageConfig().prefix() +
-                LightCoins.instance.getMessageConfig().coinsShow().stream().map(str -> str
-                        .replace("#coins#", coinsPlayer.getFormattedCoins())
+                LightCoins.instance.getMessageConfig().coinsShowTarget().stream().map(str -> str
+                        .replace("#coins#", coins)
+                        .replace("#player#", offlinePlayer.getName())
                         .replace("#currency#", currency)
                 ).collect(Collectors.joining()));
 

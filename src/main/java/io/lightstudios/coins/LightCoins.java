@@ -4,9 +4,9 @@ import io.lightstudios.coins.api.LightCoinsAPI;
 import io.lightstudios.coins.api.models.CoinsPlayer;
 import io.lightstudios.coins.api.models.PlayerData;
 import io.lightstudios.coins.api.models.VirtualCurrency;
-import io.lightstudios.coins.commands.defaults.AddCoinsCommand;
-import io.lightstudios.coins.commands.defaults.CoinsCommand;
-import io.lightstudios.coins.commands.defaults.RemoveCoinsCommand;
+import io.lightstudios.coins.commands.admin.AddCoinsCommand;
+import io.lightstudios.coins.commands.admin.ShowCoinsCommand;
+import io.lightstudios.coins.commands.admin.RemoveCoinsCommand;
 import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
 import io.lightstudios.coins.impl.events.OnPlayerJoin;
@@ -151,7 +151,7 @@ public final class LightCoins extends JavaPlugin {
     private void registerCommands() {
 
         new CommandManager(new ArrayList<>(List.of(
-                new CoinsCommand(),
+                new ShowCoinsCommand(),
                 new AddCoinsCommand(),
                 new RemoveCoinsCommand()
         )), "coins");

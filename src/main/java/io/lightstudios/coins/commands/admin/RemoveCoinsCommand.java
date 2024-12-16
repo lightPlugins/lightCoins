@@ -1,4 +1,4 @@
-package io.lightstudios.coins.commands.defaults;
+package io.lightstudios.coins.commands.admin;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsPlayer;
@@ -18,20 +18,20 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AddCoinsCommand implements LightCommand {
+public class RemoveCoinsCommand implements LightCommand {
     @Override
     public List<String> getSubcommand() {
-        return List.of("add", "give", "deposit");
+        return List.of("remove", "take", "withdraw");
     }
 
     @Override
     public String getDescription() {
-        return "Add coins to a player";
+        return "Remove coins from a player";
     }
 
     @Override
     public String getSyntax() {
-        return "/coins add <player> <amount>";
+        return "/coins remove <player> <amount>";
     }
 
     @Override
@@ -41,7 +41,7 @@ public class AddCoinsCommand implements LightCommand {
 
     @Override
     public String getPermission() {
-        return LightPermissions.COINS_ADD_COMMAND.getPerm();
+        return LightPermissions.COINS_REMOVE_COMMAND.getPerm();
     }
 
     @Override
@@ -55,21 +55,19 @@ public class AddCoinsCommand implements LightCommand {
             if(args.length == 2) {
                 return Bukkit.getServer().getOnlinePlayers().stream().map(Player::getName).toList();
             }
-
             return null;
         };
     }
 
     @Override
     public boolean performAsPlayer(Player player, String[] args) {
-
         if(args.length != 3) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().wrongSyntax().stream().map(str -> str
                                     .replace("#syntax#", getSyntax())
-                            ).toList());
+                            ).collect(Collectors.joining()));
             return false;
         }
 
@@ -81,7 +79,7 @@ public class AddCoinsCommand implements LightCommand {
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().playerNotFound().stream().map(str -> str
                                     .replace("#player#", args[1])
-                            ).toList());
+                            ).collect(Collectors.joining()));
             return false;
         }
 
@@ -92,7 +90,7 @@ public class AddCoinsCommand implements LightCommand {
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
                                     .replace("#info#", "Could not find player data")
-                            ).toList());
+                            ).collect(Collectors.joining()));
             return false;
         }
 
@@ -110,25 +108,22 @@ public class AddCoinsCommand implements LightCommand {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().noNegativ());
+                            String.join("", LightCoins.instance.getMessageConfig().noNegativ()));
             return false;
         }
 
         CoinsPlayer coinsPlayer = playerData.getCoinsPlayer();
-        EconomyResponse response = coinsPlayer.addCoins(amount);
+        EconomyResponse response = coinsPlayer.removeCoins(amount);
 
         if(response.transactionSuccess()) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
-                    List.of(
-                            LightCoins.instance.getMessageConfig().prefix() +
-                                    LightCoins.instance.getMessageConfig().coinsAdd().stream().map(str -> str
-                                            .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
-                                            .replace("#currency#", coinsPlayer.getFormattedCurrency())
-                                            .replace("#player#", target.getName())
-                                    ).collect(Collectors.joining())
-                    )
-            );
+                    LightCoins.instance.getMessageConfig().prefix() +
+                            LightCoins.instance.getMessageConfig().coinsRemove().stream().map(str -> str
+                                    .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
+                                    .replace("#currency#", coinsPlayer.getFormattedCurrency())
+                                    .replace("#player#", target.getName())
+                            ).collect(Collectors.joining()));
             return true;
         } else {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -139,7 +134,6 @@ public class AddCoinsCommand implements LightCommand {
                             ).collect(Collectors.joining()));
             return false;
         }
-
     }
 
     @Override

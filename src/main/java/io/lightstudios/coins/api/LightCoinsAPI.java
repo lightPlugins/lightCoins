@@ -1,8 +1,10 @@
 package io.lightstudios.coins.api;
 
+import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsPlayer;
 import io.lightstudios.coins.api.models.PlayerData;
 import io.lightstudios.coins.api.models.VirtualCurrency;
+import io.lightstudios.coins.impl.vault.VaultImplementer;
 import lombok.Getter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -19,7 +21,11 @@ public class LightCoinsAPI {
 
     private final HashMap<UUID, PlayerData> playerData = new HashMap<>();
     private final List<VirtualCurrency> virtualCurrencies = new ArrayList<>();
+    public VaultImplementer vaultImplementer;
 
+    public void getImplementer() {
+        this.vaultImplementer = LightCoins.instance.getVaultImplementer();
+    }
     public void createPlayerData(OfflinePlayer player) {
         initPlayer(player);
     }
