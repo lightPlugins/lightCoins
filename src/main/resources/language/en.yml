@@ -6,12 +6,20 @@ noNumber: "<red>This is not a number! Please use valid numbers."
 noNegativ: "<red>You can't use negative numbers!"
 playerNotFound: "<red>The player <dark_red>#player#<red> could not be found!"
 somethingWentWrong: "<red>Something went wrong! Infos: #info#"
+reloadSuccess: "<gray>Plugin <yellow>successfully<gray> reloaded!"
 #
 coinsShow: "<gray>You have <yellow>#coins#<gray> coins."
 coinsShowTarget: "<gray>The player <yellow>#player#<gray> has <yellow>#coins# <gray>#currency#"
 coinsAdd: "<gray>You have added <yellow>#coins# <gray>#currency# to <yellow>#player#<gray>."
 coinsRemove: "<gray>You have removed <yellow>#coins# <gray>#currency# from <yellow>#player#<gray>."
-
+#
+pay: "<gray>You have paid <yellow>#coins# <gray>#currency# to <yellow>#target#<gray>."
+payTarget: "<gray>The player <yellow>#target#<gray> has paid you <yellow>#coins# <gray>#currency#."
+payCooldown: "<red>You have to wait <yellow>#time# <red>seconds before you can pay again!"
+payOnlyOnlinePlayer:
+  - "<red>The target player <dark_red>#target# <red>can't be found or is not online! "
+  - "<red>You can only pay <dark_red>online players <red>due to security reasons! "
+  - "<red>The target player must be on the <dark_red>same server <red>as you!"
 
 
 

@@ -69,7 +69,7 @@ public class AddCoinsCommand implements LightCommand {
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().wrongSyntax().stream().map(str -> str
                                     .replace("#syntax#", getSyntax())
-                            ).toList());
+                            ).collect(Collectors.joining()));
             return false;
         }
 
@@ -81,7 +81,7 @@ public class AddCoinsCommand implements LightCommand {
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().playerNotFound().stream().map(str -> str
                                     .replace("#player#", args[1])
-                            ).toList());
+                            ).collect(Collectors.joining()));
             return false;
         }
 
@@ -92,7 +92,7 @@ public class AddCoinsCommand implements LightCommand {
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
                                     .replace("#info#", "Could not find player data")
-                            ).toList());
+                            ).collect(Collectors.joining()));
             return false;
         }
 

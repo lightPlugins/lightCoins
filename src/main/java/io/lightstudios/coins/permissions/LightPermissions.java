@@ -11,15 +11,17 @@ public enum LightPermissions {
         Admin Command Perissions
      */
 
-    COINS_COMMAND("lightcoins.command.player.coins"),
+    COINS_ADD_COMMAND("lightcoins.command.admin.coins.add"),
+    COINS_REMOVE_COMMAND("lightcoins.command.admin.coins.remove"),
+    RELOAD_COMMAND("lightcoins.command.admin.reload"),
 
 
     /*
         Player Command Permissions
      */
 
-    COINS_ADD_COMMAND("lightcoins.command.admin.coins.add"),
-    COINS_REMOVE_COMMAND("lightcoins.command.admin.coins.remove"),
+    COINS_COMMAND("lightcoins.command.player.coins"),
+    PAY_COMMAND("lightcoins.command.admin.coins.remove"),
 
             ;
 

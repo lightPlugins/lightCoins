@@ -118,12 +118,12 @@ public class VaultImplementer implements Economy {
                     return newCoinsPlayer.getCoins().doubleValue();
 
                 } else {
-                    LightCore.instance.getConsolePrinter().printError(
+                    LightCoins.instance.getConsolePrinter().printError(
                             "Failed to retrieve player data from the database.");
                     return 0.0;
                 }
             }).exceptionally(throwable -> {
-                LightCore.instance.getConsolePrinter().printError(List.of(
+                LightCoins.instance.getConsolePrinter().printError(List.of(
                         "An error occurred while reading player data from the database,",
                         "because CoinsPlayer Object in cache is null and cant retrieve data from database.",
                         "-> We cant find any related player data in the database from uuid " + uuid
@@ -232,13 +232,13 @@ public class VaultImplementer implements Economy {
                     return new EconomyResponse(finalV, newCoinsPlayer.getCoins().doubleValue(),
                             EconomyResponse.ResponseType.SUCCESS, "Deposit processed successfully.");
                 } else {
-                    LightCore.instance.getConsolePrinter().printError(
+                    LightCoins.instance.getConsolePrinter().printError(
                             "Failed to retrieve player data from the database.");
                     return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
                             "Failed to retrieve player data from the database.");
                 }
             }).exceptionally(throwable -> {
-                LightCore.instance.getConsolePrinter().printError(List.of(
+                LightCoins.instance.getConsolePrinter().printError(List.of(
                         "An error occurred while reading player data from the database,",
                         "because CoinsPlayer Object in cache is null and cant retrieve data from database.",
                         "-> We cant find any related player data in the database from uuid " + uuid
@@ -325,13 +325,13 @@ public class VaultImplementer implements Economy {
                     return new EconomyResponse(finalV, newCoinsPlayer.getCoins().doubleValue(),
                             EconomyResponse.ResponseType.SUCCESS, "Deposit processed successfully.");
                 } else {
-                    LightCore.instance.getConsolePrinter().printError(
+                    LightCoins.instance.getConsolePrinter().printError(
                             "Failed to retrieve player data from the database.");
                     return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
                             "Failed to retrieve player data from the database.");
                 }
             }).exceptionally(throwable -> {
-                LightCore.instance.getConsolePrinter().printError(List.of(
+                LightCoins.instance.getConsolePrinter().printError(List.of(
                         "An error occurred while reading player data from the database,",
                         "because CoinsPlayer Object in cache is null and cant retrieve data from database.",
                         "-> We cant find any related player data in the database from uuid " + uuid
@@ -382,7 +382,7 @@ public class VaultImplementer implements Economy {
         }
 
         if (LightCoins.instance.getLightCoinsAPI().getPlayerData().containsKey(uuid)) {
-            LightCore.instance.getConsolePrinter().printInfo("Player data already exists for " + uuid);
+            LightCoins.instance.getConsolePrinter().printInfo("Player data already exists for " + uuid);
             return false;
         }
 
@@ -397,14 +397,14 @@ public class VaultImplementer implements Economy {
         try {
             int result = LightCoins.instance.getCoinsTable().writeCoins(uuid.toString(), new BigDecimal(10)).join();
             if (result == 1) {
-                LightCore.instance.getConsolePrinter().printInfo("New Player data created for " + uuid);
+                LightCoins.instance.getConsolePrinter().printInfo("New Player data created for " + uuid);
                 return true;
             } else {
-                LightCore.instance.getConsolePrinter().printError("Failed to create player account for " + uuid);
+                LightCoins.instance.getConsolePrinter().printError("Failed to create player account for " + uuid);
                 return false;
             }
         } catch (Exception e) {
-            LightCore.instance.getConsolePrinter().printError(List.of(
+            LightCoins.instance.getConsolePrinter().printError(List.of(
                     "An error occurred while writing player data to the database!",
                     "Please check the error logs for more information."
             ));
@@ -518,7 +518,7 @@ public class VaultImplementer implements Economy {
                 try {
                     uuid = UUID.fromString(input);
                 } catch (IllegalArgumentException e) {
-                    LightCore.instance.getConsolePrinter().printError(List.of(
+                    LightCoins.instance.getConsolePrinter().printError(List.of(
                             "Failed to create player account for " + input,
                             "Invalid UUID format.",
                             "A third-party plugin is trying to create a player account with an invalid UUID.",
@@ -531,7 +531,7 @@ public class VaultImplementer implements Economy {
             try {
                 uuid = UUID.fromString(input);
             } catch (IllegalArgumentException e) {
-                LightCore.instance.getConsolePrinter().printError(List.of(
+                LightCoins.instance.getConsolePrinter().printError(List.of(
                         "Failed to create player account for " + input,
                         "Invalid UUID format.",
                         "A third-party plugin is trying to create a player account with an invalid UUID.",

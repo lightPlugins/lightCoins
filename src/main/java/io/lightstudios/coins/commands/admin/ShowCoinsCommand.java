@@ -33,7 +33,7 @@ public class ShowCoinsCommand implements LightCommand {
 
     @Override
     public int maxArgs() {
-        return 2;
+        return -1;
     }
 
     @Override
@@ -54,7 +54,17 @@ public class ShowCoinsCommand implements LightCommand {
     @Override
     public boolean performAsPlayer(Player player, String[] args) {
 
-        if(args.length == 1) {
+        if(args.length > 2 || args.length == 1) {
+            LightCore.instance.getMessageSender().sendPlayerMessage(
+                    player,
+                    LightCoins.instance.getMessageConfig().prefix() +
+                            LightCoins.instance.getMessageConfig().wrongSyntax().stream().map(str -> str
+                                    .replace("#syntax#", getSyntax())
+                            ).collect(Collectors.joining()));
+            return false;
+        }
+
+        if(args.length == 0) {
             PlayerData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(player);
 
             if(playerData == null) {
@@ -63,7 +73,7 @@ public class ShowCoinsCommand implements LightCommand {
                         LightCoins.instance.getMessageConfig().prefix() +
                                 LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
                                         .replace("#info#", "Could not find your player data")
-                                ).toList());
+                                ).collect(Collectors.joining()));
                 return false;
             }
 
@@ -83,6 +93,16 @@ public class ShowCoinsCommand implements LightCommand {
             return false;
         }
 
+        if(!player.hasPermission(LightPermissions.COINS_COMMAND.getPerm())) {
+            LightCore.instance.getMessageSender().sendPlayerMessage(
+                    player,
+                    LightCoins.instance.getMessageConfig().prefix() +
+                            LightCoins.instance.getMessageConfig().noPermission().stream().map(str -> str
+                                    .replace("#permission#", getSyntax())
+                            ).collect(Collectors.joining()));
+            return false;
+        }
+
         OfflinePlayer offlinePlayer = Bukkit.getPlayer(args[1]);
 
         if(offlinePlayer == null) {
@@ -91,7 +111,7 @@ public class ShowCoinsCommand implements LightCommand {
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().playerNotFound().stream().map(str -> str
                                     .replace("#player#", args[1])
-                            ).toList());
+                            ).collect(Collectors.joining()));
             return false;
         }
 
@@ -103,7 +123,7 @@ public class ShowCoinsCommand implements LightCommand {
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
                                     .replace("#info#", "Could not find your player data")
-                            ).toList());
+                            ).collect(Collectors.joining()));
             return false;
         }
 
@@ -115,7 +135,7 @@ public class ShowCoinsCommand implements LightCommand {
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
                                     .replace("#info#", "Could not found your coins data")
-                            ).toList());
+                            ).collect(Collectors.joining()));
             return false;
         }
 

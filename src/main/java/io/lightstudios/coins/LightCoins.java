@@ -5,8 +5,10 @@ import io.lightstudios.coins.api.models.CoinsPlayer;
 import io.lightstudios.coins.api.models.PlayerData;
 import io.lightstudios.coins.api.models.VirtualCurrency;
 import io.lightstudios.coins.commands.admin.AddCoinsCommand;
+import io.lightstudios.coins.commands.admin.ReloadCommand;
 import io.lightstudios.coins.commands.admin.ShowCoinsCommand;
 import io.lightstudios.coins.commands.admin.RemoveCoinsCommand;
+import io.lightstudios.coins.commands.defaults.PayCommand;
 import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
 import io.lightstudios.coins.impl.events.OnPlayerJoin;
@@ -52,11 +54,16 @@ public final class LightCoins extends JavaPlugin {
 
         instance = this;
         this.consolePrinter = new ConsolePrinter("§7[§rLight§eCoins§7] §r");
+        consolePrinter.printInfo("Starting LightCoins...");
         this.vaultImplementer = new VaultImplementer();
         // register the vault provider
+        consolePrinter.printInfo("Registering Vault Provider...");
         registerVaultProvider();
+        consolePrinter.printInfo("Read and Write Configs...");
         readAndWriteConfigs();
+        consolePrinter.printInfo("Select Language file...");
         selectLanguage();
+        consolePrinter.printInfo("Read and Write virtual currencies...");
         readVirtualCurrencies();
     }
 
@@ -75,6 +82,13 @@ public final class LightCoins extends JavaPlugin {
 
     }
 
+    public void loadDefaults() {
+        readAndWriteConfigs();
+        selectLanguage();
+        readVirtualCurrencies();
+        registerCommands();
+    }
+
     /**
      * Initializes the plugin by reading and writing configs
      */
@@ -90,7 +104,7 @@ public final class LightCoins extends JavaPlugin {
         try {
             this.virtualCurrencyFiles = new MultiFileManager("/virtual-currency/virtual-currencies");
         } catch (Exception e) {
-            LightCore.instance.getConsolePrinter().printError("Failed to load virtual currencies.");
+            LightCoins.instance.getConsolePrinter().printError("Failed to load virtual currencies.");
             throw new RuntimeException("Failed to load virtual currencies.");
         }
 
@@ -111,7 +125,7 @@ public final class LightCoins extends JavaPlugin {
      * Reads existing player data from the database and populates the playerData map in LightCoinsAPI
      */
     private void readPlayerData() {
-        LightCore.instance.getConsolePrinter().printInfo("Reading existing player data from the database...");
+        LightCoins.instance.getConsolePrinter().printInfo("Reading existing player data from the database...");
         float startTime = System.currentTimeMillis();
         try {
             // Call createExistingPlayerData and get the result synchronously
@@ -125,10 +139,10 @@ public final class LightCoins extends JavaPlugin {
             });
 
             float endTime = System.currentTimeMillis();
-            LightCore.instance.getConsolePrinter().printInfo("Found " + playerDataMap.size()
+            LightCoins.instance.getConsolePrinter().printInfo("Found " + playerDataMap.size()
                     + " player data entries in " + (endTime - startTime) + "ms!");
         } catch (Exception e) {
-            LightCore.instance.getConsolePrinter().printError(List.of(
+            LightCoins.instance.getConsolePrinter().printError(List.of(
                     "An error occurred while reading player data from the database!",
                     "Please check the error logs for more information."
             ));
@@ -144,7 +158,7 @@ public final class LightCoins extends JavaPlugin {
         Bukkit.getServicesManager().register(Economy.class, vaultProvider, this, ServicePriority.Highest);
         RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
         if(rsp != null) {
-            LightCore.instance.getConsolePrinter().printInfo("Successfully registered Vault provider " + rsp.getProvider().getName());
+            LightCoins.instance.getConsolePrinter().printInfo("Successfully registered Vault provider " + rsp.getProvider().getName());
         }
     }
 
@@ -153,8 +167,13 @@ public final class LightCoins extends JavaPlugin {
         new CommandManager(new ArrayList<>(List.of(
                 new ShowCoinsCommand(),
                 new AddCoinsCommand(),
-                new RemoveCoinsCommand()
+                new RemoveCoinsCommand(),
+                new ReloadCommand()
         )), "coins");
+
+        new CommandManager(new ArrayList<>(List.of(
+                new PayCommand()
+        )), "pay");
     }
 
     private void selectLanguage() {

@@ -1,5 +1,6 @@
 package io.lightstudios.coins.storage;
 
+import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsPlayer;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.database.model.DatabaseTypes;
@@ -29,13 +30,13 @@ public class CoinsTable {
             }
         }).thenCompose(future -> future).thenApply(result -> {
             if (result == null) {
-                LightCore.instance.getConsolePrinter().printError(List.of(
+                LightCoins.instance.getConsolePrinter().printError(List.of(
                         "An error occurred while reading player data from the database!",
                         "Please check the error logs for more information."
                 ));
                 throw new RuntimeException("An error occurred while reading player data from the database!");
             } else {
-                LightCore.instance.getConsolePrinter().printInfo("Player data read from the database successfully!");
+                LightCoins.instance.getConsolePrinter().printInfo("Player data read from the database successfully!");
             }
 
             return result.entrySet().stream()
@@ -57,7 +58,7 @@ public class CoinsTable {
                             HashMap::new
                     ));
         }).exceptionally(e -> {
-            LightCore.instance.getConsolePrinter().printError(List.of(
+            LightCoins.instance.getConsolePrinter().printError(List.of(
                     "An error occurred while reading player data from the database!",
                     "Please check the error logs for more information."
             ));
@@ -74,7 +75,7 @@ public class CoinsTable {
             }
         }).thenCompose(future -> future).thenApply(result -> {
             if (result == null) {
-                LightCore.instance.getConsolePrinter().printError(List.of(
+                LightCoins.instance.getConsolePrinter().printError(List.of(
                         "An error occurred while reading coins from the database!",
                         "Please check the error logs for more information."
                 ));
@@ -87,7 +88,7 @@ public class CoinsTable {
                             e -> (BigDecimal) ((Map.Entry<?, ?>) e).getValue()
                     ));
         }).exceptionally(e -> {
-            LightCore.instance.getConsolePrinter().printError(List.of(
+            LightCoins.instance.getConsolePrinter().printError(List.of(
                     "An error occurred while reading player data from the database!",
                     "Please check the error logs for more information."
             ));
@@ -110,7 +111,7 @@ public class CoinsTable {
             }
         }).thenCompose(future -> future).thenApply(result -> {
             if (result < 1) {
-                LightCore.instance.getConsolePrinter().printError(List.of(
+                LightCoins.instance.getConsolePrinter().printError(List.of(
                         "An error occurred while writing coins to the database!",
                         "Please check the error logs for more information."
                 ));
@@ -118,7 +119,7 @@ public class CoinsTable {
             }
             return result;
         }).exceptionally(e -> {
-            LightCore.instance.getConsolePrinter().printError(List.of(
+            LightCoins.instance.getConsolePrinter().printError(List.of(
                     "An error occurred while reading player data from the database!",
                     "Please check the error logs for more information."
             ));
@@ -134,16 +135,16 @@ public class CoinsTable {
                 try {
                     LightCore.instance.getSqlDatabase().executeSqlFuture(query).thenAccept(result -> {
                         if (result == null) {
-                            LightCore.instance.getConsolePrinter().printError(List.of(
+                            LightCoins.instance.getConsolePrinter().printError(List.of(
                                     "An error occurred while creating the coins table!",
                                     "Please check the error logs for more information.",
                                     "Query: " + query
                             ));
                             throw new RuntimeException("An error occurred while creating the coins table!");
                         }
-                        LightCore.instance.getConsolePrinter().printInfo("Coins table created successfully!");
+                        LightCoins.instance.getConsolePrinter().printInfo("Coins table created successfully!");
                     }).exceptionally(e -> {
-                        LightCore.instance.getConsolePrinter().printError(List.of(
+                        LightCoins.instance.getConsolePrinter().printError(List.of(
                                 "An error occurred while reading player data from the database!",
                                 "Please check the error logs for more information."
                         ));
@@ -151,7 +152,7 @@ public class CoinsTable {
                         throw new RuntimeException("An error occurred while reading player data from the database!");
                     });;
                 } catch (Exception e) {
-                    LightCore.instance.getConsolePrinter().printError(List.of(
+                    LightCoins.instance.getConsolePrinter().printError(List.of(
                             "An error occurred while creating the coins table!",
                             "Please check the error logs for more information.",
                             "Query: " + query

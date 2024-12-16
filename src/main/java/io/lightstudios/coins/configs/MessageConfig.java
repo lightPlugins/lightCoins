@@ -34,10 +34,15 @@ public class MessageConfig {
     public List<String> noNegativ() { return toStringList(config.get("noNegativ")); }
     public List<String> playerNotFound() { return toStringList(config.get("playerNotFound")); }
     public List<String> somethingWentWrong() { return toStringList(config.get("somethingWentWrong")); }
+    public List<String> reloadSuccess() { return toStringList(config.get("reloadSuccess")); }
     public List<String> coinsShow() { return toStringList(config.get("coinsShow")); }
     public List<String> coinsShowTarget() { return toStringList(config.get("coinsShowTarget")); }
     public List<String> coinsAdd() { return toStringList(config.get("coinsAdd")); }
     public List<String> coinsRemove() { return toStringList(config.get("coinsRemove")); }
+    public List<String> pay() { return toStringList(config.get("pay")); }
+    public List<String> payTarget() { return toStringList(config.get("payTarget")); }
+    public List<String> payCooldown() { return toStringList(config.get("payCooldown")); }
+    public List<String> payOnlyOnlinePlayer() { return toStringList(config.get("payOnlyOnlinePlayer")); }
 
 
 
@@ -49,7 +54,7 @@ public class MessageConfig {
                     .map(Object::toString)
                     .collect(Collectors.toList());
         } else {
-            LightCore.instance.getConsolePrinter().printError(List.of(
+            LightCoins.instance.getConsolePrinter().printError(List.of(
                     "Error in your message file at " + input,
                     "Input must be a String or a List of Strings",
                     "example as String: test: 'Test message'",

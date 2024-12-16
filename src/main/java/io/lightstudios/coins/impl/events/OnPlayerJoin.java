@@ -20,14 +20,14 @@ public class OnPlayerJoin implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
 
         if (LightCoins.instance.getLightCoinsAPI().getPlayerData().containsKey(uuid)) {
-            LightCore.instance.getConsolePrinter().printInfo("Player data already exists for " + uuid);
+            LightCoins.instance.getConsolePrinter().printInfo("Player data already exists for " + uuid);
             return;
         }
 
         LightCoins.instance.getCoinsTable().readCoins(uuid.toString()).thenAcceptAsync(result -> {
             if (result.isEmpty()) {
                 if (!LightCoins.instance.getVaultImplementer().createPlayerAccount(uuid.toString())) {
-                    LightCore.instance.getConsolePrinter().printError("Failed to create player account for " + uuid);
+                    LightCoins.instance.getConsolePrinter().printError("Failed to create player account for " + uuid);
                 }
             } else {
                 PlayerData playerData = new PlayerData();
@@ -35,7 +35,7 @@ public class OnPlayerJoin implements Listener {
                 coinsPlayer.setCoins(result.get(uuid));
                 playerData.setCoinsPlayer(coinsPlayer);
                 LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
-                LightCore.instance.getConsolePrinter().printInfo("Player data loaded for " + uuid);
+                LightCoins.instance.getConsolePrinter().printInfo("Player data loaded for " + uuid);
             }
         });
     }
