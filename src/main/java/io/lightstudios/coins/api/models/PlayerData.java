@@ -2,6 +2,7 @@ package io.lightstudios.coins.api.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -17,6 +18,8 @@ public class PlayerData {
     private UUID uuid;
     @Nullable
     private String playerName;
+    @Nullable
+    private OfflinePlayer offlinePlayer;
 
     @Nullable
     public VirtualCurrency getVirtualCurrencyByName(String name) {

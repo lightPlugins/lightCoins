@@ -104,9 +104,9 @@ public class CoinsTable {
             synchronized (this) {
                 String query;
                 if(LightCore.instance.getSqlDatabase().getDatabaseType().equals(DatabaseTypes.SQLITE)) {
-                    query = "INSERT OR REPLACE INTO " + tableName + " (uuid, coins) VALUES ('" + uuid + "', " + coins.doubleValue() + ")";
+                    query = "INSERT OR REPLACE INTO " + tableName + " (uuid, name, coins) VALUES ('" + uuid + "', '" + name + "', " + coins.doubleValue() + ")";
                 } else {
-                    query = "INSERT INTO " + tableName + " (uuid, coins) VALUES ('" + uuid + "', " + coins.doubleValue() + ") ON DUPLICATE KEY UPDATE coins = " + coins;
+                    query = "INSERT INTO " + tableName + " (uuid, coins) VALUES ('" + uuid + "', '" + name + "', " + coins.doubleValue() + ") ON DUPLICATE KEY UPDATE coins = " + coins;
                 }
 
                 return LightCore.instance.getSqlDatabase().executeSqlFuture(query);
