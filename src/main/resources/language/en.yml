@@ -7,6 +7,8 @@ noNegativ: "<red>You can't use negative numbers!"
 playerNotFound: "<red>The player <dark_red>#player#<red> could not be found!"
 somethingWentWrong: "<red>Something went wrong! Infos: #info#"
 reloadSuccess: "<gray>Plugin <yellow>successfully<gray> reloaded!"
+starterCoins: "<gray>You have received <yellow>#coins# <gray>#currency# as a starter gift!"
+playerDeleted: "<gray>You have deleted the player <yellow>#player#<gray>."
 #
 coinsShow: "<gray>You have <yellow>#coins#<gray> coins."
 coinsShowTarget: "<gray>The player <yellow>#player#<gray> has <yellow>#coins# <gray>#currency#"
@@ -20,6 +22,19 @@ payOnlyOnlinePlayer:
   - "<red>The target player <dark_red>#target# <red>can't be found or is not online! "
   - "<red>You can only pay <dark_red>online players <red>due to security reasons! "
   - "<red>The target player must be on the <dark_red>same server <red>as you!"
+#
+baltop:
+  header:
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+    - ' <gray>Top 10 Players with the largest'
+    - '     <gray>balance on the server'
+    - ' '
+    - '<dark_gray>● <yellow><bold>Overall <gray>- <yellow>#overall# <gray>#currency#'
+    - ' '
+  content: '<dark_gray>● <yellow><bold>#number#<gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+  footer:
+    - ' '
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
 
 
 

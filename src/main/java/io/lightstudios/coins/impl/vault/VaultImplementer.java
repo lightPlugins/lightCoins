@@ -90,9 +90,8 @@ public class VaultImplementer implements Economy {
 
     @Override
     public double getBalance(String input) {
-
         UUID uuid = checkUUID(input);
-        if(uuid == null) {
+        if (uuid == null) {
             return 0;
         }
 
@@ -112,24 +111,24 @@ public class VaultImplementer implements Economy {
             return future.thenApply(result -> {
                 if (result != null) {
                     BigDecimal coins = result.get(uuid);
-                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
-                    newCoinsPlayer.setCoins(coins);
-                    playerData.setCoinsPlayer(newCoinsPlayer);
-                    playerData.setPlayerName(offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName());
-                    LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
-                    LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
-                    return newCoinsPlayer.getCoins().doubleValue();
-
+                    if (coins != null) {
+                        newCoinsPlayer.setCoins(coins);
+                        playerData.setCoinsPlayer(newCoinsPlayer);
+                        LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
+                        LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
+                        return newCoinsPlayer.getCoins().doubleValue();
+                    }
                 } else {
                     LightCoins.instance.getConsolePrinter().printError(
                             "Failed to retrieve player data from the database.");
                     return 0.0;
                 }
+                return 0.0;
             }).exceptionally(throwable -> {
                 LightCoins.instance.getConsolePrinter().printError(List.of(
                         "An error occurred while reading player data from the database,",
-                        "because CoinsPlayer Object in cache is null and cant retrieve data from database.",
-                        "-> We cant find any related player data in the database from uuid " + uuid
+                        "because CoinsPlayer Object in cache is null and can't retrieve data from database.",
+                        "-> We can't find any related player data in the database from uuid " + uuid
                 ));
                 throwable.printStackTrace();
                 return 0.0;
@@ -137,7 +136,6 @@ public class VaultImplementer implements Economy {
         }
 
         return coinsPlayerRef.get().getCoins().doubleValue();
-
     }
 
     @Override
@@ -183,32 +181,21 @@ public class VaultImplementer implements Economy {
 
     @Override
     public EconomyResponse withdrawPlayer(String input, double v) {
-
         LightCoinsWithdrawEvent withdrawEvent = new LightCoinsWithdrawEvent(input, new BigDecimal(v));
-
         v = withdrawEvent.getAmount().doubleValue();
 
-        if(withdrawEvent.isCancelled()) {
+        if (withdrawEvent.isCancelled()) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
                     "Withdraw cancelled by LightVaultWithdrawEvent.");
         }
 
         UUID uuid = checkUUID(input);
-
-        if(uuid == null) {
+        if (uuid == null) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
-                    "Failed to deposit coins. Invalid UUID format.");
+                    "Failed to withdraw coins. Invalid UUID format.");
         }
-
 
         final BigDecimal formatted = LightNumbers.formatBigDecimal(BigDecimal.valueOf(v));
-        LightCoinsDepositEvent depositEvent = new LightCoinsDepositEvent(uuid.toString(), formatted);
-
-        if (depositEvent.isCancelled()) {
-            return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
-                    "Deposit cancelled by LightVaultDepositEvent.");
-        }
-
         AtomicReference<CoinsPlayer> coinsPlayerRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
                 .getPlayerData().get(uuid).getCoinsPlayer());
 
@@ -226,27 +213,32 @@ public class VaultImplementer implements Economy {
             return future.thenApply(result -> {
                 if (result != null) {
                     BigDecimal coins = result.get(uuid);
-                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
-                    newCoinsPlayer.setCoins(coins);
-                    newCoinsPlayer.removeCoins(formatted);
-                    playerData.setCoinsPlayer(newCoinsPlayer);
-                    playerData.setPlayerName(offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName());
-                    LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
-                    LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
+                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+                    if (coins != null) {
+                        newCoinsPlayer.setCoins(coins);
+                        newCoinsPlayer.removeCoins(formatted);
+                        playerData.setCoinsPlayer(newCoinsPlayer);
+                        playerData.setPlayerName(offlinePlayer.getName());
+                        playerData.setOfflinePlayer(offlinePlayer);
+                        LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
+                        LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
 
-                    return new EconomyResponse(finalV, newCoinsPlayer.getCoins().doubleValue(),
-                            EconomyResponse.ResponseType.SUCCESS, "Deposit processed successfully.");
+                        return new EconomyResponse(finalV, newCoinsPlayer.getCoins().doubleValue(),
+                                EconomyResponse.ResponseType.SUCCESS, "Withdraw processed successfully.");
+                    }
                 } else {
                     LightCoins.instance.getConsolePrinter().printError(
                             "Failed to retrieve player data from the database.");
                     return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
                             "Failed to retrieve player data from the database.");
                 }
+                return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
+                        "Failed to retrieve player data from the database.");
             }).exceptionally(throwable -> {
                 LightCoins.instance.getConsolePrinter().printError(List.of(
                         "An error occurred while reading player data from the database,",
-                        "because CoinsPlayer Object in cache is null and cant retrieve data from database.",
-                        "-> We cant find any related player data in the database from uuid " + uuid
+                        "because CoinsPlayer Object in cache is null and can't retrieve data from database.",
+                        "-> We can't find any related player data in the database from uuid " + uuid
                 ));
                 throwable.printStackTrace();
                 return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
@@ -254,7 +246,7 @@ public class VaultImplementer implements Economy {
             }).join();
         }
 
-        return coinsPlayerRef.get().addCoins(formatted);
+        return coinsPlayerRef.get().removeCoins(formatted);
     }
 
     @Override
@@ -286,10 +278,9 @@ public class VaultImplementer implements Economy {
      */
     @Override
     public EconomyResponse depositPlayer(String input, double v) {
-
         UUID uuid = checkUUID(input);
 
-        if(uuid == null) {
+        if (uuid == null) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
                     "Failed to deposit coins. Invalid UUID format.");
         }
@@ -321,27 +312,32 @@ public class VaultImplementer implements Economy {
             return future.thenApply(result -> {
                 if (result != null) {
                     BigDecimal coins = result.get(uuid);
-                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
-                    newCoinsPlayer.setCoins(coins);
-                    newCoinsPlayer.addCoins(formatted);
-                    playerData.setCoinsPlayer(newCoinsPlayer);
-                    playerData.setPlayerName(offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName());
-                    LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
-                    LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
+                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+                    if (coins != null) {
+                        newCoinsPlayer.setCoins(coins);
+                        newCoinsPlayer.addCoins(formatted);
+                        playerData.setCoinsPlayer(newCoinsPlayer);
+                        playerData.setPlayerName(offlinePlayer.getName());
+                        playerData.setOfflinePlayer(offlinePlayer);
+                        LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
+                        LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
 
-                    return new EconomyResponse(finalV, newCoinsPlayer.getCoins().doubleValue(),
-                            EconomyResponse.ResponseType.SUCCESS, "Deposit processed successfully.");
+                        return new EconomyResponse(finalV, newCoinsPlayer.getCoins().doubleValue(),
+                                EconomyResponse.ResponseType.SUCCESS, "Deposit processed successfully.");
+                    }
                 } else {
                     LightCoins.instance.getConsolePrinter().printError(
                             "Failed to retrieve player data from the database.");
                     return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
                             "Failed to retrieve player data from the database.");
                 }
+                return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
+                        "Failed to retrieve player data from the database.");
             }).exceptionally(throwable -> {
                 LightCoins.instance.getConsolePrinter().printError(List.of(
                         "An error occurred while reading player data from the database,",
-                        "because CoinsPlayer Object in cache is null and cant retrieve data from database.",
-                        "-> We cant find any related player data in the database from uuid " + uuid
+                        "because CoinsPlayer Object in cache is null and can't retrieve data from database.",
+                        "-> We can't find any related player data in the database from uuid " + uuid
                 ));
                 throwable.printStackTrace();
                 return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
@@ -350,7 +346,6 @@ public class VaultImplementer implements Economy {
         }
 
         return coinsPlayerRef.get().addCoins(formatted);
-
     }
 
     @Override
@@ -398,7 +393,6 @@ public class VaultImplementer implements Economy {
         CoinsPlayer coinsPlayer = new CoinsPlayer(uuid);
         playerData.setUuid(uuid);
         playerData.setPlayerName(offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName());
-        coinsPlayer.setCoins(LightCoins.instance.getSettingsConfig().defaultCurrencyStartBalance());
         playerData.setCoinsPlayer(coinsPlayer);
 
         LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
@@ -407,7 +401,7 @@ public class VaultImplementer implements Economy {
             int result = LightCoins.instance.getCoinsTable().writeCoins(
                     uuid.toString(),
                     offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName(),
-                    new BigDecimal(10)).join();
+                    new BigDecimal(0)).join();
             if (result == 1) {
                 LightCoins.instance.getConsolePrinter().printInfo("New Player data created for " + uuid);
                 return true;

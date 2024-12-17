@@ -35,6 +35,8 @@ public class MessageConfig {
     public List<String> playerNotFound() { return toStringList(config.get("playerNotFound")); }
     public List<String> somethingWentWrong() { return toStringList(config.get("somethingWentWrong")); }
     public List<String> reloadSuccess() { return toStringList(config.get("reloadSuccess")); }
+    public List<String> starterCoins() { return toStringList(config.get("starterCoins")); }
+    public List<String> playerDeleted() { return toStringList(config.get("playerDeleted")); }
     public List<String> coinsShow() { return toStringList(config.get("coinsShow")); }
     public List<String> coinsShowTarget() { return toStringList(config.get("coinsShowTarget")); }
     public List<String> coinsAdd() { return toStringList(config.get("coinsAdd")); }
@@ -43,6 +45,11 @@ public class MessageConfig {
     public List<String> payTarget() { return toStringList(config.get("payTarget")); }
     public List<String> payCooldown() { return toStringList(config.get("payCooldown")); }
     public List<String> payOnlyOnlinePlayer() { return toStringList(config.get("payOnlyOnlinePlayer")); }
+
+    public List<String> baltopHeader() { return config.getStringList("baltop.header"); }
+    public String baltopContent() { return config.getString("baltop.content"); }
+    public List<String> baltopFooter() { return config.getStringList("baltop.footer"); }
+
 
 
 

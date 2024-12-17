@@ -30,6 +30,7 @@ public class CoinsPlayer {
 
     public CoinsPlayer(UUID uuid) {
         this.uuid = uuid;
+        this.coins = new BigDecimal(0);
         this.maxCoins = LightCoins.instance.getSettingsConfig().defaultCurrencyMaxBalance();
         this.namePlural = LightCoins.instance.getSettingsConfig().defaultCurrencyNamePlural();
         this.nameSingular = LightCoins.instance.getSettingsConfig().defaultCurrencyNameSingular();

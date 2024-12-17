@@ -4,6 +4,7 @@ import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsPlayer;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.database.model.DatabaseTypes;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
@@ -15,88 +16,43 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-
+@Getter
 public class CoinsTable {
-
     private final String tableName = "lightcoins_coins";
 
     public CoinsTable() {
         createTable();
     }
 
-    public CompletableFuture<HashMap<UUID, CoinsPlayer>> readExistingCoinsPlayer() {
-        return CompletableFuture.supplyAsync(() -> {
-            synchronized (this) {
-                String query = "SELECT * FROM " + tableName;
-                return LightCore.instance.getSqlDatabase().querySqlFuture(query, "uuid", "coins");
-            }
-        }).thenCompose(future -> future).thenApply(result -> {
-            if (result == null) {
-                LightCoins.instance.getConsolePrinter().printError(List.of(
-                        "An error occurred while reading player data from the database!",
-                        "Please check the error logs for more information."
-                ));
-                throw new RuntimeException("An error occurred while reading player data from the database!");
-            } else {
-                LightCoins.instance.getConsolePrinter().printInfo("Player data read from the database successfully!");
-            }
-
-            return result.entrySet().stream()
-                    .collect(Collectors.toMap(
-                            e -> UUID.fromString((String) ((Map.Entry<?, ?>) e).getKey()),
-                            e -> {
-                                Object value = ((Map.Entry<?, ?>) e).getValue();
-                                BigDecimal coins;
-                                if (value instanceof Integer) {
-                                    coins = BigDecimal.valueOf((Integer) value);
-                                } else {
-                                    coins = (BigDecimal) value;
-                                }
-                                CoinsPlayer coinsPlayer = new CoinsPlayer(UUID.fromString((String) ((Map.Entry<?, ?>) e).getKey()));
-                                coinsPlayer.setCoins(coins);
-                                return coinsPlayer;
-                            },
-                            (existing, replacement) -> existing,
-                            HashMap::new
-                    ));
-        }).exceptionally(e -> {
-            LightCoins.instance.getConsolePrinter().printError(List.of(
-                    "An error occurred while reading player data from the database!",
-                    "Please check the error logs for more information."
-            ));
-            e.printStackTrace();
-            throw new RuntimeException("An error occurred while reading player data from the database!");
-        });
-    }
-
     public CompletableFuture<Map<UUID, BigDecimal>> readCoins(String uuid) {
         return CompletableFuture.supplyAsync(() -> {
-            synchronized (this) {
-                String query = "SELECT * FROM " + tableName + " WHERE uuid = '" + uuid + "'";
-                return LightCore.instance.getSqlDatabase().querySqlFuture(query, "uuid", "coins");
-            }
-        }).thenCompose(future -> future).thenApply(result -> {
-            if (result == null) {
-                LightCoins.instance.getConsolePrinter().printError(List.of(
-                        "An error occurred while reading coins from the database!",
-                        "Please check the error logs for more information."
-                ));
-                throw new RuntimeException("An error occurred while reading coins from the database!");
-            }
-
-            return result.entrySet().stream()
-                    .collect(Collectors.toMap(
-                            e -> UUID.fromString((String) ((Map.Entry<?, ?>) e).getKey()),
-                            e -> (BigDecimal) ((Map.Entry<?, ?>) e).getValue()
+                    String query = "SELECT coins FROM " + tableName + " WHERE uuid = ?";
+                    LightCoins.instance.getConsolePrinter().printInfo("Executing query: " + query + " with UUID: " + uuid);
+                    return LightCore.instance.getSqlDatabase().querySqlFuture(query, uuid);
+                }).thenCompose(future -> future)
+                .thenApply(result -> {
+                    if (result == null) {
+                        LightCoins.instance.getConsolePrinter().printError(List.of(
+                                "An error occurred while reading coins from the database!",
+                                "Please check the error logs for more information."
+                        ));
+                        throw new RuntimeException("An error occurred while reading coins from the database!");
+                    }
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> rows = (List<Map<String, Object>>) (List<?>) result;
+                    LightCoins.instance.getConsolePrinter().printInfo("Query result: " + rows);
+                    return rows.stream().collect(Collectors.toMap(
+                            row -> UUID.fromString(uuid),
+                            row -> new BigDecimal(row.get("coins").toString()) // Ensure conversion to BigDecimal
                     ));
-        }).exceptionally(e -> {
-            LightCoins.instance.getConsolePrinter().printError(List.of(
-                    "An error occurred while reading player data from the database!",
-                    "Please check the error logs for more information."
-            ));
-            e.printStackTrace();
-            throw new RuntimeException("An error occurred while reading player data from the database!");
-        });
+                }).exceptionally(e -> {
+                    LightCoins.instance.getConsolePrinter().printError(List.of(
+                            "An error occurred while reading player data from the database!",
+                            "Please check the error logs for more information."
+                    ));
+                    e.printStackTrace();
+                    throw new RuntimeException("An error occurred while reading player data from the database!");
+                });
     }
 
     public CompletableFuture<Integer> writeCoins(String uuid, String name, BigDecimal coins) {
@@ -127,6 +83,31 @@ public class CoinsTable {
             ));
             e.printStackTrace();
             throw new RuntimeException("An error occurred while reading player data from the database!");
+        });
+    }
+
+    public CompletableFuture<Boolean> deleteAccount(UUID uuid) {
+
+        return CompletableFuture.supplyAsync(() -> {
+            synchronized (this) {
+                String query = "DELETE FROM " + tableName + " WHERE uuid = '" + uuid.toString() + "'";
+                return LightCore.instance.getSqlDatabase().executeSqlFuture(query);
+            }
+        }).thenCompose(future -> future).thenApply(result -> {
+            if (result < 1) {
+                LightCoins.instance.getConsolePrinter().printError(List.of(
+                        "An error occurred while deleting account from the database!",
+                        "Please check the error logs for more information."
+                ));
+            }
+            return true;
+        }).exceptionally(e -> {
+            LightCoins.instance.getConsolePrinter().printError(List.of(
+                    "An error occurred while deleting account from the database!",
+                    "Please check the error logs for more information."
+            ));
+            e.printStackTrace();
+            return false;
         });
     }
 
