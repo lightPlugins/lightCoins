@@ -34,6 +34,7 @@ public class OnPlayerJoin implements Listener {
                 CoinsPlayer coinsPlayer = new CoinsPlayer(uuid);
                 coinsPlayer.setCoins(result.get(uuid));
                 playerData.setCoinsPlayer(coinsPlayer);
+                playerData.setPlayerName(event.getPlayer().getName());
                 LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
                 LightCoins.instance.getConsolePrinter().printInfo("Player data loaded for " + uuid);
             }

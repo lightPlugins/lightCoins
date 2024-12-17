@@ -10,6 +10,7 @@ import io.lightstudios.core.hooks.towny.TownyInterface;
 import io.lightstudios.core.util.LightNumbers;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import javax.annotation.Nullable;
@@ -111,8 +112,10 @@ public class VaultImplementer implements Economy {
             return future.thenApply(result -> {
                 if (result != null) {
                     BigDecimal coins = result.get(uuid);
+                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
                     newCoinsPlayer.setCoins(coins);
                     playerData.setCoinsPlayer(newCoinsPlayer);
+                    playerData.setPlayerName(offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName());
                     LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
                     LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
                     return newCoinsPlayer.getCoins().doubleValue();
@@ -223,9 +226,11 @@ public class VaultImplementer implements Economy {
             return future.thenApply(result -> {
                 if (result != null) {
                     BigDecimal coins = result.get(uuid);
+                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
                     newCoinsPlayer.setCoins(coins);
                     newCoinsPlayer.removeCoins(formatted);
                     playerData.setCoinsPlayer(newCoinsPlayer);
+                    playerData.setPlayerName(offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName());
                     LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
                     LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
 
@@ -316,9 +321,11 @@ public class VaultImplementer implements Economy {
             return future.thenApply(result -> {
                 if (result != null) {
                     BigDecimal coins = result.get(uuid);
+                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
                     newCoinsPlayer.setCoins(coins);
                     newCoinsPlayer.addCoins(formatted);
                     playerData.setCoinsPlayer(newCoinsPlayer);
+                    playerData.setPlayerName(offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName());
                     LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
                     LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
 
@@ -387,15 +394,20 @@ public class VaultImplementer implements Economy {
         }
 
         PlayerData playerData = new PlayerData();
+        OfflinePlayer offlinePlayer = LightCore.instance.getServer().getOfflinePlayer(uuid);
         CoinsPlayer coinsPlayer = new CoinsPlayer(uuid);
         playerData.setUuid(uuid);
+        playerData.setPlayerName(offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName());
         coinsPlayer.setCoins(LightCoins.instance.getSettingsConfig().defaultCurrencyStartBalance());
         playerData.setCoinsPlayer(coinsPlayer);
 
         LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
 
         try {
-            int result = LightCoins.instance.getCoinsTable().writeCoins(uuid.toString(), new BigDecimal(10)).join();
+            int result = LightCoins.instance.getCoinsTable().writeCoins(
+                    uuid.toString(),
+                    offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName(),
+                    new BigDecimal(10)).join();
             if (result == 1) {
                 LightCoins.instance.getConsolePrinter().printInfo("New Player data created for " + uuid);
                 return true;

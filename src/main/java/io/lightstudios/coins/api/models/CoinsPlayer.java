@@ -9,6 +9,8 @@ import io.lightstudios.core.util.LightNumbers;
 import lombok.Getter;
 import lombok.Setter;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -48,8 +50,13 @@ public class CoinsPlayer {
                     EconomyResponse.ResponseType.FAILURE, "Max coins reached > " + this.maxCoins);
         }
 
+        OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(this.uuid);
+
         this.coins = this.coins.add(coins);
-        transactionManager.addTransaction(this.uuid, this.coins);
+        transactionManager.addTransaction(
+                this.uuid,
+                offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName(),
+                this.coins);
         return new EconomyResponse(coins.doubleValue(), this.coins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
     }
@@ -68,8 +75,13 @@ public class CoinsPlayer {
                     EconomyResponse.ResponseType.FAILURE, "Not enough coins.");
         }
 
+        OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(this.uuid);
+
         this.coins = this.coins.subtract(coins);
-        transactionManager.addTransaction(this.uuid, this.coins);
+        transactionManager.addTransaction(
+                this.uuid,
+                offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName(),
+                this.coins);
         return new EconomyResponse(coins.doubleValue(), this.coins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
     }

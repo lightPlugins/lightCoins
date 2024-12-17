@@ -1,5 +1,8 @@
 language: en
 defaultCurrency:
+  # The '%lightcoins_coins%' placeholder.
+  coinsPlaceholder: '<yellow>#coins# <gray>#currency#'
+  # The name of the currency.
   displayName: '<#ffdc73>Vault'
   # This is the starting balance for this
   # currency when a new player joins the server.

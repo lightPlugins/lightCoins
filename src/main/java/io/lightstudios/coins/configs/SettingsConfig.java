@@ -14,6 +14,7 @@ public class SettingsConfig {
     }
 
     public String language() {return config.getString("language");}
+    public String coinsPlaceholder() {return config.getString("defaultCurrency.coinsPlaceholder");}
     public String defaultCurrencyName() {return config.getString("defaultCurrency.displayName");}
 
     public BigDecimal defaultCurrencyStartBalance() {

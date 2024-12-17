@@ -4,6 +4,8 @@ import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsPlayer;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.database.model.DatabaseTypes;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
@@ -97,7 +99,7 @@ public class CoinsTable {
         });
     }
 
-    public CompletableFuture<Integer> writeCoins(String uuid, BigDecimal coins) {
+    public CompletableFuture<Integer> writeCoins(String uuid, String name, BigDecimal coins) {
         return CompletableFuture.supplyAsync(() -> {
             synchronized (this) {
                 String query;
@@ -167,6 +169,7 @@ public class CoinsTable {
 
         return "CREATE TABLE IF NOT EXISTS " + tableName + " ("
                 + "uuid VARCHAR(36) NOT NULL UNIQUE, "
+                + "name VARCHAR(36), "
                 + "coins DECIMAL(65, 2), "
                 + "PRIMARY KEY (uuid))";
     }
