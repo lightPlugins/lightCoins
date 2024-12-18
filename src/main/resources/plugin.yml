@@ -2,3 +2,5 @@ name: lightCoins
 version: '0.1.0-SNAPSHOT'
 main: io.lightstudios.coins.LightCoins
 api-version: '1.21'
+depend: ["lightCore"]
+softdepend: ["Towny"]

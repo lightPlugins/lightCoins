@@ -1,8 +1,8 @@
 package io.lightstudios.coins.api;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.models.CoinsPlayer;
-import io.lightstudios.coins.api.models.PlayerData;
+import io.lightstudios.coins.api.models.CoinsData;
+import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.VirtualCurrency;
 import io.lightstudios.coins.impl.vault.VaultImplementer;
 import lombok.Getter;
@@ -10,7 +10,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nullable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.UUID;
 @Getter
 public class LightCoinsAPI {
 
-    private final HashMap<UUID, PlayerData> playerData = new HashMap<>();
+    private final HashMap<UUID, AccountData> playerData = new HashMap<>();
     private final List<VirtualCurrency> virtualCurrencies = new ArrayList<>();
     public VaultImplementer vaultImplementer;
 
@@ -34,25 +33,25 @@ public class LightCoinsAPI {
     }
 
     @Nullable
-    public PlayerData getPlayerData(OfflinePlayer player) {
+    public AccountData getPlayerData(OfflinePlayer player) {
         return playerData.get(player.getUniqueId());
     }
     @Nullable
-    public PlayerData getPlayerData(Player player) {
+    public AccountData getPlayerData(Player player) {
         return playerData.get(player.getUniqueId());
     }
     @Nullable
-    public PlayerData getPlayerData(UUID uuid) {
+    public AccountData getPlayerData(UUID uuid) {
         return playerData.get(uuid);
     }
 
 
     private void initPlayer(OfflinePlayer player) {
-        PlayerData playerData = new PlayerData();
+        AccountData playerData = new AccountData();
 
-        CoinsPlayer coinsPlayer = new CoinsPlayer(player.getUniqueId());
+        CoinsData coinsPlayer = new CoinsData(player.getUniqueId());
 
-        playerData.setCoinsPlayer(coinsPlayer);
+        playerData.setCoinsData(coinsPlayer);
 
         if(!this.playerData.containsKey(player.getUniqueId())) {
             this.playerData.put(player.getUniqueId(), playerData);

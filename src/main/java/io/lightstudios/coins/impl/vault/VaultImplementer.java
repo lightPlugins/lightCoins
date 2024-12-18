@@ -1,8 +1,8 @@
 package io.lightstudios.coins.impl.vault;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.models.CoinsPlayer;
-import io.lightstudios.coins.api.models.PlayerData;
+import io.lightstudios.coins.api.models.CoinsData;
+import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.impl.custom.LightCoinsDepositEvent;
 import io.lightstudios.coins.impl.custom.LightCoinsWithdrawEvent;
 import io.lightstudios.core.LightCore;
@@ -16,7 +16,6 @@ import org.bukkit.OfflinePlayer;
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -60,16 +59,13 @@ public class VaultImplementer implements Economy {
 
     @Override
     public boolean hasAccount(String input) {
-
         UUID uuid = checkUUID(input);
 
         if(uuid == null) {
             return false;
         }
-
-        CoinsPlayer coinsPlayer = LightCoins.instance.getLightCoinsAPI()
-                .getPlayerData().get(uuid).getCoinsPlayer();
-
+        CoinsData coinsPlayer = LightCoins.instance.getLightCoinsAPI()
+                .getPlayerData().get(uuid).getCoinsData();
         return coinsPlayer != null;
     }
 
@@ -95,47 +91,44 @@ public class VaultImplementer implements Economy {
             return 0;
         }
 
-        AtomicReference<CoinsPlayer> coinsPlayerRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
-                .getPlayerData().get(uuid).getCoinsPlayer());
+        AtomicReference<CoinsData> coinsDataRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
+                .getPlayerData().get(uuid).getCoinsData());
 
-        if (coinsPlayerRef.get() == null) {
+        if (coinsDataRef.get() == null) {
             LightCoins.instance.getConsolePrinter().printInfo(List.of(
                     "Could not find player data in cache for " + uuid,
                     "Attempting to retrieve player data from the database..."
             ));
-            PlayerData playerData = new PlayerData();
-            CoinsPlayer newCoinsPlayer = new CoinsPlayer(uuid);
-            CompletableFuture<Map<UUID, BigDecimal>> future = LightCoins.instance.getCoinsTable()
-                    .readCoins(uuid.toString());
+            AccountData accountData = new AccountData();
+            CoinsData newCoinsData = new CoinsData(uuid);
+            CompletableFuture<CoinsData> future = LightCoins.instance.getCoinsTable()
+                    .findCoinsDataByUUID(uuid);
 
             return future.thenApply(result -> {
                 if (result != null) {
-                    BigDecimal coins = result.get(uuid);
-                    if (coins != null) {
-                        newCoinsPlayer.setCoins(coins);
-                        playerData.setCoinsPlayer(newCoinsPlayer);
-                        LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
-                        LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
-                        return newCoinsPlayer.getCoins().doubleValue();
-                    }
+                    newCoinsData.setName(result.getName());
+                    newCoinsData.setCoins(result.getCoins());
+                    accountData.setCoinsData(newCoinsData);
+                    LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, accountData);
+                    LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
+                    return newCoinsData.getCoins().doubleValue();
                 } else {
                     LightCoins.instance.getConsolePrinter().printError(
-                            "Failed to retrieve player data from the database.");
+                            "Failed to retrieve account data from the database.");
                     return 0.0;
                 }
-                return 0.0;
             }).exceptionally(throwable -> {
                 LightCoins.instance.getConsolePrinter().printError(List.of(
-                        "An error occurred while reading player data from the database,",
-                        "because CoinsPlayer Object in cache is null and can't retrieve data from database.",
-                        "-> We can't find any related player data in the database from uuid " + uuid
+                        "An error occurred while reading account data from the database,",
+                        "because CoinsData Object in cache is null and can't retrieve data from database.",
+                        "-> We can't find any related account data in the database from uuid " + uuid
                 ));
                 throwable.printStackTrace();
                 return 0.0;
             }).join();
         }
 
-        return coinsPlayerRef.get().getCoins().doubleValue();
+        return coinsDataRef.get().getCoins().doubleValue();
     }
 
     @Override
@@ -181,68 +174,60 @@ public class VaultImplementer implements Economy {
 
     @Override
     public EconomyResponse withdrawPlayer(String input, double v) {
+
+        UUID uuid = checkUUID(input);
+        if (uuid == null) {
+            return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
+                    "Failed to withdraw coins. Invalid UUID format: " + input);
+        }
+
         LightCoinsWithdrawEvent withdrawEvent = new LightCoinsWithdrawEvent(input, new BigDecimal(v));
         v = withdrawEvent.getAmount().doubleValue();
 
         if (withdrawEvent.isCancelled()) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
-                    "Withdraw cancelled by LightVaultWithdrawEvent.");
-        }
-
-        UUID uuid = checkUUID(input);
-        if (uuid == null) {
-            return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
-                    "Failed to withdraw coins. Invalid UUID format.");
+                    "Withdraw cancelled by LightCoinsWithdrawEvent.");
         }
 
         final BigDecimal formatted = LightNumbers.formatBigDecimal(BigDecimal.valueOf(v));
-        AtomicReference<CoinsPlayer> coinsPlayerRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
-                .getPlayerData().get(uuid).getCoinsPlayer());
+        AtomicReference<CoinsData> coinsPlayerRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
+                .getPlayerData().get(uuid).getCoinsData());
 
         if (coinsPlayerRef.get() == null) {
             LightCoins.instance.getConsolePrinter().printInfo(List.of(
-                    "Could not find player data in cache for " + uuid,
-                    "Attempting to retrieve player data from the database..."
+                    "Could not find account data in cache for " + uuid,
+                    "Attempting to retrieve account data from the database..."
             ));
-            PlayerData playerData = new PlayerData();
-            CoinsPlayer newCoinsPlayer = new CoinsPlayer(uuid);
-            CompletableFuture<Map<UUID, BigDecimal>> future = LightCoins.instance.getCoinsTable()
-                    .readCoins(uuid.toString());
+            AccountData playerData = new AccountData();
+            CoinsData newCoinsPlayer = new CoinsData(uuid);
+            CompletableFuture<CoinsData> future = LightCoins.instance.getCoinsTable()
+                    .findCoinsDataByUUID(uuid);
 
             final double finalV = v;
             return future.thenApply(result -> {
                 if (result != null) {
-                    BigDecimal coins = result.get(uuid);
-                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-                    if (coins != null) {
-                        newCoinsPlayer.setCoins(coins);
-                        newCoinsPlayer.removeCoins(formatted);
-                        playerData.setCoinsPlayer(newCoinsPlayer);
-                        playerData.setPlayerName(offlinePlayer.getName());
-                        playerData.setOfflinePlayer(offlinePlayer);
-                        LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
-                        LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
+                    newCoinsPlayer.setName(result.getName());
+                    newCoinsPlayer.setCoins(result.getCoins());
+                    playerData.setCoinsData(newCoinsPlayer);
+                    LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
+                    LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved account data from the database.");
 
-                        return new EconomyResponse(finalV, newCoinsPlayer.getCoins().doubleValue(),
-                                EconomyResponse.ResponseType.SUCCESS, "Withdraw processed successfully.");
-                    }
+                    return newCoinsPlayer.removeCoins(formatted);
                 } else {
                     LightCoins.instance.getConsolePrinter().printError(
-                            "Failed to retrieve player data from the database.");
+                            "Failed to retrieve account data from the database.");
                     return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
-                            "Failed to retrieve player data from the database.");
+                            "Failed to retrieve account data from the database.");
                 }
-                return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
-                        "Failed to retrieve player data from the database.");
             }).exceptionally(throwable -> {
                 LightCoins.instance.getConsolePrinter().printError(List.of(
-                        "An error occurred while reading player data from the database,",
-                        "because CoinsPlayer Object in cache is null and can't retrieve data from database.",
-                        "-> We can't find any related player data in the database from uuid " + uuid
+                        "An error occurred while reading account data from the database,",
+                        "because CoinsData Object in cache is null and can't retrieve data from database.",
+                        "-> We can't find any related account data in the database from uuid " + uuid
                 ));
                 throwable.printStackTrace();
                 return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
-                        "An error occurred while reading player data from the database.");
+                        "An error occurred while reading account data from the database.");
             }).join();
         }
 
@@ -282,7 +267,7 @@ public class VaultImplementer implements Economy {
 
         if (uuid == null) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
-                    "Failed to deposit coins. Invalid UUID format.");
+                    "Failed to deposit coins. Invalid UUID format: " + input);
         }
 
         final BigDecimal formatted = LightNumbers.formatBigDecimal(BigDecimal.valueOf(v));
@@ -290,58 +275,49 @@ public class VaultImplementer implements Economy {
 
         if (depositEvent.isCancelled()) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
-                    "Deposit cancelled by LightVaultDepositEvent.");
+                    "Deposit cancelled by LightCoinsDepositEvent.");
         }
 
         v = depositEvent.getAmount().doubleValue();
 
-        AtomicReference<CoinsPlayer> coinsPlayerRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
-                .getPlayerData().get(uuid).getCoinsPlayer());
+        AtomicReference<CoinsData> coinsPlayerRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
+                .getPlayerData().get(uuid).getCoinsData());
 
         final double finalV = v;
         if (coinsPlayerRef.get() == null) {
             LightCoins.instance.getConsolePrinter().printInfo(List.of(
-                    "Could not find player data in cache for " + uuid,
-                    "Attempting to retrieve player data from the database..."
+                    "Could not find account data in cache for " + uuid,
+                    "Attempting to retrieve account data from the database..."
             ));
-            PlayerData playerData = new PlayerData();
-            CoinsPlayer newCoinsPlayer = new CoinsPlayer(uuid);
-            CompletableFuture<Map<UUID, BigDecimal>> future = LightCoins.instance.getCoinsTable()
-                    .readCoins(uuid.toString());
+            AccountData playerData = new AccountData();
+            CoinsData newCoinsPlayer = new CoinsData(uuid);
+            CompletableFuture<CoinsData> future = LightCoins.instance.getCoinsTable()
+                    .findCoinsDataByUUID(uuid);
 
             return future.thenApply(result -> {
                 if (result != null) {
-                    BigDecimal coins = result.get(uuid);
-                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-                    if (coins != null) {
-                        newCoinsPlayer.setCoins(coins);
-                        newCoinsPlayer.addCoins(formatted);
-                        playerData.setCoinsPlayer(newCoinsPlayer);
-                        playerData.setPlayerName(offlinePlayer.getName());
-                        playerData.setOfflinePlayer(offlinePlayer);
-                        LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
-                        LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
+                    newCoinsPlayer.setName(result.getName());
+                    newCoinsPlayer.setCoins(result.getCoins());
+                    playerData.setCoinsData(newCoinsPlayer);
+                    LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
+                    LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved account data from the database.");
 
-                        return new EconomyResponse(finalV, newCoinsPlayer.getCoins().doubleValue(),
-                                EconomyResponse.ResponseType.SUCCESS, "Deposit processed successfully.");
-                    }
+                    return newCoinsPlayer.addCoins(formatted);
                 } else {
                     LightCoins.instance.getConsolePrinter().printError(
-                            "Failed to retrieve player data from the database.");
+                            "Failed to retrieve account data from the database.");
                     return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
-                            "Failed to retrieve player data from the database.");
+                            "Failed to retrieve account data from the database.");
                 }
-                return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
-                        "Failed to retrieve player data from the database.");
             }).exceptionally(throwable -> {
                 LightCoins.instance.getConsolePrinter().printError(List.of(
-                        "An error occurred while reading player data from the database,",
-                        "because CoinsPlayer Object in cache is null and can't retrieve data from database.",
-                        "-> We can't find any related player data in the database from uuid " + uuid
+                        "An error occurred while reading account data from the database,",
+                        "because CoinsData Object in cache is null and can't retrieve data from database.",
+                        "-> We can't find any related account data in the database from uuid " + uuid
                 ));
                 throwable.printStackTrace();
                 return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
-                        "An error occurred while reading player data from the database.");
+                        "An error occurred while reading account data from the database.");
             }).join();
         }
 
@@ -377,41 +353,48 @@ public class VaultImplementer implements Economy {
      **/
     @Override
     public boolean createPlayerAccount(String input) {
+
+        LightCoins.instance.getConsolePrinter().printError("Creating Account: " + input);
         UUID uuid = checkUUID(input);
 
         if (uuid == null) {
+            LightCoins.instance.getConsolePrinter().printError("UUID is null");
             return false;
         }
 
         if (LightCoins.instance.getLightCoinsAPI().getPlayerData().containsKey(uuid)) {
-            LightCoins.instance.getConsolePrinter().printInfo("Player data already exists for " + uuid);
+            LightCoins.instance.getConsolePrinter().printInfo("Coins data already exists for " + uuid);
             return false;
         }
 
-        PlayerData playerData = new PlayerData();
-        OfflinePlayer offlinePlayer = LightCore.instance.getServer().getOfflinePlayer(uuid);
-        CoinsPlayer coinsPlayer = new CoinsPlayer(uuid);
-        playerData.setUuid(uuid);
-        playerData.setPlayerName(offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName());
-        playerData.setCoinsPlayer(coinsPlayer);
-
-        LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
-
+        boolean isTownyAccount;
+        if(LightCore.instance.getHookManager().isExistTowny()) {
+            TownyInterface townyInterface = LightCore.instance.getHookManager().getTownyInterface();
+            isTownyAccount = townyInterface.isTownyUUID(uuid);
+        } else {
+            isTownyAccount = false;
+        }
+        AccountData accountData = new AccountData();
+        OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
+        CoinsData coinsData = new CoinsData(uuid);
+        accountData.setUuid(uuid);
+        accountData.setName(isTownyAccount ? "towny_account" : offlinePlayer.getName());
+        accountData.setOfflinePlayer(offlinePlayer);
+        coinsData.setName(isTownyAccount ? "towny_account" : offlinePlayer.getName());
+        accountData.setCoinsData(coinsData);
         try {
-            int result = LightCoins.instance.getCoinsTable().writeCoins(
-                    uuid.toString(),
-                    offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName(),
-                    new BigDecimal(0)).join();
+            int result = LightCoins.instance.getCoinsTable().writeCoinsData(coinsData).join();
             if (result == 1) {
-                LightCoins.instance.getConsolePrinter().printInfo("New Player data created for " + uuid);
+                LightCoins.instance.getConsolePrinter().printInfo("New account data created for " + uuid);
+                LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, accountData);
                 return true;
             } else {
-                LightCoins.instance.getConsolePrinter().printError("Failed to create player account for " + uuid);
+                LightCoins.instance.getConsolePrinter().printError("Failed to create account account for " + uuid);
                 return false;
             }
         } catch (Exception e) {
             LightCoins.instance.getConsolePrinter().printError(List.of(
-                    "An error occurred while writing player data to the database!",
+                    "An error occurred while writing account data to the database!",
                     "Please check the error logs for more information."
             ));
             e.printStackTrace();
@@ -434,7 +417,7 @@ public class VaultImplementer implements Economy {
         return createPlayerAccount(offlinePlayer);
     }
 
-    // ########################### BANK METHODS ###########################
+    // ########################### BANK METHODS ############################
     // #####################################################################
 
     @Override
@@ -513,11 +496,11 @@ public class VaultImplementer implements Economy {
     @Nullable
     private UUID checkUUID(String input) {
         UUID uuid;
-
         if (LightCore.instance.getHookManager().isExistTowny()) {
+            LightCoins.instance.getConsolePrinter().printInfo("Towny is enabled and checking uuid " + input);
             TownyInterface townyInterface = LightCore.instance.getHookManager().getTownyInterface();
             UUID townyObjectUUID = townyInterface.getTownyObjectUUID(input);
-
+            LightCoins.instance.getConsolePrinter().printInfo("checking towny uuid: " + townyObjectUUID);
             if (townyInterface.isTownyUUID(townyObjectUUID)) {
                 uuid = townyObjectUUID;
             } else {

@@ -25,13 +25,13 @@ payOnlyOnlinePlayer:
 #
 baltop:
   header:
-    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
     - ' <gray>Top 10 Players with the largest'
     - '     <gray>balance on the server'
     - ' '
-    - '<dark_gray>● <yellow><bold>Overall <gray>- <yellow>#overall# <gray>#currency#'
+    - '<dark_gray>● <yellow><bold>Overall<reset> <gray>- <yellow>#overall# <gray>#currency#'
     - ' '
-  content: '<dark_gray>● <yellow><bold>#number#<gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+  content: '<dark_gray>● <yellow><bold>#number#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
   footer:
     - ' '
     - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'

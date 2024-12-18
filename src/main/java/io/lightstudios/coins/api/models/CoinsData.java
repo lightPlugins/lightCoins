@@ -1,8 +1,6 @@
 package io.lightstudios.coins.api.models;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.impl.custom.LightCoinsDepositEvent;
-import io.lightstudios.coins.impl.custom.LightCoinsWithdrawEvent;
 import io.lightstudios.coins.synchronisation.TransactionCoins;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
@@ -17,9 +15,10 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class CoinsPlayer {
+public class CoinsData {
 
     private UUID uuid;
+    private String name;
     private BigDecimal coins;
     private BigDecimal maxCoins;
     private String namePlural;
@@ -28,13 +27,19 @@ public class CoinsPlayer {
 
     private static final TransactionCoins transactionManager = new TransactionCoins();
 
-    public CoinsPlayer(UUID uuid) {
+    public CoinsData(UUID uuid) {
         this.uuid = uuid;
+        this.name = "unknown";
         this.coins = new BigDecimal(0);
         this.maxCoins = LightCoins.instance.getSettingsConfig().defaultCurrencyMaxBalance();
         this.namePlural = LightCoins.instance.getSettingsConfig().defaultCurrencyNamePlural();
         this.nameSingular = LightCoins.instance.getSettingsConfig().defaultCurrencyNameSingular();
         this.decimalPlaces = LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces();
+
+        transactionManager.setDelay(LightCoins.instance.getSettingsConfig().syncDelay());
+        transactionManager.setPeriod(LightCoins.instance.getSettingsConfig().syncPeriod());
+        transactionManager.startTransactions();
+
     }
 
 
@@ -51,13 +56,8 @@ public class CoinsPlayer {
                     EconomyResponse.ResponseType.FAILURE, "Max coins reached > " + this.maxCoins);
         }
 
-        OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(this.uuid);
-
         this.coins = this.coins.add(coins);
-        transactionManager.addTransaction(
-                this.uuid,
-                offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName(),
-                this.coins);
+        transactionManager.addTransaction(this);
         return new EconomyResponse(coins.doubleValue(), this.coins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
     }
@@ -76,13 +76,8 @@ public class CoinsPlayer {
                     EconomyResponse.ResponseType.FAILURE, "Not enough coins.");
         }
 
-        OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(this.uuid);
-
         this.coins = this.coins.subtract(coins);
-        transactionManager.addTransaction(
-                this.uuid,
-                offlinePlayer.getPlayer() == null ? null : offlinePlayer.getName(),
-                this.coins);
+        transactionManager.addTransaction(this);
         return new EconomyResponse(coins.doubleValue(), this.coins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
     }
@@ -99,9 +94,6 @@ public class CoinsPlayer {
     }
     public String getFormattedCurrency() {
         return coins.compareTo(BigDecimal.ONE) == 0 ? nameSingular : namePlural;
-    }
-    public String getRawCoins() {
-        return LightNumbers.formatForMessages(coins);
     }
 
     public boolean hasEnough(BigDecimal coins) {

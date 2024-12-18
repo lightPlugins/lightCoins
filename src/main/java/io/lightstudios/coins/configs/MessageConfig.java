@@ -1,20 +1,11 @@
 package io.lightstudios.coins.configs;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.LightCoinsAPI;
-import io.lightstudios.coins.api.VirtualResponse;
-import io.lightstudios.coins.api.models.CoinsPlayer;
-import io.lightstudios.coins.api.models.PlayerData;
-import io.lightstudios.coins.api.models.VirtualCurrency;
-import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.files.FileManager;
-import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class MessageConfig {

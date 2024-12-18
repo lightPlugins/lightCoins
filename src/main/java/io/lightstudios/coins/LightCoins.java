@@ -1,8 +1,8 @@
 package io.lightstudios.coins;
 
 import io.lightstudios.coins.api.LightCoinsAPI;
-import io.lightstudios.coins.api.models.CoinsPlayer;
-import io.lightstudios.coins.api.models.PlayerData;
+import io.lightstudios.coins.api.models.AccountData;
+import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.VirtualCurrency;
 import io.lightstudios.coins.commands.admin.*;
 import io.lightstudios.coins.commands.defaults.BalTopCommand;
@@ -11,8 +11,7 @@ import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
 import io.lightstudios.coins.impl.events.OnPlayerJoin;
 import io.lightstudios.coins.impl.vault.VaultImplementer;
-import io.lightstudios.coins.storage.CoinsTable;
-import io.lightstudios.core.LightCore;
+import io.lightstudios.coins.storage.CoinsDataTable;
 import io.lightstudios.core.commands.manager.CommandManager;
 import io.lightstudios.core.util.ConsolePrinter;
 import io.lightstudios.core.util.files.FileManager;
@@ -20,24 +19,19 @@ import io.lightstudios.core.util.files.MultiFileManager;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.units.qual.C;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Getter
 public final class LightCoins extends JavaPlugin {
 
     public static LightCoins instance;
     private LightCoinsAPI lightCoinsAPI;
-    private CoinsTable coinsTable;
+    private CoinsDataTable coinsTable;
     private VaultImplementer vaultImplementer;
     private ConsolePrinter consolePrinter;
 
@@ -70,7 +64,7 @@ public final class LightCoins extends JavaPlugin {
     @Override
     public void onEnable() {
         this.lightCoinsAPI = new LightCoinsAPI();
-        this.coinsTable = new CoinsTable();
+        this.coinsTable = new CoinsDataTable();
         // read existing player data from the database and populate the playerData map in LightCoinsAPI
         readPlayerData();
         registerEvents();
@@ -123,60 +117,22 @@ public final class LightCoins extends JavaPlugin {
 
     /**
      * Reads existing player data from the database and populates the playerData map in LightCoinsAPI
+     * SYNCHRONOUS
      */
     public void readPlayerData() {
-        LightCoins.instance.getConsolePrinter().printInfo("Reading existing player data from the database...");
-        long startTime = System.currentTimeMillis();
-        try {
-            // Fetch all UUIDs from the database
-            String query = "SELECT uuid FROM " + coinsTable.getTableName();
-            CompletableFuture<List<String>> futureUuids = LightCore.instance.getSqlDatabase().querySqlFuture(query, "uuid")
-                    .thenApply(result -> {
-                        if (result == null || result.isEmpty()) {
-                            LightCoins.instance.getConsolePrinter().printError("No UUIDs found in the database.");
-                            return Collections.emptyList();
-                        }
-                        LightCoins.instance.getConsolePrinter().printError("UUIDs found in the database: " + result);
-                        return result.stream().map(Object::toString).collect(Collectors.toList());
-                    });
-
-            // Process each UUID and populate the playerData map in LightCoinsAPI
-            List<CompletableFuture<Void>> futures = futureUuids.thenApply(uuids -> uuids.stream()
-                    .map(uuid -> coinsTable.readCoins(uuid).thenAccept(result -> {
-                        if (result != null) {
-                            result.forEach((playerUUID, coins) -> {
-                                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerUUID);
-                                CoinsPlayer coinsPlayer = new CoinsPlayer(playerUUID);
-                                coinsPlayer.setCoins(coins);
-
-                                PlayerData playerData = new PlayerData();
-                                playerData.setCoinsPlayer(coinsPlayer);
-                                playerData.setPlayerName(offlinePlayer.getName());
-                                playerData.setOfflinePlayer(offlinePlayer);
-
-                                lightCoinsAPI.getPlayerData().put(playerUUID, playerData);
-                            });
-                        } else {
-                            LightCoins.instance.getConsolePrinter().printError("No coins data found for UUID: " + uuid);
-                        }
-                    }))
-                    .collect(Collectors.toList())
-            ).join();
-
-            // Wait for all futures to complete
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-            long endTime = System.currentTimeMillis();
-            LightCoins.instance.getConsolePrinter().printInfo("Found " + lightCoinsAPI.getPlayerData().size()
-                    + " player data entries in " + (endTime - startTime) + "ms!");
-        } catch (Exception e) {
-            LightCoins.instance.getConsolePrinter().printError(List.of(
-                    "An error occurred while reading player data from the database!",
-                    "Please check the error logs for more information."
-            ));
-            e.printStackTrace();
-            throw new RuntimeException(e);
+        float start = System.currentTimeMillis();
+        List<CoinsData> coinsDataList = getCoinsTable().readCoinsData().join();
+        for (CoinsData coinsData : coinsDataList) {
+            AccountData accountData = new AccountData();
+            accountData.setCoinsData(coinsData);
+            accountData.setUuid(coinsData.getUuid());
+            accountData.setName(coinsData.getName());
+            accountData.setOfflinePlayer(Bukkit.getServer().getOfflinePlayer(coinsData.getUuid()));
+            getLightCoinsAPI().getPlayerData().put(coinsData.getUuid(), accountData);
         }
+        float end = System.currentTimeMillis();
+        int size = coinsDataList.size();
+        LightCoins.instance.getConsolePrinter().printInfo("Read " + size + " player data from the database in " + (end - start) + "ms");
     }
 
     /**

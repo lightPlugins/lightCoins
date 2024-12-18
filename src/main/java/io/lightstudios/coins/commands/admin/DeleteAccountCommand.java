@@ -1,7 +1,7 @@
 package io.lightstudios.coins.commands.admin;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.models.PlayerData;
+import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightTimers;
@@ -68,11 +68,9 @@ public class DeleteAccountCommand implements LightCommand {
             return false;
         }
 
-
         String targetPlayerName = strings[1];
         OfflinePlayer targetPlayer = Bukkit.getServer().getOfflinePlayer(targetPlayerName);
-        PlayerData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(targetPlayer.getUniqueId());
-
+        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(targetPlayer.getUniqueId());
         if (playerData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
@@ -82,12 +80,11 @@ public class DeleteAccountCommand implements LightCommand {
                             ).collect(Collectors.joining()));
             return false;
         }
-
+        LightCoins.instance.getConsolePrinter().printInfo("Deleting account for " + targetPlayerName);
         CompletableFuture<Boolean> deleteResult = LightCoins.instance.getCoinsTable().deleteAccount(targetPlayer.getUniqueId());
-
         deleteResult.thenAccept(success -> {
             if (success) {
-                PlayerData test = LightCoins.instance.getLightCoinsAPI().getPlayerData().remove(targetPlayer.getUniqueId());
+                AccountData test = LightCoins.instance.getLightCoinsAPI().getPlayerData().remove(targetPlayer.getUniqueId());
                 if(test == null) {
                     LightCoins.instance.getConsolePrinter().printDebug("Deleted player data for " + targetPlayerName);
                 }
@@ -101,7 +98,8 @@ public class DeleteAccountCommand implements LightCommand {
                 if(targetPlayer.isOnline()) {
                     if(targetPlayer.getPlayer() != null) {
                         LightTimers.doSync((task) -> {
-                            LightCore.instance.getPlayerPunishment().autoKickPlayer(targetPlayer.getPlayer(), "<red>Your account has been deleted\nPlease rejoin the server");
+                            LightCore.instance.getPlayerPunishment().autoKickPlayer(targetPlayer.getPlayer(),
+                                    "<red>Your coins account has been deleted\nPlease rejoin the server");
                         }, 40L);
                     }
                 }

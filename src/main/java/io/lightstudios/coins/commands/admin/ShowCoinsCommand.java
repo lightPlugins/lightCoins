@@ -1,8 +1,8 @@
 package io.lightstudios.coins.commands.admin;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.models.CoinsPlayer;
-import io.lightstudios.coins.api.models.PlayerData;
+import io.lightstudios.coins.api.models.CoinsData;
+import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.interfaces.LightCommand;
@@ -65,7 +65,7 @@ public class ShowCoinsCommand implements LightCommand {
         }
 
         if(args.length == 0) {
-            PlayerData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(player);
+            AccountData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(player);
 
             if(playerData == null) {
                 LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -77,7 +77,7 @@ public class ShowCoinsCommand implements LightCommand {
                 return false;
             }
 
-            CoinsPlayer coinsPlayer = playerData.getCoinsPlayer();
+            CoinsData coinsPlayer = playerData.getCoinsData();
 
             String coins = coinsPlayer.getFormattedCoins();
             String currency = coinsPlayer.getFormattedCurrency();
@@ -115,7 +115,7 @@ public class ShowCoinsCommand implements LightCommand {
             return false;
         }
 
-        PlayerData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(offlinePlayer);
+        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(offlinePlayer);
 
         if(playerData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -127,7 +127,7 @@ public class ShowCoinsCommand implements LightCommand {
             return false;
         }
 
-        CoinsPlayer coinsPlayer = playerData.getCoinsPlayer();
+        CoinsData coinsPlayer = playerData.getCoinsData();
 
         if(coinsPlayer == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(

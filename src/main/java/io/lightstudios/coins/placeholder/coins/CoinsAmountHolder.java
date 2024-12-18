@@ -1,7 +1,7 @@
 package io.lightstudios.coins.placeholder.coins;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.models.PlayerData;
+import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.placeholder.LightPlaceholder;
 import org.bukkit.OfflinePlayer;
@@ -15,14 +15,14 @@ public class CoinsAmountHolder implements LightPlaceholder {
             return null;
         }
 
-        PlayerData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(offlinePlayer.getUniqueId());
+        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(offlinePlayer.getUniqueId());
         if(playerData == null) {
             return "Player not found";
         }
 
         String placeholder = LightCoins.instance.getSettingsConfig().coinsPlaceholder()
-                .replace("#coins#", playerData.getCoinsPlayer().getFormattedCoins())
-                .replace("#currency#", playerData.getCoinsPlayer().getFormattedCurrency());
+                .replace("#coins#", playerData.getCoinsData().getFormattedCoins())
+                .replace("#currency#", playerData.getCoinsData().getFormattedCurrency());
 
         return LightCore.instance.getColorTranslation().adventureTranslator(placeholder, offlinePlayer.getPlayer());
     }

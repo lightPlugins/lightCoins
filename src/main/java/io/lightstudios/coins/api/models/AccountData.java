@@ -11,13 +11,13 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class PlayerData {
+public class AccountData {
 
-    private CoinsPlayer coinsPlayer;
+    private CoinsData coinsData;
     private List<VirtualCurrency> virtualCurrencies;
     private UUID uuid;
     @Nullable
-    private String playerName;
+    private String name;
     @Nullable
     private OfflinePlayer offlinePlayer;
 

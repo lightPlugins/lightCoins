@@ -1,8 +1,8 @@
 package io.lightstudios.coins.commands.defaults;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.models.CoinsPlayer;
-import io.lightstudios.coins.api.models.PlayerData;
+import io.lightstudios.coins.api.models.CoinsData;
+import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
@@ -92,8 +92,8 @@ public class PayCommand implements LightCommand {
             return false;
         }
 
-        PlayerData targetData = LightCoins.instance.getLightCoinsAPI().getPlayerData(player);
-        PlayerData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(player);
+        AccountData targetData = LightCoins.instance.getLightCoinsAPI().getPlayerData(player);
+        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(player);
 
         if(playerData == null || targetData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -123,8 +123,8 @@ public class PayCommand implements LightCommand {
             return false;
         }
 
-        CoinsPlayer coinsPlayer = playerData.getCoinsPlayer();
-        CoinsPlayer targetCoinsPlayer = targetData.getCoinsPlayer();
+        CoinsData coinsPlayer = playerData.getCoinsData();
+        CoinsData targetCoinsPlayer = targetData.getCoinsData();
 
         EconomyResponse playerResponse = coinsPlayer.removeCoins(amount);
         EconomyResponse targetResponse = targetCoinsPlayer.addCoins(amount);

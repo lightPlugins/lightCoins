@@ -1,4 +1,7 @@
 language: en
+multiTransactionSync:
+  period: 500
+  delay: 500
 defaultCurrency:
   # The '%lightcoins_coins%' placeholder.
   coinsPlaceholder: '<yellow>#coins# <gray>#currency#'
@@ -6,7 +9,7 @@ defaultCurrency:
   displayName: '<#ffdc73>Vault'
   # This is the starting balance for this
   # currency when a new player joins the server.
-  startBalance: 0.00
+  startBalance: 200.00
   # The decimal places for this currency.
   # 2 means 0.00, 3 means 0.000 and so on.
   # If you set this to 0, the currency will be displayed without decimal places.
