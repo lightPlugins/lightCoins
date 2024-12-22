@@ -60,13 +60,13 @@ public class VaultImplementer implements Economy {
     @Override
     public boolean hasAccount(String input) {
         UUID uuid = checkUUID(input);
+        LightCoins.instance.getConsolePrinter().printError("Checking Account if exist: " + input + " -> " + uuid);
 
         if(uuid == null) {
+            LightCoins.instance.getConsolePrinter().printError("UUID is null: " + input);
             return false;
         }
-        CoinsData coinsPlayer = LightCoins.instance.getLightCoinsAPI()
-                .getPlayerData().get(uuid).getCoinsData();
-        return coinsPlayer != null;
+        return LightCoins.instance.getLightCoinsAPI().getPlayerData().get(uuid) != null;
     }
 
     @Override
@@ -371,6 +371,7 @@ public class VaultImplementer implements Economy {
         if(LightCore.instance.getHookManager().isExistTowny()) {
             TownyInterface townyInterface = LightCore.instance.getHookManager().getTownyInterface();
             isTownyAccount = townyInterface.isTownyUUID(uuid);
+            LightCoins.instance.getConsolePrinter().printInfo("Account creation for Towny with uuid: " + uuid);
         } else {
             isTownyAccount = false;
         }
@@ -495,44 +496,22 @@ public class VaultImplementer implements Economy {
      */
     @Nullable
     private UUID checkUUID(String input) {
-        UUID uuid;
-        // Problem with TownyInterface -> AccountHolder returns null
-        if (LightCore.instance.getHookManager().isExistTowny()) {
-            LightCoins.instance.getConsolePrinter().printInfo("Towny is enabled, try to checking uuid " + input);
-            TownyInterface townyInterface = LightCore.instance.getHookManager().getTownyInterface();
-            UUID townyObjectUUID = townyInterface.getTownyObjectUUID(input);
-            if (townyInterface.isTownyUUID(townyObjectUUID)) {
-                LightCoins.instance.getConsolePrinter().printInfo("Found town uuid: " + townyObjectUUID + " provided by " + input);
-                uuid = townyObjectUUID;
-            } else {
-                try {
-                    LightCoins.instance.getConsolePrinter().printInfo("Input is not a town. Try to read normal uuid via input: " + input);
-                    uuid = UUID.fromString(input);
-                } catch (IllegalArgumentException e) {
-                    LightCoins.instance.getConsolePrinter().printError(List.of(
-                            "Failed to create player account for " + input,
-                            "Invalid UUID format.",
-                            "A third-party plugin is trying to create a player account with an invalid UUID.",
-                            "Please report this to the target plugin developer. NOT LightCoins!"
-                    ));
-                    return null;
+        try {
+            return UUID.fromString(input);
+        } catch (IllegalArgumentException ignored) {
+            // Problem with TownyInterface -> AccountHolder returns null
+            if (LightCore.instance.getHookManager().isExistTowny()) {
+                LightCoins.instance.getConsolePrinter().printInfo("Input is not a valid UUID, try to check if this is a town name: " + input);
+                TownyInterface townyInterface = LightCore.instance.getHookManager().getTownyInterface();
+                UUID townyObjectUUID = townyInterface.getTownyObjectUUID(input);
+                if (townyInterface.isTownyUUID(townyObjectUUID)) {
+                    LightCoins.instance.getConsolePrinter().printInfo("Found town uuid: " + townyObjectUUID + " provided by " + input);
+                    return townyObjectUUID;
                 }
-            }
-        } else {
-            try {
-                uuid = UUID.fromString(input);
-            } catch (IllegalArgumentException e) {
-                LightCoins.instance.getConsolePrinter().printError(List.of(
-                        "Failed to create player account for " + input,
-                        "Invalid UUID format.",
-                        "A third-party plugin is trying to create a player account with an invalid UUID.",
-                        "Please report this to the target plugin developer. NOT LightCoins!"
-                ));
-                return null;
             }
         }
 
-        return uuid;
+        return null;
     }
 
 }
