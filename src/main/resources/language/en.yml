@@ -1,5 +1,5 @@
 version: 1
-prefix: "<dark_gray>[<gray>Light<yellow>Coins<dark_gray>] <reset>"
+prefix: "<yellow><bold><italic>light<gray>Coins <reset>"
 noPermission: "<red>You do not have permission to do this! You need <dark_red>#permission#<red>!"
 wrongSyntax: "<red>Wrong command syntax. <gray>Please use <red>#syntax#"
 noNumber: "<red>This is not a number! Please use valid numbers."
@@ -13,6 +13,8 @@ playerDeleted: "<gray>You have deleted the player <yellow>#player#<gray>."
 coinsShow: "<gray>You have <yellow>#coins#<gray> coins."
 coinsShowTarget: "<gray>The player <yellow>#player#<gray> has <yellow>#coins# <gray>#currency#"
 coinsAdd: "<gray>You have added <yellow>#coins# <gray>#currency# to <yellow>#player#<gray>."
+coinsAddAll: "<gray>You have added <yellow>#coins# <gray>#currency# to <yellow>#amount# players<gray>."
+coinsAddAllFailed: "<red>Failed to add <dark_red>#coins# <red>#currency# to <dark_red>#amount# players<red>."
 coinsRemove: "<gray>You have removed <yellow>#coins# <gray>#currency# from <yellow>#player#<gray>."
 #
 pay: "<gray>You have paid <yellow>#coins# <gray>#currency# to <yellow>#target#<gray>."
@@ -35,8 +37,10 @@ baltop:
   footer:
     - ' '
     - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
-
-
+# Virtual Currencies
+virtualShow: "<gray>You have <yellow>#amount# <gray>#currency#."
+virtualCurrencyNotFound: "<red>The currency <dark_red>#currency# <red>could not be found!"
+virtualCurrencyAdd: "<gray>You have added <yellow>#amount# <gray>#currency# to <yellow>#player#<gray>."
 
 
 

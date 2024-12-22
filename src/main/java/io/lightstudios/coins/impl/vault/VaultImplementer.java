@@ -3,8 +3,8 @@ package io.lightstudios.coins.impl.vault;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
-import io.lightstudios.coins.impl.custom.LightCoinsDepositEvent;
-import io.lightstudios.coins.impl.custom.LightCoinsWithdrawEvent;
+import io.lightstudios.coins.impl.events.custom.LightCoinsDepositEvent;
+import io.lightstudios.coins.impl.events.custom.LightCoinsWithdrawEvent;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.hooks.towny.TownyInterface;
 import io.lightstudios.core.util.LightNumbers;
@@ -490,13 +490,17 @@ public class VaultImplementer implements Economy {
      * Check if the provided String is a valid UUID.
      * Inclusive check if the provided String is a valid TownyName
      * and convert it to a UUID.
+     * <p>IMPORTANT: Towny is currently not supported by LightCoins, because the towny api is broken</p>
      * @param input The String to check.
      * @return The UUID if the String is a valid UUID or TownyName.
      */
     @Nullable
     private UUID checkUUID(String input) {
         UUID uuid;
-        if (LightCore.instance.getHookManager().isExistTowny()) {
+        // LightCore.instance.getHookManager().isExistTowny()
+        // Problem with TownyInterface -> AccountHolder returns null
+        // That's a Towny problem, not a LightCoins problem -> Towny is currently not supported
+        if (false) {
             LightCoins.instance.getConsolePrinter().printInfo("Towny is enabled and checking uuid " + input);
             TownyInterface townyInterface = LightCore.instance.getHookManager().getTownyInterface();
             UUID townyObjectUUID = townyInterface.getTownyObjectUUID(input);

@@ -15,6 +15,8 @@ public enum LightPermissions {
     COINS_REMOVE_COMMAND("lightcoins.command.admin.coins.remove"),
     RELOAD_COMMAND("lightcoins.command.admin.reload"),
     DELETE_ACCOUNT_COMMAND("lightcoins.command.admin.delete"),
+    ADD_ALL_COMMAND("lightcoins.command.admin.coins.addall"),
+    VIRTUAL_ADD_COMMAND("lightcoins.command.admin.virtual.add"),
 
 
     /*
@@ -24,6 +26,8 @@ public enum LightPermissions {
     COINS_COMMAND("lightcoins.command.player.coins"),
     PAY_COMMAND("lightcoins.command.player.coins.remove"),
     BALTOP_COMMAND("lightcoins.command.player.baltop"),
+
+    VIRTUAL_SHOW_COMMAND("lightcoins.command.player.virtual.show"),
 
             ;
 

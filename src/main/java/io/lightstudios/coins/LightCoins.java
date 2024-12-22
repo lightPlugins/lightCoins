@@ -3,15 +3,19 @@ package io.lightstudios.coins;
 import io.lightstudios.coins.api.LightCoinsAPI;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.CoinsData;
-import io.lightstudios.coins.api.models.VirtualCurrency;
-import io.lightstudios.coins.commands.admin.*;
-import io.lightstudios.coins.commands.defaults.BalTopCommand;
-import io.lightstudios.coins.commands.defaults.PayCommand;
+import io.lightstudios.coins.api.models.VirtualData;
+import io.lightstudios.coins.commands.vault.admin.*;
+import io.lightstudios.coins.commands.vault.defaults.BalTopCommand;
+import io.lightstudios.coins.commands.vault.defaults.PayCommand;
+import io.lightstudios.coins.commands.virtual.admin.VirtualAddCommand;
+import io.lightstudios.coins.commands.virtual.defaults.VirtualShowCommand;
 import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
 import io.lightstudios.coins.impl.events.OnPlayerJoin;
 import io.lightstudios.coins.impl.vault.VaultImplementer;
 import io.lightstudios.coins.storage.CoinsDataTable;
+import io.lightstudios.coins.storage.VirtualDataTable;
+import io.lightstudios.core.LightCore;
 import io.lightstudios.core.commands.manager.CommandManager;
 import io.lightstudios.core.util.ConsolePrinter;
 import io.lightstudios.core.util.files.FileManager;
@@ -24,6 +28,7 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.sql.Connection;
 import java.util.*;
 
 @Getter
@@ -32,6 +37,7 @@ public final class LightCoins extends JavaPlugin {
     public static LightCoins instance;
     private LightCoinsAPI lightCoinsAPI;
     private CoinsDataTable coinsTable;
+    private VirtualDataTable virtualDataTable;
     private VaultImplementer vaultImplementer;
     private ConsolePrinter consolePrinter;
 
@@ -52,6 +58,12 @@ public final class LightCoins extends JavaPlugin {
         this.vaultImplementer = new VaultImplementer();
         // register the vault provider
         consolePrinter.printInfo("Registering Vault Provider...");
+
+        this.coinsTable = new CoinsDataTable();
+        this.virtualDataTable = new VirtualDataTable();
+
+        this.lightCoinsAPI = new LightCoinsAPI();
+
         registerVaultProvider();
         consolePrinter.printInfo("Read and Write Configs...");
         readAndWriteConfigs();
@@ -63,10 +75,10 @@ public final class LightCoins extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.lightCoinsAPI = new LightCoinsAPI();
-        this.coinsTable = new CoinsDataTable();
+
         // read existing player data from the database and populate the playerData map in LightCoinsAPI
         readPlayerData();
+        readVirtualData();
         registerEvents();
         registerCommands();
     }
@@ -96,14 +108,20 @@ public final class LightCoins extends JavaPlugin {
      */
     private void readVirtualCurrencies() {
         try {
-            this.virtualCurrencyFiles = new MultiFileManager("/virtual-currency/virtual-currencies");
+            this.virtualCurrencyFiles = new MultiFileManager("plugins/" + getName() + "/virtual-currency/");
         } catch (Exception e) {
             LightCoins.instance.getConsolePrinter().printError("Failed to load virtual currencies.");
             throw new RuntimeException("Failed to load virtual currencies.");
         }
 
         for(File file : this.virtualCurrencyFiles.getYamlFiles()) {
-            getLightCoinsAPI().getVirtualCurrencies().add(new VirtualCurrency(file));
+
+            if(file.getName().equalsIgnoreCase("_example.yml")) {
+                continue;
+            }
+
+            getLightCoinsAPI().getVirtualCurrencies().add(new VirtualData(file, null));
+            consolePrinter.printInfo("Loading virtual currency: " + file.getName());
         }
     }
 
@@ -132,7 +150,35 @@ public final class LightCoins extends JavaPlugin {
         }
         float end = System.currentTimeMillis();
         int size = coinsDataList.size();
-        LightCoins.instance.getConsolePrinter().printInfo("Read " + size + " player data from the database in " + (end - start) + "ms");
+        LightCoins.instance.getConsolePrinter().printInfo(
+                "Read " + size + " player data from the database in " + (end - start) + "ms");
+    }
+
+    private void readVirtualData() {
+        float start = System.currentTimeMillis();
+        List<VirtualData> virtualDataList = getVirtualDataTable().readVirtualData().join();
+        for (VirtualData virtualData : virtualDataList) {
+            UUID uuid = virtualData.getPlayerUUID();
+
+            if(uuid == null) {
+                LightCoins.instance.getConsolePrinter().printError(
+                        "An error occurred while reading virtual data uuid from the database!");
+                continue;
+            }
+
+            for(AccountData accountData : LightCoins.instance.getLightCoinsAPI().getPlayerData().values()) {
+                if(accountData.getUuid().equals(uuid)) {
+                    accountData.getVirtualCurrencies().add(virtualData);
+                    consolePrinter.printInfo("Loaded virtual data " + virtualData.getCurrencyName() +
+                            " for player: " + accountData.getName());
+                    continue;
+                }
+            }
+        }
+        float end = System.currentTimeMillis();
+        int size = virtualDataList.size();
+        LightCoins.instance.getConsolePrinter().printInfo(
+                "Read " + size + " virtual data from the database in " + (end - start) + "ms");
     }
 
     /**
@@ -154,7 +200,8 @@ public final class LightCoins extends JavaPlugin {
                 new AddCoinsCommand(),
                 new RemoveCoinsCommand(),
                 new ReloadCommand(),
-                new DeleteAccountCommand()
+                new DeleteAccountCommand(),
+                new AddAllCommand()
         )), "coins");
 
         new CommandManager(new ArrayList<>(List.of(
@@ -164,6 +211,11 @@ public final class LightCoins extends JavaPlugin {
         new CommandManager(new ArrayList<>(List.of(
                 new BalTopCommand()
         )), "baltop");
+
+        new CommandManager(new ArrayList<>(List.of(
+                new VirtualShowCommand(),
+                new VirtualAddCommand()
+        )), "virtual");
     }
 
     private void selectLanguage() {

@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,18 +20,18 @@ import java.util.concurrent.CompletableFuture;
 @Getter
 public class CoinsDataTable {
     private final String tableName = "lightcoins_coins";
-    private final Connection connection;
 
     public CoinsDataTable() {
+        LightCoins.instance.getConsolePrinter().printInfo("Initializing CoinsDataTable and creating Table...");
         createTable();
-        this.connection = LightCore.instance.getSqlDatabase().getConnection();
     }
 
     public CompletableFuture<List<CoinsData>> readCoinsData() {
         return CompletableFuture.supplyAsync(() -> {
             synchronized (this) {
                 String query = "SELECT uuid, name, coins FROM " + tableName;
-                try (PreparedStatement statement = connection.prepareStatement(query);
+                try (Connection connection = LightCore.instance.getSqlDatabase().getConnection();
+                     PreparedStatement statement = connection.prepareStatement(query);
                      ResultSet resultSet = statement.executeQuery()) {
 
                     List<CoinsData> coinsDataList = new ArrayList<>();
@@ -70,7 +71,8 @@ public class CoinsDataTable {
         return CompletableFuture.supplyAsync(() -> {
             synchronized (this) {
                 String query = "SELECT uuid, name, coins FROM " + tableName + " WHERE uuid = ?";
-                try (PreparedStatement statement = connection.prepareStatement(query)) {
+                try (Connection connection = LightCore.instance.getSqlDatabase().getConnection();
+                     PreparedStatement statement = connection.prepareStatement(query)) {
                     statement.setString(1, id.toString());
                     try (ResultSet resultSet = statement.executeQuery()) {
                         if (resultSet.next()) {
@@ -114,7 +116,8 @@ public class CoinsDataTable {
                 } else {
                     query = "INSERT INTO " + tableName + " (uuid, name, coins) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE coins = VALUES(coins)";
                 }
-                try (PreparedStatement statement = connection.prepareStatement(query)) {
+                try (Connection connection = LightCore.instance.getSqlDatabase().getConnection();
+                     PreparedStatement statement = connection.prepareStatement(query)) {
                     statement.setString(1, coinsData.getUuid().toString());
                     statement.setString(2, coinsData.getName());
                     statement.setBigDecimal(3, coinsData.getCoins());
@@ -151,7 +154,8 @@ public class CoinsDataTable {
         return CompletableFuture.supplyAsync(() -> {
             synchronized (this) {
                 String query = "DELETE FROM " + tableName + " WHERE uuid = ?";
-                try (PreparedStatement statement = connection.prepareStatement(query)) {
+                try (Connection connection = LightCore.instance.getSqlDatabase().getConnection();
+                     PreparedStatement statement = connection.prepareStatement(query)) {
                     statement.setString(1, uuid.toString());
                     int result = statement.executeUpdate();
                     if (result < 1) {
@@ -162,7 +166,7 @@ public class CoinsDataTable {
                         return false;
                     }
                     return true;
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     LightCoins.instance.getConsolePrinter().printError(List.of(
                             "An error occurred while deleting account from the database!",
                             "Please check the error logs for more information."
@@ -177,33 +181,18 @@ public class CoinsDataTable {
     public void createTable() {
         synchronized (this) {
             String query = createCoinsTable();
-            try {
-                LightCore.instance.getSqlDatabase().executeSqlFuture(query).thenAccept(result -> {
-                    if (result == null) {
-                        LightCoins.instance.getConsolePrinter().printError(List.of(
-                                "An error occurred while creating the coins table!",
-                                "Please check the error logs for more information.",
-                                "Query: " + query
-                        ));
-                        throw new RuntimeException("An error occurred while creating the coins table!");
-                    }
-                    LightCoins.instance.getConsolePrinter().printInfo("Coins table created successfully!");
-                }).exceptionally(e -> {
-                    LightCoins.instance.getConsolePrinter().printError(List.of(
-                            "An error occurred while reading player data from the database!",
-                            "Please check the error logs for more information."
-                    ));
-                    e.printStackTrace();
-                    throw new RuntimeException("An error occurred while reading player data from the database!");
-                });
-            } catch (Exception e) {
+            LightCoins.instance.getConsolePrinter().printInfo("Creating coins table...");
+            try (Connection connection = LightCore.instance.getSqlDatabase().getConnection();
+                 PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.executeUpdate();
+                LightCoins.instance.getConsolePrinter().printInfo("Coins table created successfully!");
+            } catch (SQLException e) {
                 LightCoins.instance.getConsolePrinter().printError(List.of(
                         "An error occurred while creating the coins table!",
                         "Please check the error logs for more information.",
                         "Query: " + query
                 ));
                 e.printStackTrace();
-                throw new RuntimeException("An error occurred while creating the coins table!");
             }
         }
     }

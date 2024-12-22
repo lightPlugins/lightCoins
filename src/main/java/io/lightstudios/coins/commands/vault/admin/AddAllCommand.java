@@ -1,69 +1,65 @@
-package io.lightstudios.coins.commands.admin;
+package io.lightstudios.coins.commands.vault.admin;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.interfaces.LightCommand;
 import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class AddCoinsCommand implements LightCommand {
+public class AddAllCommand implements LightCommand {
     @Override
     public List<String> getSubcommand() {
-        return List.of("add", "give", "deposit");
+        return List.of("giveall", "addall");
     }
 
     @Override
     public String getDescription() {
-        return "Add coins to a player";
+        return "Give all players in the Database x coins";
     }
 
     @Override
     public String getSyntax() {
-        return "/coins add <player> <amount>";
+        return "/coins addall <amount>";
     }
 
     @Override
     public int maxArgs() {
-        return 3;
+        return 2;
     }
 
     @Override
     public String getPermission() {
-        return LightPermissions.COINS_ADD_COMMAND.getPerm();
+        return LightPermissions.ADD_ALL_COMMAND.getPerm();
     }
 
     @Override
     public TabCompleter registerTabCompleter() {
         return (sender, command, alias, args) -> {
 
-            if(args.length == 1) {
-                return getSubcommand();
-            }
-
-            if(args.length == 2) {
-                return Bukkit.getServer().getOnlinePlayers().stream().map(Player::getName).toList();
+            if (args.length == 1) {
+                return List.of("100", "1000", "10000", "100000", "1000000");
             }
 
             return null;
+
         };
     }
 
     @Override
     public boolean performAsPlayer(Player player, String[] args) {
 
-        if(args.length != 3) {
+        if(args.length != 2) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
@@ -73,30 +69,7 @@ public class AddCoinsCommand implements LightCommand {
             return false;
         }
 
-        OfflinePlayer target = Bukkit.getServer().getPlayer(args[1]);
-
-        if(target == null) {
-            LightCore.instance.getMessageSender().sendPlayerMessage(
-                    player,
-                    LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().playerNotFound().stream().map(str -> str
-                                    .replace("#player#", args[1])
-                            ).collect(Collectors.joining()));
-            return false;
-        }
-
-        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(target);
-        if(playerData == null) {
-            LightCore.instance.getMessageSender().sendPlayerMessage(
-                    player,
-                    LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
-                                    .replace("#info#", "Could not find player data")
-                            ).collect(Collectors.joining()));
-            return false;
-        }
-
-        BigDecimal amount = LightNumbers.parseMoney(args[2]);
+        BigDecimal amount = LightNumbers.parseMoney(args[1]);
 
         if(amount == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -114,32 +87,58 @@ public class AddCoinsCommand implements LightCommand {
             return false;
         }
 
-        CoinsData coinsPlayer = playerData.getCoinsData();
-        EconomyResponse response = coinsPlayer.addCoins(amount);
+        HashMap<UUID, AccountData> accounts = LightCoins.instance.getLightCoinsAPI().getPlayerData();
 
-        if(response.transactionSuccess()) {
+        int failedTransactions = 0;
+        int successfulTransactions = 0;
+
+        for (AccountData account : accounts.values()) {
+            EconomyResponse response = account.getCoinsData().addCoins(amount);
+            if(!response.transactionSuccess()) {
+                failedTransactions++;
+                LightCoins.instance.getConsolePrinter().printError(List.of(
+                        "Failed to add coins to player: " + account.getCoinsData().getName(),
+                        "Error: " + response.errorMessage
+                ));
+                continue;
+            }
+            successfulTransactions++;
+        }
+
+        int finalSuccessfulTransactions = successfulTransactions;
+
+        if(failedTransactions == 0) {
+            LightCoins.instance.getConsolePrinter().printInfo(List.of(
+                    "Added " + amount + " to " + finalSuccessfulTransactions + " players",
+                    "Failed to add coins to " + failedTransactions + " players"
+            ));
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     List.of(
                             LightCoins.instance.getMessageConfig().prefix() +
-                                    LightCoins.instance.getMessageConfig().coinsAdd().stream().map(str -> str
+                                    LightCoins.instance.getMessageConfig().coinsAddAll().stream().map(str -> str
                                             .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
-                                            .replace("#currency#", coinsPlayer.getFormattedCurrency())
-                                            .replace("#player#", target.getName())
+                                            .replace("#currency#", LightCoins.instance.getSettingsConfig().defaultCurrencyNamePlural())
+                                            .replace("#amount#", String.valueOf(finalSuccessfulTransactions))
                                     ).collect(Collectors.joining())
                     )
             );
-            return true;
         } else {
+            int finalFailedTransactions = failedTransactions;
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
-                    LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
-                                    .replace("#info#", response.errorMessage)
-                            ).collect(Collectors.joining()));
-            return false;
+                    List.of(
+                            LightCoins.instance.getMessageConfig().prefix() +
+                                    LightCoins.instance.getMessageConfig().coinsAddAllFailed().stream().map(str -> str
+                                            .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
+                                            .replace("#currency#", LightCoins.instance.getSettingsConfig().defaultCurrencyNamePlural())
+                                            .replace("#amount#", String.valueOf(finalFailedTransactions))
+                                    ).collect(Collectors.joining())
+                    )
+            );
         }
 
+        return false;
     }
 
     @Override

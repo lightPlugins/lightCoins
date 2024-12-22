@@ -1,4 +1,4 @@
-package io.lightstudios.coins.commands.defaults;
+package io.lightstudios.coins.commands.vault.defaults;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsData;

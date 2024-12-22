@@ -1,4 +1,4 @@
-package io.lightstudios.coins.impl.custom;
+package io.lightstudios.coins.impl.events.custom;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,10 +10,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 
-public class LightCoinsDepositEvent extends Event implements Cancellable {
+public class LightCoinsWithdrawEvent extends Event implements Cancellable {
+
     private static final HandlerList HANDLERS = new HandlerList();
     @Getter
-    private final String uuid;
+    private final String target;
     @Getter
     private BigDecimal amount;
     private boolean isCancelled;
@@ -25,8 +26,8 @@ public class LightCoinsDepositEvent extends Event implements Cancellable {
         return HANDLERS;
     }
 
-    public LightCoinsDepositEvent(String uuid, BigDecimal amount) {
-        this.uuid = uuid;
+    public LightCoinsWithdrawEvent(String target, BigDecimal amount) {
+        this.target = target;
         this.amount = amount;
         this.responseType = EconomyResponse.ResponseType.NOT_IMPLEMENTED;
     }
@@ -36,7 +37,7 @@ public class LightCoinsDepositEvent extends Event implements Cancellable {
         BigDecimal action(EconomyResponse.ResponseType status, BigDecimal amount);
     }
 
-    public BigDecimal getAmount(LightEconomyResponse action) {
+    public BigDecimal getAmount(LightCoinsDepositEvent.LightEconomyResponse action) {
         return action.action(this.responseType, this.amount);
     }
 

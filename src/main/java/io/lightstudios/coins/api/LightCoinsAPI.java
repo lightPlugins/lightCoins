@@ -3,7 +3,7 @@ package io.lightstudios.coins.api;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
-import io.lightstudios.coins.api.models.VirtualCurrency;
+import io.lightstudios.coins.api.models.VirtualData;
 import io.lightstudios.coins.impl.vault.VaultImplementer;
 import lombok.Getter;
 import org.bukkit.OfflinePlayer;
@@ -19,7 +19,7 @@ import java.util.UUID;
 public class LightCoinsAPI {
 
     private final HashMap<UUID, AccountData> playerData = new HashMap<>();
-    private final List<VirtualCurrency> virtualCurrencies = new ArrayList<>();
+    private final List<VirtualData> virtualCurrencies = new ArrayList<>();
     public VaultImplementer vaultImplementer;
 
     public void getImplementer() {

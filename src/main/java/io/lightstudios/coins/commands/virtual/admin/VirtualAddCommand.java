@@ -1,8 +1,9 @@
-package io.lightstudios.coins.commands.admin;
+package io.lightstudios.coins.commands.virtual.admin;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.models.CoinsData;
+import io.lightstudios.coins.api.VirtualResponse;
 import io.lightstudios.coins.api.models.AccountData;
+import io.lightstudios.coins.api.models.VirtualData;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
@@ -15,33 +16,35 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RemoveCoinsCommand implements LightCommand {
+public class VirtualAddCommand implements LightCommand {
+
     @Override
     public List<String> getSubcommand() {
-        return List.of("remove", "take", "withdraw");
+        return List.of("add", "give");
     }
 
     @Override
     public String getDescription() {
-        return "Remove coins from a player";
+        return "Add virtual currency to a offline player";
     }
 
     @Override
     public String getSyntax() {
-        return "/coins remove <player> <amount>";
+        return "/virtual add <player> <currency> <amount>";
     }
 
     @Override
     public int maxArgs() {
-        return 3;
+        return 4;
     }
 
     @Override
     public String getPermission() {
-        return LightPermissions.COINS_REMOVE_COMMAND.getPerm();
+        return LightPermissions.VIRTUAL_ADD_COMMAND.getPerm();
     }
 
     @Override
@@ -53,15 +56,22 @@ public class RemoveCoinsCommand implements LightCommand {
             }
 
             if(args.length == 2) {
-                return Bukkit.getServer().getOnlinePlayers().stream().map(Player::getName).toList();
+                return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList();
             }
+
+            if(args.length == 3) {
+                return LightCoins.instance.getVirtualCurrencyFiles().getYamlFiles().stream()
+                        .map(file -> file.getName().replace(".yml", "")).toList();
+            }
+
             return null;
         };
     }
 
     @Override
     public boolean performAsPlayer(Player player, String[] args) {
-        if(args.length != 3) {
+
+        if(args.length != 4) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
@@ -71,9 +81,9 @@ public class RemoveCoinsCommand implements LightCommand {
             return false;
         }
 
-        OfflinePlayer target = Bukkit.getServer().getPlayer(args[1]);
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
 
-        if(target == null) {
+        if(offlinePlayer.getPlayer() == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
@@ -83,8 +93,9 @@ public class RemoveCoinsCommand implements LightCommand {
             return false;
         }
 
-        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(target);
-        if(playerData == null) {
+        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getPlayerData(offlinePlayer);
+
+        if(accountData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
@@ -94,7 +105,19 @@ public class RemoveCoinsCommand implements LightCommand {
             return false;
         }
 
-        BigDecimal amount = LightNumbers.parseMoney(args[2]);
+        VirtualData virtualData = accountData.getVirtualCurrencyByName(args[2]);
+
+        if(virtualData == null) {
+            LightCore.instance.getMessageSender().sendPlayerMessage(
+                    player,
+                    LightCoins.instance.getMessageConfig().prefix() +
+                            LightCoins.instance.getMessageConfig().virtualCurrencyNotFound().stream().map(str -> str
+                                    .replace("#currency#", args[2])
+                            ).collect(Collectors.joining()));
+            return false;
+        }
+
+        BigDecimal amount = LightNumbers.parseMoney(args[3]);
 
         if(amount == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -108,24 +131,13 @@ public class RemoveCoinsCommand implements LightCommand {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
-                            String.join("", LightCoins.instance.getMessageConfig().noNegativ()));
+                            LightCoins.instance.getMessageConfig().noNegativ());
             return false;
         }
 
-        CoinsData coinsPlayer = playerData.getCoinsData();
-        EconomyResponse response = coinsPlayer.removeCoins(amount);
+        VirtualResponse response = virtualData.addBalance(amount);
 
-        if(response.transactionSuccess()) {
-            LightCore.instance.getMessageSender().sendPlayerMessage(
-                    player,
-                    LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().coinsRemove().stream().map(str -> str
-                                    .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
-                                    .replace("#currency#", coinsPlayer.getFormattedCurrency())
-                                    .replace("#player#", target.getName())
-                            ).collect(Collectors.joining()));
-            return true;
-        } else {
+        if(!response.transactionSuccess()) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
@@ -134,6 +146,18 @@ public class RemoveCoinsCommand implements LightCommand {
                             ).collect(Collectors.joining()));
             return false;
         }
+
+        LightCore.instance.getMessageSender().sendPlayerMessage(
+                player,
+                LightCoins.instance.getMessageConfig().prefix() +
+                        LightCoins.instance.getMessageConfig().virtualCurrencyAdd().stream().map(str -> str
+                                .replace("#amount#", LightNumbers.formatForMessages(amount, virtualData.getDecimalPlaces()))
+                                .replace("#currency#", virtualData.getFormattedCurrencySymbol())
+                                .replace("#player#", virtualData.getPlayerName())
+                        ).collect(Collectors.joining()));
+
+
+        return false;
     }
 
     @Override

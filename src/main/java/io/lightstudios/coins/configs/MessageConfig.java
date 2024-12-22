@@ -31,6 +31,8 @@ public class MessageConfig {
     public List<String> coinsShow() { return toStringList(config.get("coinsShow")); }
     public List<String> coinsShowTarget() { return toStringList(config.get("coinsShowTarget")); }
     public List<String> coinsAdd() { return toStringList(config.get("coinsAdd")); }
+    public List<String> coinsAddAll() { return toStringList(config.get("coinsAddAll")); }
+    public List<String> coinsAddAllFailed() { return toStringList(config.get("coinsAddAllFailed")); }
     public List<String> coinsRemove() { return toStringList(config.get("coinsRemove")); }
     public List<String> pay() { return toStringList(config.get("pay")); }
     public List<String> payTarget() { return toStringList(config.get("payTarget")); }
@@ -40,6 +42,10 @@ public class MessageConfig {
     public List<String> baltopHeader() { return config.getStringList("baltop.header"); }
     public String baltopContent() { return config.getString("baltop.content"); }
     public List<String> baltopFooter() { return config.getStringList("baltop.footer"); }
+
+    public List<String> virtualShow() { return toStringList(config.get("virtualShow")); }
+    public List<String> virtualCurrencyNotFound() { return toStringList(config.get("virtualCurrencyNotFound")); }
+    public List<String> virtualCurrencyAdd() { return toStringList(config.get("virtualCurrencyAdd")); }
 
 
 

@@ -64,7 +64,7 @@
         <dependency>
             <groupId>com.github.lightPlugins</groupId>
             <artifactId>lightCore</artifactId>
-            <version>0.2.3</version>
+            <version>0.2.4</version>
             <scope>provided</scope>
         </dependency>
 

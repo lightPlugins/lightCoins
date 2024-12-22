@@ -1,6 +1,9 @@
 package io.lightstudios.coins.api.models;
 
+import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.VirtualResponse;
+import io.lightstudios.coins.synchronisation.TransactionVirtual;
+import io.lightstudios.core.util.LightNumbers;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,7 +15,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class VirtualCurrency {
+public class VirtualData {
 
     private File file;
     private String currencyName;
@@ -23,11 +26,21 @@ public class VirtualCurrency {
     private String currencySymbolSingular;
     private BigDecimal maxBalance;
 
-    private UUID uuid;
+    private UUID playerUUID;
+    private String playerName;
     private BigDecimal balance;
 
-    public VirtualCurrency(File file) {
+    private static final TransactionVirtual transactionVirtual = new TransactionVirtual();
+
+    public VirtualData(File file, UUID uuid) {
         this.file = file;
+        this.playerUUID = uuid;
+        this.balance = new BigDecimal(0);
+
+        transactionVirtual.setDelay(LightCoins.instance.getSettingsConfig().syncDelay());
+        transactionVirtual.setPeriod(LightCoins.instance.getSettingsConfig().syncPeriod());
+        transactionVirtual.startTransactions();
+
         readCurrencyFile();
     }
 
@@ -36,12 +49,12 @@ public class VirtualCurrency {
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
         this.currencyName = file.getName().replace(".yml", "");
-        this.displayName = config.getString("display-name");
-        this.startingBalance = BigDecimal.valueOf(config.getDouble("start-balance"));
-        this.decimalPlaces = config.getInt("decimal-places");
-        this.currencySymbolPlural = config.getString("currency-name-plural");
-        this.currencySymbolSingular = config.getString("currency-name-singular");
-        this.maxBalance = BigDecimal.valueOf(config.getDouble("max-balance"));
+        this.displayName = config.getString("displayName");
+        this.startingBalance = BigDecimal.valueOf(config.getDouble("startBalance"));
+        this.decimalPlaces = config.getInt("decimalPlaces");
+        this.currencySymbolPlural = config.getString("currencyNamePlural");
+        this.currencySymbolSingular = config.getString("currencyNameSingular");
+        this.maxBalance = BigDecimal.valueOf(config.getDouble("maxBalance"));
 
     }
 
@@ -64,6 +77,7 @@ public class VirtualCurrency {
         }
 
         this.balance = this.balance.add(amount);
+        transactionVirtual.addTransaction(this);
 
         return new VirtualResponse(amount, this.balance, defaultResponse.type, defaultResponse.errorMessage);
     }
@@ -86,6 +100,7 @@ public class VirtualCurrency {
         }
 
         this.balance = this.balance.subtract(amount);
+        transactionVirtual.addTransaction(this);
 
         return new VirtualResponse(amount, this.balance, defaultResponse.type, defaultResponse.errorMessage);
     }
@@ -109,6 +124,13 @@ public class VirtualCurrency {
 
         return new VirtualResponse(amount, this.balance,
                 VirtualResponse.VirtualResponseType.SUCCESS, "");
+    }
+
+    public String getFormattedBalance() {
+        return LightNumbers.formatForMessages(balance, decimalPlaces);
+    }
+    public String getFormattedCurrencySymbol() {
+        return balance.compareTo(BigDecimal.ONE) == 0 ? currencySymbolSingular : currencySymbolPlural;
     }
 
 }
