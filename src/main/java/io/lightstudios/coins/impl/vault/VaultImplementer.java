@@ -490,7 +490,6 @@ public class VaultImplementer implements Economy {
      * Check if the provided String is a valid UUID.
      * Inclusive check if the provided String is a valid TownyName
      * and convert it to a UUID.
-     * <p>IMPORTANT: Towny is currently not supported by LightCoins, because the towny api is broken</p>
      * @param input The String to check.
      * @return The UUID if the String is a valid UUID or TownyName.
      */
@@ -499,14 +498,15 @@ public class VaultImplementer implements Economy {
         UUID uuid;
         // Problem with TownyInterface -> AccountHolder returns null
         if (LightCore.instance.getHookManager().isExistTowny()) {
-            LightCoins.instance.getConsolePrinter().printInfo("Towny is enabled and checking uuid " + input);
+            LightCoins.instance.getConsolePrinter().printInfo("Towny is enabled, try to checking uuid " + input);
             TownyInterface townyInterface = LightCore.instance.getHookManager().getTownyInterface();
             UUID townyObjectUUID = townyInterface.getTownyObjectUUID(input);
-            LightCoins.instance.getConsolePrinter().printInfo("checking towny uuid: " + townyObjectUUID);
             if (townyInterface.isTownyUUID(townyObjectUUID)) {
+                LightCoins.instance.getConsolePrinter().printInfo("Found town uuid: " + townyObjectUUID + " provided by " + input);
                 uuid = townyObjectUUID;
             } else {
                 try {
+                    LightCoins.instance.getConsolePrinter().printInfo("Input is not a town. Try to read normal uuid via input: " + input);
                     uuid = UUID.fromString(input);
                 } catch (IllegalArgumentException e) {
                     LightCoins.instance.getConsolePrinter().printError(List.of(
