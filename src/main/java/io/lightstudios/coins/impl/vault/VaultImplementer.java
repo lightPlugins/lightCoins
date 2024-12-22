@@ -497,10 +497,8 @@ public class VaultImplementer implements Economy {
     @Nullable
     private UUID checkUUID(String input) {
         UUID uuid;
-        // LightCore.instance.getHookManager().isExistTowny()
         // Problem with TownyInterface -> AccountHolder returns null
-        // That's a Towny problem, not a LightCoins problem -> Towny is currently not supported
-        if (false) {
+        if (LightCore.instance.getHookManager().isExistTowny()) {
             LightCoins.instance.getConsolePrinter().printInfo("Towny is enabled and checking uuid " + input);
             TownyInterface townyInterface = LightCore.instance.getHookManager().getTownyInterface();
             UUID townyObjectUUID = townyInterface.getTownyObjectUUID(input);
