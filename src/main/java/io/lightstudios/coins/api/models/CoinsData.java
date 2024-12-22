@@ -53,7 +53,7 @@ public class CoinsData {
 
         if(this.coins.add(coins).compareTo(this.maxCoins) > 0) {
             return new EconomyResponse(coins.doubleValue(), this.coins.doubleValue(),
-                    EconomyResponse.ResponseType.FAILURE, "Max coins reached > " + this.maxCoins);
+                    EconomyResponse.ResponseType.FAILURE, "Max coins reached: " + coins + " > " + this.maxCoins);
         }
 
         this.coins = this.coins.add(coins);

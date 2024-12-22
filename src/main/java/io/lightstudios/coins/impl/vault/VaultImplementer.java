@@ -60,10 +60,9 @@ public class VaultImplementer implements Economy {
     @Override
     public boolean hasAccount(String input) {
         UUID uuid = checkUUID(input);
-        LightCoins.instance.getConsolePrinter().printError("Checking Account if exist: " + input + " -> " + uuid);
 
         if(uuid == null) {
-            LightCoins.instance.getConsolePrinter().printError("UUID is null: " + input);
+            LightCoins.instance.getConsolePrinter().printError("hasAccount Methode -> UUID is null for input: " + input);
             return false;
         }
         return LightCoins.instance.getLightCoinsAPI().getPlayerData().get(uuid) != null;
@@ -86,7 +85,9 @@ public class VaultImplementer implements Economy {
 
     @Override
     public double getBalance(String input) {
+
         UUID uuid = checkUUID(input);
+
         if (uuid == null) {
             return 0;
         }
@@ -354,16 +355,17 @@ public class VaultImplementer implements Economy {
     @Override
     public boolean createPlayerAccount(String input) {
 
-        LightCoins.instance.getConsolePrinter().printError("Creating Account: " + input);
         UUID uuid = checkUUID(input);
 
         if (uuid == null) {
-            LightCoins.instance.getConsolePrinter().printError("UUID is null");
             return false;
         }
 
         if (LightCoins.instance.getLightCoinsAPI().getPlayerData().containsKey(uuid)) {
-            LightCoins.instance.getConsolePrinter().printInfo("Coins data already exists for " + uuid);
+            LightCoins.instance.getConsolePrinter().printError(List.of(
+                    "Account data for " + uuid + " already exists in cache.",
+                    "No need to create a new account."
+            ));
             return false;
         }
 
@@ -371,7 +373,6 @@ public class VaultImplementer implements Economy {
         if(LightCore.instance.getHookManager().isExistTowny()) {
             TownyInterface townyInterface = LightCore.instance.getHookManager().getTownyInterface();
             isTownyAccount = townyInterface.isTownyUUID(uuid);
-            LightCoins.instance.getConsolePrinter().printInfo("Account creation for Towny with uuid: " + uuid);
         } else {
             isTownyAccount = false;
         }
@@ -386,7 +387,14 @@ public class VaultImplementer implements Economy {
         try {
             int result = LightCoins.instance.getCoinsTable().writeCoinsData(coinsData).join();
             if (result == 1) {
-                LightCoins.instance.getConsolePrinter().printInfo("New account data created for " + uuid);
+                LightCoins.instance.getConsolePrinter().printInfo(List.of(
+                        "Account data for " + uuid + " has been created successfully.",
+                        "Adding account data to cache...",
+                        "  is Towny: " + isTownyAccount,
+                        "  Account Name: " + accountData.getName(),
+                        "  CoinsData Name: " + accountData.getCoinsData().getName(),
+                        "  CoinsData Balance: " + accountData.getCoinsData().getCoins().doubleValue()
+                ));
                 LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, accountData);
                 return true;
             } else {
@@ -500,18 +508,12 @@ public class VaultImplementer implements Economy {
             return UUID.fromString(input);
         } catch (IllegalArgumentException ignored) {
             // Problem with TownyInterface -> AccountHolder returns null
-            if (LightCore.instance.getHookManager().isExistTowny()) {
-                LightCoins.instance.getConsolePrinter().printInfo("Input is not a valid UUID, try to check if this is a town name: " + input);
-                TownyInterface townyInterface = LightCore.instance.getHookManager().getTownyInterface();
-                UUID townyObjectUUID = townyInterface.getTownyObjectUUID(input);
-                if (townyInterface.isTownyUUID(townyObjectUUID)) {
-                    LightCoins.instance.getConsolePrinter().printInfo("Found town uuid: " + townyObjectUUID + " provided by " + input);
-                    return townyObjectUUID;
-                }
-            }
+            LightCoins.instance.getConsolePrinter().printError(List.of(
+                    "Failed to convert given input to valid UUID: " + input,
+                    "Third party plugin trys to use non UUID format.",
+                    "This is an unsupported behavior and should be fixed immediately by the third party plugin developer!"
+            ));
+            return null;
         }
-
-        return null;
     }
-
 }

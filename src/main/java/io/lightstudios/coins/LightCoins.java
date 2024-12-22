@@ -15,7 +15,6 @@ import io.lightstudios.coins.impl.events.OnPlayerJoin;
 import io.lightstudios.coins.impl.vault.VaultImplementer;
 import io.lightstudios.coins.storage.CoinsDataTable;
 import io.lightstudios.coins.storage.VirtualDataTable;
-import io.lightstudios.core.LightCore;
 import io.lightstudios.core.commands.manager.CommandManager;
 import io.lightstudios.core.util.ConsolePrinter;
 import io.lightstudios.core.util.files.FileManager;
@@ -28,7 +27,6 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.sql.Connection;
 import java.util.*;
 
 @Getter

@@ -2,8 +2,6 @@ package io.lightstudios.coins.synchronisation;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsData;
-import io.lightstudios.core.LightCore;
-import io.lightstudios.core.database.model.DatabaseTypes;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -60,7 +58,7 @@ public class TransactionCoins {
             CompletableFuture.runAsync(() -> {
                 LightCoins.instance.getCoinsTable().writeCoinsData(coinsData);
                 // Log the transaction
-                LightCoins.instance.getConsolePrinter().printDebug(
+                LightCoins.instance.getConsolePrinter().printInfo(
                         "Processed [" + timestamp + "] transaction for " + uuid + ": " + amount);
             }).exceptionally(throwable -> {
                 LightCoins.instance.getConsolePrinter().printError("Failed to process last transaction for " + uuid);
@@ -69,7 +67,7 @@ public class TransactionCoins {
             });
         }
 
-        LightCoins.instance.getConsolePrinter().printDebug("Cleared transaction queue, waiting for next transactions");
+        LightCoins.instance.getConsolePrinter().printInfo("Cleared transaction queue, ready for next transaction");
         transactionQueue.clear();
     }
 

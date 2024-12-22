@@ -1,5 +1,5 @@
 version: 1
-prefix: "<yellow><bold><italic>light<gray>Coins <reset>"
+prefix: "<yellow><bold><italic>light<gray>Coins <dark_gray>● <reset>"
 noPermission: "<red>You do not have permission to do this! You need <dark_red>#permission#<red>!"
 wrongSyntax: "<red>Wrong command syntax. <gray>Please use <red>#syntax#"
 noNumber: "<red>This is not a number! Please use valid numbers."
