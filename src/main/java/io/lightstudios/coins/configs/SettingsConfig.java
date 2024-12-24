@@ -14,6 +14,11 @@ public class SettingsConfig {
     }
 
     public String language() { return config.getString("language");}
+    public int baltopCommandAmount() { return config.getInt("defaultCurrency.baltopCommandAmount");}
+    public String commandsCoins() { return config.getString("commands.coins");}
+    public String commandsVirtual() { return config.getString("commands.virtual");}
+    public String commandsBaltop() { return config.getString("commands.baltop");}
+    public String commandsPay() { return config.getString("commands.pay");}
     public String coinsPlaceholder() { return config.getString("defaultCurrency.coinsPlaceholder");}
     public String defaultCurrencyName() { return config.getString("defaultCurrency.displayName");}
     public long syncDelay() { return config.getLong("multiTransactionSync.delay");}

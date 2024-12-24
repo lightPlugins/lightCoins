@@ -53,7 +53,7 @@ public class VirtualDataTable {
                         }
 
                         VirtualData virtualData = new VirtualData(file, uuid);
-                        virtualData.setBalance(balance);
+                        virtualData.setCurrentBalance(balance);
                         virtualData.setPlayerName(name);
                         virtualDataList.add(virtualData);
                     }
@@ -108,7 +108,7 @@ public class VirtualDataTable {
                             }
 
                             VirtualData virtualData = new VirtualData(file, id);
-                            virtualData.setBalance(balance);
+                            virtualData.setCurrentBalance(balance);
                             virtualData.setPlayerName(name);
                             virtualDataList.add(virtualData);
                         }
@@ -144,7 +144,7 @@ public class VirtualDataTable {
                     statement.setString(1, virtualData.getPlayerUUID().toString());
                     statement.setString(2, virtualData.getPlayerName());
                     statement.setString(3, virtualData.getCurrencyName());
-                    statement.setBigDecimal(4, virtualData.getBalance());
+                    statement.setBigDecimal(4, virtualData.getCurrentBalance());
                     return statement.executeUpdate();
                 } catch (Exception e) {
                     LightCoins.instance.getConsolePrinter().printError(List.of(

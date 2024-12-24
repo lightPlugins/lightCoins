@@ -46,7 +46,7 @@ public class TransactionCoins {
         if (lastTransaction != null) {
             UUID uuid = lastTransaction.coinsData.getUuid();
             String name = lastTransaction.coinsData.getName();
-            BigDecimal amount = lastTransaction.coinsData.getCoins();
+            BigDecimal amount = lastTransaction.coinsData.getCurrentCoins();
             String timestamp = lastTransaction.timestamp();
 
             // Create a CoinsData object

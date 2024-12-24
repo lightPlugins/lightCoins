@@ -65,7 +65,7 @@ public class VaultImplementer implements Economy {
             LightCoins.instance.getConsolePrinter().printError("hasAccount Methode -> UUID is null for input: " + input);
             return false;
         }
-        return LightCoins.instance.getLightCoinsAPI().getPlayerData().get(uuid) != null;
+        return LightCoins.instance.getLightCoinsAPI().getAccountData().get(uuid) != null;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class VaultImplementer implements Economy {
         }
 
         AtomicReference<CoinsData> coinsDataRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
-                .getPlayerData().get(uuid).getCoinsData());
+                .getAccountData().get(uuid).getCoinsData());
 
         if (coinsDataRef.get() == null) {
             LightCoins.instance.getConsolePrinter().printInfo(List.of(
@@ -108,11 +108,11 @@ public class VaultImplementer implements Economy {
             return future.thenApply(result -> {
                 if (result != null) {
                     newCoinsData.setName(result.getName());
-                    newCoinsData.setCoins(result.getCoins());
+                    newCoinsData.setCoins(result.getCurrentCoins());
                     accountData.setCoinsData(newCoinsData);
-                    LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, accountData);
+                    LightCoins.instance.getLightCoinsAPI().getAccountData().put(uuid, accountData);
                     LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
-                    return newCoinsData.getCoins().doubleValue();
+                    return newCoinsData.getCurrentCoins().doubleValue();
                 } else {
                     LightCoins.instance.getConsolePrinter().printError(
                             "Failed to retrieve account data from the database.");
@@ -129,7 +129,7 @@ public class VaultImplementer implements Economy {
             }).join();
         }
 
-        return coinsDataRef.get().getCoins().doubleValue();
+        return coinsDataRef.get().getCurrentCoins().doubleValue();
     }
 
     @Override
@@ -192,7 +192,7 @@ public class VaultImplementer implements Economy {
 
         final BigDecimal formatted = LightNumbers.formatBigDecimal(BigDecimal.valueOf(v));
         AtomicReference<CoinsData> coinsPlayerRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
-                .getPlayerData().get(uuid).getCoinsData());
+                .getAccountData().get(uuid).getCoinsData());
 
         if (coinsPlayerRef.get() == null) {
             LightCoins.instance.getConsolePrinter().printInfo(List.of(
@@ -208,9 +208,9 @@ public class VaultImplementer implements Economy {
             return future.thenApply(result -> {
                 if (result != null) {
                     newCoinsPlayer.setName(result.getName());
-                    newCoinsPlayer.setCoins(result.getCoins());
+                    newCoinsPlayer.setCoins(result.getCurrentCoins());
                     playerData.setCoinsData(newCoinsPlayer);
-                    LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
+                    LightCoins.instance.getLightCoinsAPI().getAccountData().put(uuid, playerData);
                     LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved account data from the database.");
 
                     return newCoinsPlayer.removeCoins(formatted);
@@ -282,7 +282,7 @@ public class VaultImplementer implements Economy {
         v = depositEvent.getAmount().doubleValue();
 
         AtomicReference<CoinsData> coinsPlayerRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
-                .getPlayerData().get(uuid).getCoinsData());
+                .getAccountData().get(uuid).getCoinsData());
 
         final double finalV = v;
         if (coinsPlayerRef.get() == null) {
@@ -298,9 +298,9 @@ public class VaultImplementer implements Economy {
             return future.thenApply(result -> {
                 if (result != null) {
                     newCoinsPlayer.setName(result.getName());
-                    newCoinsPlayer.setCoins(result.getCoins());
+                    newCoinsPlayer.setCoins(result.getCurrentCoins());
                     playerData.setCoinsData(newCoinsPlayer);
-                    LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
+                    LightCoins.instance.getLightCoinsAPI().getAccountData().put(uuid, playerData);
                     LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved account data from the database.");
 
                     return newCoinsPlayer.addCoins(formatted);
@@ -361,7 +361,7 @@ public class VaultImplementer implements Economy {
             return false;
         }
 
-        if (LightCoins.instance.getLightCoinsAPI().getPlayerData().containsKey(uuid)) {
+        if (LightCoins.instance.getLightCoinsAPI().getAccountData().containsKey(uuid)) {
             LightCoins.instance.getConsolePrinter().printError(List.of(
                     "Account data for " + uuid + " already exists in cache.",
                     "No need to create a new account."
@@ -393,9 +393,9 @@ public class VaultImplementer implements Economy {
                         "  is Towny: " + isTownyAccount,
                         "  Account Name: " + accountData.getName(),
                         "  CoinsData Name: " + accountData.getCoinsData().getName(),
-                        "  CoinsData Balance: " + accountData.getCoinsData().getCoins().doubleValue()
+                        "  CoinsData Balance: " + accountData.getCoinsData().getCurrentCoins().doubleValue()
                 ));
-                LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, accountData);
+                LightCoins.instance.getLightCoinsAPI().getAccountData().put(uuid, accountData);
                 return true;
             } else {
                 LightCoins.instance.getConsolePrinter().printError("Failed to create account account for " + uuid);

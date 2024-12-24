@@ -1,7 +1,6 @@
 package io.lightstudios.coins.synchronisation;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.VirtualData;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,7 +48,7 @@ public class TransactionVirtual {
         if (lastTransaction != null) {
             UUID uuid = lastTransaction.virtualData.getPlayerUUID();
             String name = lastTransaction.virtualData.getPlayerName();
-            BigDecimal amount = lastTransaction.virtualData.getBalance();
+            BigDecimal amount = lastTransaction.virtualData.getCurrentBalance();
             String timestamp = lastTransaction.timestamp();
             File file = lastTransaction.virtualData.getFile();
 

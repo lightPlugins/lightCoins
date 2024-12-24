@@ -83,7 +83,7 @@ public class RemoveCoinsCommand implements LightCommand {
             return false;
         }
 
-        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(target);
+        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(target);
         if(playerData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,

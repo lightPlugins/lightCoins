@@ -19,21 +19,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class VirtualAddCommand implements LightCommand {
-
+public class VirtualRemoveCommand implements LightCommand {
     @Override
     public List<String> getSubcommand() {
-        return List.of("add", "give");
+        return List.of("remove");
     }
 
     @Override
     public String getDescription() {
-        return "Add virtual currency to a offline player";
+        return "Remove virtual currency from a player";
     }
 
     @Override
     public String getSyntax() {
-        return "/virtual add <player> <currency> <amount>";
+        return "/virtual remove <player> <amount>";
     }
 
     @Override
@@ -43,7 +42,7 @@ public class VirtualAddCommand implements LightCommand {
 
     @Override
     public String getPermission() {
-        return LightPermissions.VIRTUAL_ADD_COMMAND.getPerm();
+        return LightPermissions.VIRTUAL_REMOVE_COMMAND.getPerm();
     }
 
     @Override
@@ -80,26 +79,14 @@ public class VirtualAddCommand implements LightCommand {
             return false;
         }
 
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
-
-        if(offlinePlayer.getPlayer() == null) {
-            LightCore.instance.getMessageSender().sendPlayerMessage(
-                    player,
-                    LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().playerNotFound().stream().map(str -> str
-                                    .replace("#player#", args[1])
-                            ).collect(Collectors.joining()));
-            return false;
-        }
-
-        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData(offlinePlayer);
+        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData(args[1]);
 
         if(accountData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
-                                    .replace("#info#", "Could not find player data")
+                            LightCoins.instance.getMessageConfig().playerNotFound().stream().map(str -> str
+                                    .replace("#player#", args[1])
                             ).collect(Collectors.joining()));
             return false;
         }
@@ -134,7 +121,7 @@ public class VirtualAddCommand implements LightCommand {
             return false;
         }
 
-        VirtualResponse response = virtualData.addBalance(amount);
+        VirtualResponse response = virtualData.removeBalance(amount);
 
         if(!response.transactionSuccess()) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -149,18 +136,18 @@ public class VirtualAddCommand implements LightCommand {
         LightCore.instance.getMessageSender().sendPlayerMessage(
                 player,
                 LightCoins.instance.getMessageConfig().prefix() +
-                        LightCoins.instance.getMessageConfig().virtualCurrencyAdd().stream().map(str -> str
+                        LightCoins.instance.getMessageConfig().virtualCurrencyRemove().stream().map(str -> str
                                 .replace("#amount#", LightNumbers.formatForMessages(amount, virtualData.getDecimalPlaces()))
                                 .replace("#currency#", virtualData.getFormattedCurrencySymbol())
                                 .replace("#player#", virtualData.getPlayerName())
                         ).collect(Collectors.joining()));
-
 
         return false;
     }
 
     @Override
     public boolean performAsConsole(ConsoleCommandSender consoleCommandSender, String[] args) {
+
         if(args.length != 4) {
             LightCoins.instance.getConsolePrinter().printError("Wrong syntax. Use: " + getSyntax());
             return false;
@@ -192,7 +179,7 @@ public class VirtualAddCommand implements LightCommand {
             return false;
         }
 
-        VirtualResponse response = virtualData.addBalance(amount);
+        VirtualResponse response = virtualData.removeBalance(amount);
 
         if(!response.transactionSuccess()) {
             LightCoins.instance.getConsolePrinter().printError("Transaction failed: " + response.errorMessage);

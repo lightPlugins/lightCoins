@@ -1,4 +1,4 @@
-package io.lightstudios.coins.commands.vault.defaults;
+package io.lightstudios.coins.commands.vault.player;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.AccountData;
@@ -49,23 +49,26 @@ public class BalTopCommand implements LightCommand {
 
     @Override
     public boolean performAsPlayer(Player player, String[] strings) {
-        int x = 10;
+        int x = LightCoins.instance.getSettingsConfig().baltopCommandAmount();
+        int decimalPlaces = LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces();
 
-        List<AccountData> allPlayers = new ArrayList<>(LightCoins.instance.getLightCoinsAPI().getPlayerData().values());
+        List<AccountData> allPlayers = new ArrayList<>(LightCoins.instance.getLightCoinsAPI().getAccountData().values());
 
         List<AccountData> sortedPlayers = allPlayers.stream()
-                .sorted((p1, p2) -> p2.getCoinsData().getCoins().compareTo(p1.getCoinsData().getCoins()))
+                .filter(p -> p.getName() != null && !p.getName().equalsIgnoreCase("towny_account"))
+                .sorted((p1, p2) -> p2.getCoinsData().getCurrentCoins().compareTo(p1.getCoinsData().getCurrentCoins()))
                 .limit(x)
                 .toList();
 
         BigDecimal overallCoins = sortedPlayers.stream()
+                .filter(p -> p.getName() != null && !p.getName().equalsIgnoreCase("towny_account"))
                 .map(AccountData::getCoinsData)
-                .map(CoinsData::getCoins)
+                .map(CoinsData::getCurrentCoins)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         List<String> messages = LightCoins.instance.getMessageConfig().baltopHeader()
                 .stream().map(s -> s.replace("#overall#", overallCoins.toString())
-                        .replace("#overall#", LightNumbers.formatForMessages(overallCoins))
+                        .replace("#overall#", LightNumbers.formatForMessages(overallCoins, decimalPlaces))
                         .replace("#currency#", LightCoins.instance.getSettingsConfig().defaultCurrencyNamePlural()))
                 .collect(Collectors.toCollection(ArrayList::new));
 
@@ -80,7 +83,7 @@ public class BalTopCommand implements LightCommand {
             messages.add(LightCoins.instance.getMessageConfig().baltopContent()
                     .replace("#number#", String.valueOf(i + 1))
                     .replace("#name#", playerData.getName())
-                    .replace("#amount#", playerData.getCoinsData().getCoins().toString())
+                    .replace("#amount#", playerData.getCoinsData().getFormattedCoins())
                     .replace("#currency#", playerData.getCoinsData().getFormattedCurrency()));
         }
         messages.addAll(LightCoins.instance.getMessageConfig().baltopFooter());

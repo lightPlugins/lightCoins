@@ -18,46 +18,43 @@ import java.util.UUID;
 @Getter
 public class LightCoinsAPI {
 
-    private final HashMap<UUID, AccountData> playerData = new HashMap<>();
-    private final List<VirtualData> virtualCurrencies = new ArrayList<>();
-    public VaultImplementer vaultImplementer;
+    private final HashMap<UUID, AccountData> accountData = new HashMap<>();
 
-    public void getImplementer() {
-        this.vaultImplementer = LightCoins.instance.getVaultImplementer();
-    }
-    public void createPlayerData(OfflinePlayer player) {
-        initPlayer(player);
-    }
-    public void createPlayerData(Player player) {
-        initPlayer(player);
+    public VaultImplementer getImplementer() {
+        return LightCoins.instance.getVaultImplementer();
     }
 
     @Nullable
-    public AccountData getPlayerData(OfflinePlayer player) {
-        return playerData.get(player.getUniqueId());
+    public AccountData getAccountData(OfflinePlayer player) {
+        return accountData.get(player.getUniqueId());
     }
     @Nullable
-    public AccountData getPlayerData(Player player) {
-        return playerData.get(player.getUniqueId());
+    public AccountData getAccountData(Player player) {
+        return accountData.get(player.getUniqueId());
     }
     @Nullable
-    public AccountData getPlayerData(UUID uuid) {
-        return playerData.get(uuid);
+    public AccountData getAccountData(UUID uuid) {
+        return accountData.get(uuid);
     }
-
-
-    private void initPlayer(OfflinePlayer player) {
-        AccountData playerData = new AccountData();
-
-        CoinsData coinsPlayer = new CoinsData(player.getUniqueId());
-
-        playerData.setCoinsData(coinsPlayer);
-
-        if(!this.playerData.containsKey(player.getUniqueId())) {
-            this.playerData.put(player.getUniqueId(), playerData);
+    @Nullable
+    public AccountData getAccountData(String playerName) {
+        for(AccountData data : accountData.values()) {
+            if(data.getName() != null && data.getName().equalsIgnoreCase(playerName)) {
+                return data;
+            }
         }
+        return null;
     }
 
+    public List<String> getAccountDataPlayerNames() {
+        List<String> names = new ArrayList<>();
+        for(AccountData data : accountData.values()) {
+            if(data.getName() != null && !data.getName().equalsIgnoreCase("towny_account")) {
+                names.add(data.getName());
+            }
+        }
 
+        return names;
 
+    }
 }

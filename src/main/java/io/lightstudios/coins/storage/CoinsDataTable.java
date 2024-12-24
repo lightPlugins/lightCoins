@@ -41,7 +41,7 @@ public class CoinsDataTable {
                         BigDecimal coins = resultSet.getBigDecimal("coins");
 
                         CoinsData coinsPlayer = new CoinsData(uuid);
-                        coinsPlayer.setCoins(coins);
+                        coinsPlayer.setCurrentCoins(coins);
                         coinsPlayer.setName(name);
 
                         coinsDataList.add(coinsPlayer);
@@ -81,7 +81,7 @@ public class CoinsDataTable {
                             BigDecimal coins = resultSet.getBigDecimal("coins");
 
                             CoinsData coinsPlayer = new CoinsData(uuid);
-                            coinsPlayer.setCoins(coins);
+                            coinsPlayer.setCurrentCoins(coins);
                             coinsPlayer.setName(name);
                             return coinsPlayer;
                         } else {
@@ -120,7 +120,7 @@ public class CoinsDataTable {
                      PreparedStatement statement = connection.prepareStatement(query)) {
                     statement.setString(1, coinsData.getUuid().toString());
                     statement.setString(2, coinsData.getName());
-                    statement.setBigDecimal(3, coinsData.getCoins());
+                    statement.setBigDecimal(3, coinsData.getCurrentCoins());
                     return statement.executeUpdate();
                 } catch (Exception e) {
                     LightCoins.instance.getConsolePrinter().printError(List.of(

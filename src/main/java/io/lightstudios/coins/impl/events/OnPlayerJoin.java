@@ -29,7 +29,7 @@ public class OnPlayerJoin implements Listener {
     public void onPlayerLogin(PlayerJoinEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
 
-        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getPlayerData().get(uuid);
+        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData().get(uuid);
 
         if (accountData != null) {
             LightCoins.instance.getConsolePrinter().printInfo("Player data already exists for " + uuid);
@@ -69,7 +69,7 @@ public class OnPlayerJoin implements Listener {
         playerData.setCoinsData(newCoinsData);
         playerData.setName(event.getPlayer().getName());
         playerData.setOfflinePlayer(event.getPlayer());
-        LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
+        LightCoins.instance.getLightCoinsAPI().getAccountData().put(uuid, playerData);
 
         EconomyResponse response = newCoinsData.addCoins(starterCoins);
         if (response.transactionSuccess()) {
@@ -90,7 +90,7 @@ public class OnPlayerJoin implements Listener {
     private void loadExistingPlayerData(PlayerJoinEvent event, UUID uuid, CoinsData coinsData, AccountData playerData) {
         playerData.setCoinsData(coinsData);
         playerData.setName(event.getPlayer().getName());
-        LightCoins.instance.getLightCoinsAPI().getPlayerData().put(uuid, playerData);
+        LightCoins.instance.getLightCoinsAPI().getAccountData().put(uuid, playerData);
         LightCoins.instance.getConsolePrinter().printInfo("Player data loaded for " + uuid);
     }
 

@@ -1,4 +1,4 @@
-package io.lightstudios.coins.commands.vault.defaults;
+package io.lightstudios.coins.commands.vault.player;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsData;
@@ -92,8 +92,8 @@ public class PayCommand implements LightCommand {
             return false;
         }
 
-        AccountData targetData = LightCoins.instance.getLightCoinsAPI().getPlayerData(player);
-        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(player);
+        AccountData targetData = LightCoins.instance.getLightCoinsAPI().getAccountData(player);
+        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(player);
 
         if(playerData == null || targetData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(

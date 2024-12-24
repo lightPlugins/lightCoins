@@ -1,4 +1,4 @@
-package io.lightstudios.coins.commands.vault.admin;
+package io.lightstudios.coins.commands.overall.admin;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.permissions.LightPermissions;
@@ -23,7 +23,7 @@ public class ReloadCommand implements LightCommand {
 
     @Override
     public String getSyntax() {
-        return "/coins reload";
+        return "/lightcoins reload";
     }
 
     @Override
@@ -50,7 +50,6 @@ public class ReloadCommand implements LightCommand {
     public boolean performAsPlayer(Player player, String[] strings) {
 
         LightCoins.instance.loadDefaults();
-
         LightCore.instance.getMessageSender().sendPlayerMessage(
                 player,
                 LightCoins.instance.getMessageConfig().prefix() +
@@ -61,7 +60,6 @@ public class ReloadCommand implements LightCommand {
 
     @Override
     public boolean performAsConsole(ConsoleCommandSender consoleCommandSender, String[] strings) {
-
         LightCoins.instance.loadDefaults();
         LightCoins.instance.getConsolePrinter().printInfo("Plugin configuration reloaded");
         return false;

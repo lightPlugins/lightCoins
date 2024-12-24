@@ -70,7 +70,7 @@ public class DeleteAccountCommand implements LightCommand {
 
         String targetPlayerName = strings[1];
         OfflinePlayer targetPlayer = Bukkit.getServer().getOfflinePlayer(targetPlayerName);
-        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(targetPlayer.getUniqueId());
+        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(targetPlayer.getUniqueId());
         if (playerData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
@@ -84,7 +84,7 @@ public class DeleteAccountCommand implements LightCommand {
         CompletableFuture<Boolean> deleteResult = LightCoins.instance.getCoinsTable().deleteAccount(targetPlayer.getUniqueId());
         deleteResult.thenAccept(success -> {
             if (success) {
-                AccountData test = LightCoins.instance.getLightCoinsAPI().getPlayerData().remove(targetPlayer.getUniqueId());
+                AccountData test = LightCoins.instance.getLightCoinsAPI().getAccountData().remove(targetPlayer.getUniqueId());
                 if(test == null) {
                     LightCoins.instance.getConsolePrinter().printDebug("Deleted player data for " + targetPlayerName);
                 }

@@ -33,6 +33,7 @@ public class MessageConfig {
     public List<String> coinsAdd() { return toStringList(config.get("coinsAdd")); }
     public List<String> coinsAddAll() { return toStringList(config.get("coinsAddAll")); }
     public List<String> coinsAddAllFailed() { return toStringList(config.get("coinsAddAllFailed")); }
+    public List<String> coinsSet() { return toStringList(config.get("coinsSet")); }
     public List<String> coinsRemove() { return toStringList(config.get("coinsRemove")); }
     public List<String> pay() { return toStringList(config.get("pay")); }
     public List<String> payTarget() { return toStringList(config.get("payTarget")); }
@@ -46,6 +47,13 @@ public class MessageConfig {
     public List<String> virtualShow() { return toStringList(config.get("virtualShow")); }
     public List<String> virtualCurrencyNotFound() { return toStringList(config.get("virtualCurrencyNotFound")); }
     public List<String> virtualCurrencyAdd() { return toStringList(config.get("virtualCurrencyAdd")); }
+    public List<String> virtualCurrencySet() { return toStringList(config.get("virtualCurrencySet")); }
+    public List<String> virtualCurrencyRemove() { return toStringList(config.get("virtualCurrencyRemove")); }
+
+    public List<String> helpCommandCoins() { return config.getStringList("helpCommand.coins"); }
+    public List<String> helpCommandVirtual() { return config.getStringList("helpCommand.virtual"); }
+    public List<String> helpCommandDefault() { return config.getStringList("helpCommand.default"); }
+    public List<String> helpCommandPlayer() { return config.getStringList("helpCommand.player"); }
 
 
 

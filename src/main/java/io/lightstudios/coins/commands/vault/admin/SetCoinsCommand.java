@@ -1,15 +1,13 @@
 package io.lightstudios.coins.commands.vault.admin;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
+import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.interfaces.LightCommand;
 import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
@@ -18,20 +16,20 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AddCoinsCommand implements LightCommand {
+public class SetCoinsCommand implements LightCommand {
     @Override
     public List<String> getSubcommand() {
-        return List.of("add", "give", "deposit");
+        return List.of("set");
     }
 
     @Override
     public String getDescription() {
-        return "Add coins to a player";
+        return "Set the coins of a player";
     }
 
     @Override
     public String getSyntax() {
-        return "/coins add <player> <amount>";
+        return "/coins set <player> <amount>";
     }
 
     @Override
@@ -41,7 +39,7 @@ public class AddCoinsCommand implements LightCommand {
 
     @Override
     public String getPermission() {
-        return LightPermissions.COINS_ADD_COMMAND.getPerm();
+        return LightPermissions.COINS_SET_COMMAND.getPerm();
     }
 
     @Override
@@ -53,7 +51,7 @@ public class AddCoinsCommand implements LightCommand {
             }
 
             if(args.length == 2) {
-                return Bukkit.getServer().getOnlinePlayers().stream().map(Player::getName).toList();
+                return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
             }
 
             return null;
@@ -73,9 +71,9 @@ public class AddCoinsCommand implements LightCommand {
             return false;
         }
 
-        OfflinePlayer target = Bukkit.getServer().getPlayer(args[1]);
+        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData(args[1]);
 
-        if(target == null) {
+        if(accountData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
@@ -85,13 +83,12 @@ public class AddCoinsCommand implements LightCommand {
             return false;
         }
 
-        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(target);
-        if(playerData == null) {
+        if(accountData.getName() == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
-                                    .replace("#info#", "Could not find player data")
+                            LightCoins.instance.getMessageConfig().playerNotFound().stream().map(str -> str
+                                    .replace("#player#", args[1])
                             ).collect(Collectors.joining()));
             return false;
         }
@@ -114,18 +111,18 @@ public class AddCoinsCommand implements LightCommand {
             return false;
         }
 
-        CoinsData coinsPlayer = playerData.getCoinsData();
-        EconomyResponse response = coinsPlayer.addCoins(amount);
+        CoinsData coinsPlayer = accountData.getCoinsData();
+        EconomyResponse response = coinsPlayer.setCoins(amount);
 
         if(response.transactionSuccess()) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     List.of(
                             LightCoins.instance.getMessageConfig().prefix() +
-                                    LightCoins.instance.getMessageConfig().coinsAdd().stream().map(str -> str
+                                    LightCoins.instance.getMessageConfig().coinsSet().stream().map(str -> str
                                             .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
                                             .replace("#currency#", coinsPlayer.getFormattedCurrency())
-                                            .replace("#player#", target.getName())
+                                            .replace("#player#", accountData.getName())
                                     ).collect(Collectors.joining())
                     )
             );
@@ -139,7 +136,6 @@ public class AddCoinsCommand implements LightCommand {
                             ).collect(Collectors.joining()));
             return false;
         }
-
     }
 
     @Override

@@ -4,10 +4,16 @@ import io.lightstudios.coins.api.LightCoinsAPI;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.VirtualData;
+import io.lightstudios.coins.commands.overall.admin.DefaultHelpCommand;
+import io.lightstudios.coins.commands.overall.admin.ReloadCommand;
 import io.lightstudios.coins.commands.vault.admin.*;
-import io.lightstudios.coins.commands.vault.defaults.BalTopCommand;
-import io.lightstudios.coins.commands.vault.defaults.PayCommand;
+import io.lightstudios.coins.commands.vault.player.BalTopCommand;
+import io.lightstudios.coins.commands.vault.player.HelpCommand;
+import io.lightstudios.coins.commands.vault.player.PayCommand;
 import io.lightstudios.coins.commands.virtual.admin.VirtualAddCommand;
+import io.lightstudios.coins.commands.virtual.admin.VirtualHelpCommand;
+import io.lightstudios.coins.commands.virtual.admin.VirtualRemoveCommand;
+import io.lightstudios.coins.commands.virtual.admin.VirtualSetCommand;
 import io.lightstudios.coins.commands.virtual.defaults.VirtualShowCommand;
 import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
@@ -46,6 +52,11 @@ public final class LightCoins extends JavaPlugin {
 
     private FileManager settings;
     private FileManager message;
+
+    private CommandManager vaultCommands;
+    private CommandManager virtualCommands;
+    private CommandManager balTopCommands;
+    private CommandManager payCommands;
 
     @Override
     public void onLoad() {
@@ -90,6 +101,7 @@ public final class LightCoins extends JavaPlugin {
         readAndWriteConfigs();
         selectLanguage();
         readVirtualCurrencies();
+        unregisterCommands();
         registerCommands();
     }
 
@@ -110,16 +122,6 @@ public final class LightCoins extends JavaPlugin {
         } catch (Exception e) {
             LightCoins.instance.getConsolePrinter().printError("Failed to load virtual currencies.");
             throw new RuntimeException("Failed to load virtual currencies.");
-        }
-
-        for(File file : this.virtualCurrencyFiles.getYamlFiles()) {
-
-            if(file.getName().equalsIgnoreCase("_example.yml")) {
-                continue;
-            }
-
-            getLightCoinsAPI().getVirtualCurrencies().add(new VirtualData(file, null));
-            consolePrinter.printInfo("Loading virtual currency: " + file.getName());
         }
     }
 
@@ -144,7 +146,7 @@ public final class LightCoins extends JavaPlugin {
             accountData.setUuid(coinsData.getUuid());
             accountData.setName(coinsData.getName());
             accountData.setOfflinePlayer(Bukkit.getServer().getOfflinePlayer(coinsData.getUuid()));
-            getLightCoinsAPI().getPlayerData().put(coinsData.getUuid(), accountData);
+            getLightCoinsAPI().getAccountData().put(coinsData.getUuid(), accountData);
         }
         float end = System.currentTimeMillis();
         int size = coinsDataList.size();
@@ -164,7 +166,7 @@ public final class LightCoins extends JavaPlugin {
                 continue;
             }
 
-            for(AccountData accountData : LightCoins.instance.getLightCoinsAPI().getPlayerData().values()) {
+            for(AccountData accountData : LightCoins.instance.getLightCoinsAPI().getAccountData().values()) {
                 if(accountData.getUuid().equals(uuid)) {
                     accountData.getVirtualCurrencies().add(virtualData);
                     consolePrinter.printInfo("Loaded virtual data " + virtualData.getCurrencyName() +
@@ -193,27 +195,48 @@ public final class LightCoins extends JavaPlugin {
 
     private void registerCommands() {
 
-        new CommandManager(new ArrayList<>(List.of(
+        vaultCommands = new CommandManager(new ArrayList<>(List.of(
                 new ShowCoinsCommand(),
                 new AddCoinsCommand(),
                 new RemoveCoinsCommand(),
-                new ReloadCommand(),
                 new DeleteAccountCommand(),
-                new AddAllCommand()
-        )), "coins");
+                new AddAllCommand(),
+                new SetCoinsCommand(),
+                new HelpCommand()
+        )), settingsConfig.commandsCoins());
 
-        new CommandManager(new ArrayList<>(List.of(
+        payCommands = new CommandManager(new ArrayList<>(List.of(
                 new PayCommand()
-        )), "pay");
+        )), settingsConfig.commandsPay());
 
-        new CommandManager(new ArrayList<>(List.of(
+        balTopCommands = new CommandManager(new ArrayList<>(List.of(
                 new BalTopCommand()
-        )), "baltop");
+        )), settingsConfig.commandsBaltop());
+
+        virtualCommands = new CommandManager(new ArrayList<>(List.of(
+                new VirtualShowCommand(),
+                new VirtualAddCommand(),
+                new VirtualSetCommand(),
+                new VirtualRemoveCommand(),
+                new VirtualHelpCommand()
+        )), settingsConfig.commandsVirtual());
 
         new CommandManager(new ArrayList<>(List.of(
-                new VirtualShowCommand(),
-                new VirtualAddCommand()
-        )), "virtual");
+                new ReloadCommand(),
+                new DefaultHelpCommand()
+        )), "lightcoins");
+    }
+
+    private void unregisterCommands() {
+
+        if(vaultCommands == null || payCommands == null || balTopCommands == null || virtualCommands == null) {
+            return;
+        }
+
+        vaultCommands.unregisterCommand();
+        payCommands.unregisterCommand();
+        balTopCommands.unregisterCommand();
+        virtualCommands.unregisterCommand();
     }
 
     private void selectLanguage() {

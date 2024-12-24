@@ -65,7 +65,7 @@ public class ShowCoinsCommand implements LightCommand {
         }
 
         if(args.length == 0) {
-            AccountData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(player);
+            AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(player);
 
             if(playerData == null) {
                 LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -115,7 +115,7 @@ public class ShowCoinsCommand implements LightCommand {
             return false;
         }
 
-        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(offlinePlayer);
+        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(offlinePlayer);
 
         if(playerData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(

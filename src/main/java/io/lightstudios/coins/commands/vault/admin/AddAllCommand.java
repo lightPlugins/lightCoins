@@ -87,7 +87,7 @@ public class AddAllCommand implements LightCommand {
             return false;
         }
 
-        HashMap<UUID, AccountData> accounts = LightCoins.instance.getLightCoinsAPI().getPlayerData();
+        HashMap<UUID, AccountData> accounts = LightCoins.instance.getLightCoinsAPI().getAccountData();
 
         int failedTransactions = 0;
         int successfulTransactions = 0;

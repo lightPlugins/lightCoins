@@ -15,6 +15,7 @@ coinsShowTarget: "<gray>The player <yellow>#player#<gray> has <yellow>#coins# <g
 coinsAdd: "<gray>You have added <yellow>#coins# <gray>#currency# to <yellow>#player#<gray>."
 coinsAddAll: "<gray>You have added <yellow>#coins# <gray>#currency# to <yellow>#amount# players<gray>."
 coinsAddAllFailed: "<red>Failed to add <dark_red>#coins# <red>#currency# to <dark_red>#amount# players<red>."
+coinsSet: "<gray>You have set the balance of <yellow>#player#<gray> to <yellow>#coins# <gray>#currency#."
 coinsRemove: "<gray>You have removed <yellow>#coins# <gray>#currency# from <yellow>#player#<gray>."
 #
 pay: "<gray>You have paid <yellow>#coins# <gray>#currency# to <yellow>#target#<gray>."
@@ -41,8 +42,49 @@ baltop:
 virtualShow: "<gray>You have <yellow>#amount# <gray>#currency#."
 virtualCurrencyNotFound: "<red>The currency <dark_red>#currency# <red>could not be found!"
 virtualCurrencyAdd: "<gray>You have added <yellow>#amount# <gray>#currency# to <yellow>#player#<gray>."
-
-
+virtualCurrencySet: "<gray>You have set the currency <yellow>#currency#<gray> of player <yellow>#player#<gray> to <yellow>#amount#<gray>."
+virtualCurrencyRemove: "<gray>You have removed <yellow>#amount# <gray>#currency# from <yellow>#player#<gray>."
+# Help command
+helpCommand:
+  coins:
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+    - ' '
+    - '  <gray>Admin & Console Commands:'
+    - '<gray>● <yellow>/coins show <gray>[<yellow>player<gray>] <gray>- Show a players balance'
+    - '<gray>● <yellow>/coins add/set/remove <gray>[<yellow>player<gray>] <gray>[<yellow>amount<gray>] <gray>- Change a player coins value'
+    - '<gray>● <yellow>/coins help <gray>- Showing all the available commands'
+    - ' '
+    - '  <gray>Player Commands:'
+    - '<gray>● <yellow>/pay <gray>[<yellow>player<gray>] <gray>[<yellow>amount<gray>] <gray>- Send coins to other players'
+    - '<gray>● <yellow>/baltop <gray>- List the players with the 10 largest balances'
+    - '<gray>● <yellow>/coins <gray>- Shows your current balance'
+    - ' '
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+  virtual:
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+    - ' '
+    - '  <gray>Admin & Console Commands:'
+    - '<gray>● <yellow>/virtual show <gray>[<yellow>currency<gray>] <gray>- Show a players currency balance'
+    - '<gray>● <yellow>/virtual set/add/remove <gray>[<yellow>currency<gray>] <gray>[<yellow>player<gray>] <gray>[<yellow>amount<gray>] <gray>- Change a player currency value'
+    - ' '
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+  default:
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+    - ' '
+    - '  <gray>Admin & Console Commands:'
+    - '<gray>● <yellow>/lightcoins reload <gray>- Reload the configs and messages.'
+    - '<gray>● <yellow>/lightcoins help <gray>- Showing all the available commands'
+    - ' '
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+  player:
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+    - ' '
+    - '  <gray>Player Commands:'
+    - '<gray>● <yellow>/coins <gray>- Shows your current balance'
+    - '<gray>● <yellow>/pay <gray>[<yellow>player<gray>] <gray>[<yellow>amount<gray>] <gray>- Send coins to other players'
+    - '<gray>● <yellow>/baltop <gray>- List the players with the 10 largest balances'
+    - ' '
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
 
 
 

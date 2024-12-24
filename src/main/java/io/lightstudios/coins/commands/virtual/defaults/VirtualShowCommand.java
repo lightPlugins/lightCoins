@@ -65,7 +65,7 @@ public class VirtualShowCommand implements LightCommand {
             return false;
         }
 
-        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getPlayerData(player);
+        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData(player);
 
         if(accountData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -84,6 +84,7 @@ public class VirtualShowCommand implements LightCommand {
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().virtualCurrencyNotFound().stream().map(str -> str
+                                    .replace("#currency#", args[1])
                                     .replace("#syntax#", getSyntax())
                             ).collect(Collectors.joining()));
             return false;

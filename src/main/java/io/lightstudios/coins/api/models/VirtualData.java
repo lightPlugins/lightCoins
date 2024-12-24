@@ -28,14 +28,14 @@ public class VirtualData {
 
     private UUID playerUUID;
     private String playerName;
-    private BigDecimal balance;
+    private BigDecimal currentBalance;
 
     private static final TransactionVirtual transactionVirtual = new TransactionVirtual();
 
     public VirtualData(File file, UUID uuid) {
         this.file = file;
         this.playerUUID = uuid;
-        this.balance = new BigDecimal(0);
+        this.currentBalance = new BigDecimal(0);
 
         transactionVirtual.setDelay(LightCoins.instance.getSettingsConfig().syncDelay());
         transactionVirtual.setPeriod(LightCoins.instance.getSettingsConfig().syncPeriod());
@@ -58,6 +58,23 @@ public class VirtualData {
 
     }
 
+    public VirtualResponse setBalance(BigDecimal amount) {
+        VirtualResponse defaultResponse = checkDefaults(amount);
+
+        if(!defaultResponse.transactionSuccess()) {
+            return new VirtualResponse(amount, this.currentBalance, defaultResponse.type, defaultResponse.errorMessage);
+        }
+
+        if(amount.compareTo(this.maxBalance) > 0) {
+            return new VirtualResponse(amount, this.currentBalance,
+                    VirtualResponse.VirtualResponseType.MAX_BALANCE_EXCEED, "Max balance exceeded");
+        }
+
+        this.currentBalance = amount;
+        transactionVirtual.addTransaction(this);
+
+        return new VirtualResponse(amount, this.currentBalance, defaultResponse.type, defaultResponse.errorMessage);
+    }
 
     /**
      * Add the balance of the player
@@ -68,18 +85,18 @@ public class VirtualData {
         VirtualResponse defaultResponse = checkDefaults(amount);
 
         if(!defaultResponse.transactionSuccess()) {
-            return new VirtualResponse(amount, this.balance, defaultResponse.type, defaultResponse.errorMessage);
+            return new VirtualResponse(amount, this.currentBalance, defaultResponse.type, defaultResponse.errorMessage);
         }
 
-        if(this.balance.add(amount).compareTo(this.maxBalance) > 0) {
-            return new VirtualResponse(amount, this.balance,
+        if(this.currentBalance.add(amount).compareTo(this.maxBalance) > 0) {
+            return new VirtualResponse(amount, this.currentBalance,
                     VirtualResponse.VirtualResponseType.MAX_BALANCE_EXCEED, "Max balance exceeded");
         }
 
-        this.balance = this.balance.add(amount);
+        this.currentBalance = this.currentBalance.add(amount);
         transactionVirtual.addTransaction(this);
 
-        return new VirtualResponse(amount, this.balance, defaultResponse.type, defaultResponse.errorMessage);
+        return new VirtualResponse(amount, this.currentBalance, defaultResponse.type, defaultResponse.errorMessage);
     }
 
     /**
@@ -91,22 +108,22 @@ public class VirtualData {
         VirtualResponse defaultResponse = checkDefaults(amount);
 
         if(!defaultResponse.transactionSuccess()) {
-            return new VirtualResponse(amount, this.balance, defaultResponse.type, defaultResponse.errorMessage);
+            return new VirtualResponse(amount, this.currentBalance, defaultResponse.type, defaultResponse.errorMessage);
         }
 
         if(!hasEnough(amount)) {
-            return new VirtualResponse(amount, this.balance,
+            return new VirtualResponse(amount, this.currentBalance,
                     VirtualResponse.VirtualResponseType.NOT_ENOUGH, "Not enough balance");
         }
 
-        this.balance = this.balance.subtract(amount);
+        this.currentBalance = this.currentBalance.subtract(amount);
         transactionVirtual.addTransaction(this);
 
-        return new VirtualResponse(amount, this.balance, defaultResponse.type, defaultResponse.errorMessage);
+        return new VirtualResponse(amount, this.currentBalance, defaultResponse.type, defaultResponse.errorMessage);
     }
 
     public boolean hasEnough(BigDecimal amount) {
-        return this.balance.compareTo(amount) >= 0;
+        return this.currentBalance.compareTo(amount) >= 0;
     }
 
 
@@ -118,19 +135,19 @@ public class VirtualData {
     private VirtualResponse checkDefaults(BigDecimal amount) {
 
         if(amount.compareTo(BigDecimal.ZERO) < 0) {
-            return new VirtualResponse(amount, this.balance,
+            return new VirtualResponse(amount, this.currentBalance,
                     VirtualResponse.VirtualResponseType.NOT_NEGATIVE, "Amount cannot be negative");
         }
 
-        return new VirtualResponse(amount, this.balance,
+        return new VirtualResponse(amount, this.currentBalance,
                 VirtualResponse.VirtualResponseType.SUCCESS, "");
     }
 
     public String getFormattedBalance() {
-        return LightNumbers.formatForMessages(balance, decimalPlaces);
+        return LightNumbers.formatForMessages(currentBalance, decimalPlaces);
     }
     public String getFormattedCurrencySymbol() {
-        return balance.compareTo(BigDecimal.ONE) == 0 ? currencySymbolSingular : currencySymbolPlural;
+        return currentBalance.compareTo(BigDecimal.ONE) == 0 ? currencySymbolSingular : currencySymbolPlural;
     }
 
 }

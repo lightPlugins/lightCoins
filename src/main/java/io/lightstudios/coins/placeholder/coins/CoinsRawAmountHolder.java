@@ -14,11 +14,11 @@ public class CoinsRawAmountHolder implements LightPlaceholder {
             return null;
         }
 
-        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getPlayerData(offlinePlayer.getUniqueId());
+        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(offlinePlayer.getUniqueId());
         if(playerData == null) {
             return "Player not found";
         }
 
-        return playerData.getCoinsData().getCoins().toPlainString();
+        return playerData.getCoinsData().getCurrentCoins().toPlainString();
     }
 }

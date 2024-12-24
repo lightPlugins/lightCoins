@@ -2,7 +2,21 @@ language: en
 multiTransactionSync:
   period: 500
   delay: 500
+# While I register commands after Server start, you can change the command prefix here.
+# After changing the command prefix, you have to reload the plugin with /lightcoins reload
+# To see autocomplete suggestions for the new command prefix you must rejoin the server!
+commands:
+  # The command prefix for the Vault currency
+  coins: 'coins'
+  # The command prefix for the Virtual currency
+  virtual: 'virtual'
+  # The command prefix for baltop command
+  baltop: 'baltop'
+  # The command prefix for the vault pay command
+  pay: 'pay'
 defaultCurrency:
+  # The amount of entries shown in the baltop list via command
+  baltopCommandAmount: 10
   # The '%lightcoins_coins%' placeholder.
   coinsPlaceholder: '<yellow>#coins# <gray>#currency#'
   # The name of the currency.
