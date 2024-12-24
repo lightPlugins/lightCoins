@@ -92,44 +92,19 @@ public class VaultImplementer implements Economy {
             return 0;
         }
 
-        AtomicReference<CoinsData> coinsDataRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
-                .getAccountData().get(uuid).getCoinsData());
+        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData().get(uuid);
 
-        if (coinsDataRef.get() == null) {
-            LightCoins.instance.getConsolePrinter().printInfo(List.of(
-                    "Could not find player data in cache for " + uuid,
-                    "Attempting to retrieve player data from the database..."
-            ));
-            AccountData accountData = new AccountData();
-            CoinsData newCoinsData = new CoinsData(uuid);
-            CompletableFuture<CoinsData> future = LightCoins.instance.getCoinsTable()
-                    .findCoinsDataByUUID(uuid);
-
-            return future.thenApply(result -> {
-                if (result != null) {
-                    newCoinsData.setName(result.getName());
-                    newCoinsData.setCoins(result.getCurrentCoins());
-                    accountData.setCoinsData(newCoinsData);
-                    LightCoins.instance.getLightCoinsAPI().getAccountData().put(uuid, accountData);
-                    LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved Player data from the database.");
-                    return newCoinsData.getCurrentCoins().doubleValue();
-                } else {
-                    LightCoins.instance.getConsolePrinter().printError(
-                            "Failed to retrieve account data from the database.");
-                    return 0.0;
-                }
-            }).exceptionally(throwable -> {
-                LightCoins.instance.getConsolePrinter().printError(List.of(
-                        "An error occurred while reading account data from the database,",
-                        "because CoinsData Object in cache is null and can't retrieve data from database.",
-                        "-> We can't find any related account data in the database from uuid " + uuid
-                ));
-                throwable.printStackTrace();
-                return 0.0;
-            }).join();
+        if(accountData == null) {
+            return 0;
         }
 
-        return coinsDataRef.get().getCurrentCoins().doubleValue();
+        CoinsData coinsData = accountData.getCoinsData();
+
+        if(coinsData == null) {
+            return 0;
+        }
+
+        return coinsData.getCurrentCoins().doubleValue();
     }
 
     @Override
@@ -191,48 +166,22 @@ public class VaultImplementer implements Economy {
         }
 
         final BigDecimal formatted = LightNumbers.formatBigDecimal(BigDecimal.valueOf(v));
-        AtomicReference<CoinsData> coinsPlayerRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
-                .getAccountData().get(uuid).getCoinsData());
 
-        if (coinsPlayerRef.get() == null) {
-            LightCoins.instance.getConsolePrinter().printInfo(List.of(
-                    "Could not find account data in cache for " + uuid,
-                    "Attempting to retrieve account data from the database..."
-            ));
-            AccountData playerData = new AccountData();
-            CoinsData newCoinsPlayer = new CoinsData(uuid);
-            CompletableFuture<CoinsData> future = LightCoins.instance.getCoinsTable()
-                    .findCoinsDataByUUID(uuid);
+        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData().get(uuid);
 
-            final double finalV = v;
-            return future.thenApply(result -> {
-                if (result != null) {
-                    newCoinsPlayer.setName(result.getName());
-                    newCoinsPlayer.setCoins(result.getCurrentCoins());
-                    playerData.setCoinsData(newCoinsPlayer);
-                    LightCoins.instance.getLightCoinsAPI().getAccountData().put(uuid, playerData);
-                    LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved account data from the database.");
-
-                    return newCoinsPlayer.removeCoins(formatted);
-                } else {
-                    LightCoins.instance.getConsolePrinter().printError(
-                            "Failed to retrieve account data from the database.");
-                    return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
-                            "Failed to retrieve account data from the database.");
-                }
-            }).exceptionally(throwable -> {
-                LightCoins.instance.getConsolePrinter().printError(List.of(
-                        "An error occurred while reading account data from the database,",
-                        "because CoinsData Object in cache is null and can't retrieve data from database.",
-                        "-> We can't find any related account data in the database from uuid " + uuid
-                ));
-                throwable.printStackTrace();
-                return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
-                        "An error occurred while reading account data from the database.");
-            }).join();
+        if(accountData == null) {
+            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Failed to withdraw coins. Account Data not found for " + uuid);
         }
 
-        return coinsPlayerRef.get().removeCoins(formatted);
+        CoinsData coinsData = accountData.getCoinsData();
+
+        if(coinsData == null) {
+            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Failed to withdraw coins. Coins Data not found for " + uuid);
+        }
+
+        return coinsData.addCoins(formatted);
     }
 
     @Override
@@ -281,48 +230,21 @@ public class VaultImplementer implements Economy {
 
         v = depositEvent.getAmount().doubleValue();
 
-        AtomicReference<CoinsData> coinsPlayerRef = new AtomicReference<>(LightCoins.instance.getLightCoinsAPI()
-                .getAccountData().get(uuid).getCoinsData());
+        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData().get(uuid);
 
-        final double finalV = v;
-        if (coinsPlayerRef.get() == null) {
-            LightCoins.instance.getConsolePrinter().printInfo(List.of(
-                    "Could not find account data in cache for " + uuid,
-                    "Attempting to retrieve account data from the database..."
-            ));
-            AccountData playerData = new AccountData();
-            CoinsData newCoinsPlayer = new CoinsData(uuid);
-            CompletableFuture<CoinsData> future = LightCoins.instance.getCoinsTable()
-                    .findCoinsDataByUUID(uuid);
-
-            return future.thenApply(result -> {
-                if (result != null) {
-                    newCoinsPlayer.setName(result.getName());
-                    newCoinsPlayer.setCoins(result.getCurrentCoins());
-                    playerData.setCoinsData(newCoinsPlayer);
-                    LightCoins.instance.getLightCoinsAPI().getAccountData().put(uuid, playerData);
-                    LightCoins.instance.getConsolePrinter().printInfo("Successfully retrieved account data from the database.");
-
-                    return newCoinsPlayer.addCoins(formatted);
-                } else {
-                    LightCoins.instance.getConsolePrinter().printError(
-                            "Failed to retrieve account data from the database.");
-                    return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
-                            "Failed to retrieve account data from the database.");
-                }
-            }).exceptionally(throwable -> {
-                LightCoins.instance.getConsolePrinter().printError(List.of(
-                        "An error occurred while reading account data from the database,",
-                        "because CoinsData Object in cache is null and can't retrieve data from database.",
-                        "-> We can't find any related account data in the database from uuid " + uuid
-                ));
-                throwable.printStackTrace();
-                return new EconomyResponse(finalV, 0, EconomyResponse.ResponseType.FAILURE,
-                        "An error occurred while reading account data from the database.");
-            }).join();
+        if(accountData == null) {
+            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Failed to deposit coins. Account Data not found for " + uuid);
         }
 
-        return coinsPlayerRef.get().addCoins(formatted);
+        CoinsData coinsData = accountData.getCoinsData();
+
+        if(coinsData == null) {
+            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Failed to deposit coins. Coins Data not found for " + uuid);
+        }
+
+        return coinsData.addCoins(formatted);
     }
 
     @Override
@@ -380,21 +302,13 @@ public class VaultImplementer implements Economy {
         OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
         CoinsData coinsData = new CoinsData(uuid);
         accountData.setUuid(uuid);
-        accountData.setName(isTownyAccount ? "towny_account" : offlinePlayer.getName());
+        accountData.setName(isTownyAccount ? "nonplayer_account" : offlinePlayer.getName());
         accountData.setOfflinePlayer(offlinePlayer);
-        coinsData.setName(isTownyAccount ? "towny_account" : offlinePlayer.getName());
+        coinsData.setName(isTownyAccount ? "nonplayer_account" : offlinePlayer.getName());
         accountData.setCoinsData(coinsData);
         try {
             int result = LightCoins.instance.getCoinsTable().writeCoinsData(coinsData).join();
             if (result == 1) {
-                LightCoins.instance.getConsolePrinter().printInfo(List.of(
-                        "Account data for " + uuid + " has been created successfully.",
-                        "Adding account data to cache...",
-                        "  is Towny: " + isTownyAccount,
-                        "  Account Name: " + accountData.getName(),
-                        "  CoinsData Name: " + accountData.getCoinsData().getName(),
-                        "  CoinsData Balance: " + accountData.getCoinsData().getCurrentCoins().doubleValue()
-                ));
                 LightCoins.instance.getLightCoinsAPI().getAccountData().put(uuid, accountData);
                 return true;
             } else {

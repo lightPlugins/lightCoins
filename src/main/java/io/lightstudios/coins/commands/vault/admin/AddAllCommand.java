@@ -48,7 +48,7 @@ public class AddAllCommand implements LightCommand {
         return (sender, command, alias, args) -> {
 
             if (args.length == 1) {
-                return List.of("100", "1000", "10000", "100000", "1000000");
+                return getSubcommand();
             }
 
             return null;
@@ -93,6 +93,13 @@ public class AddAllCommand implements LightCommand {
         int successfulTransactions = 0;
 
         for (AccountData account : accounts.values()) {
+
+            if(account.getName() != null) {
+                if(account.getName().equalsIgnoreCase("nonplayer_account")) {
+                    continue;
+                }
+            }
+
             EconomyResponse response = account.getCoinsData().addCoins(amount);
             if(!response.transactionSuccess()) {
                 failedTransactions++;

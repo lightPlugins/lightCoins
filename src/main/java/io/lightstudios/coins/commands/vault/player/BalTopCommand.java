@@ -55,13 +55,13 @@ public class BalTopCommand implements LightCommand {
         List<AccountData> allPlayers = new ArrayList<>(LightCoins.instance.getLightCoinsAPI().getAccountData().values());
 
         List<AccountData> sortedPlayers = allPlayers.stream()
-                .filter(p -> p.getName() != null && !p.getName().equalsIgnoreCase("towny_account"))
+                .filter(p -> p.getName() != null && !p.getName().equalsIgnoreCase("nonplayer_account"))
                 .sorted((p1, p2) -> p2.getCoinsData().getCurrentCoins().compareTo(p1.getCoinsData().getCurrentCoins()))
                 .limit(x)
                 .toList();
 
         BigDecimal overallCoins = sortedPlayers.stream()
-                .filter(p -> p.getName() != null && !p.getName().equalsIgnoreCase("towny_account"))
+                .filter(p -> p.getName() != null && !p.getName().equalsIgnoreCase("nonplayer_account"))
                 .map(AccountData::getCoinsData)
                 .map(CoinsData::getCurrentCoins)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

@@ -49,7 +49,7 @@ public class LightCoinsAPI {
     public List<String> getAccountDataPlayerNames() {
         List<String> names = new ArrayList<>();
         for(AccountData data : accountData.values()) {
-            if(data.getName() != null && !data.getName().equalsIgnoreCase("towny_account")) {
+            if(data.getName() != null && !data.getName().equalsIgnoreCase("nonplayer_account")) {
                 names.add(data.getName());
             }
         }
