@@ -1,10 +1,40 @@
+# This file is generated with LightCore used in LightCoins
+#
+#    ___       ___  ________  ___  ___  _________  ________  ________  ________  _______
+#   |\  \     |\  \|\   ____\|\  \|\  \|\___   ___\\   ____\|\   __  \|\   __  \|\  ___ \
+#   \ \  \    \ \  \ \  \___|\ \  \\\  \|___ \  \_\ \  \___|\ \  \|\  \ \  \|\  \ \   __/|
+#    \ \  \    \ \  \ \  \  __\ \   __  \   \ \  \ \ \  \    \ \  \\\  \ \   _  _\ \  \_|/__
+#     \ \  \____\ \  \ \  \|\  \ \  \ \  \   \ \  \ \ \  \____\ \  \\\  \ \  \\  \\ \  \_|\ \
+#      \ \_______\ \__\ \_______\ \__\ \__\   \ \__\ \ \_______\ \_______\ \__\\ _\\ \_______\
+#       \|_______|\|__|\|_______|\|__|\|__|    \|__|  \|_______|\|_______|\|__|\|__|\|_______|
+#
+# -> powered LightCoins - A simple and lightweight coins /virtual currency plugin for your server.
+#    Copyright © 2024 LightStudios
+#
+# The language file for the baltop command.
+# You can create a new file called "language/xx.yml" where "xx" is the language code
+# and use the same structure as the default en.yml.
 language: en
+# This system is designed for efficient and fast data storage (database).
+# Vault and Virtual currency are using this system.
+# HINT: Cached Data Storage will write immediately.
+#       This affects only the database storage.
+#       If you get performance issues, you can increase the period and delay.
+# IMPORTANT: Do not increase these values too much on multiserver setups!
+# Defaults:
+#  period: 500
+#  delay: 500
 multiTransactionSync:
+  # The period in milliseconds for the transaction sync.
+  # How often should check our transaction queue for new transactions and write theme in the database.
   period: 500
+  # The delay in milliseconds for the transaction sync.
+  # How long should the system wait before the first sync.
   delay: 500
 # While I register commands after Server start, you can change the command prefix here.
 # After changing the command prefix, you have to reload the plugin with /lightcoins reload
 # To see autocomplete suggestions for the new command prefix you must rejoin the server!
+# HINT: to remove the previous command prefix, you have to RESTART the server.
 commands:
   # The command prefix for the Vault currency
   coins: 'coins'
@@ -14,19 +44,22 @@ commands:
   baltop: 'baltop'
   # The command prefix for the vault pay command
   pay: 'pay'
+# The Vault default currency settings.
+# IMPORTANT: These settings only affects the Vault currency and not the custom currencies!
 defaultCurrency:
   # The amount of entries shown in the baltop list via command
   baltopCommandAmount: 10
   # The '%lightcoins_coins%' placeholder.
   coinsPlaceholder: '<yellow>#coins# <gray>#currency#'
-  # The name of the currency.
+  # The name of the currency used in some messages.
   displayName: '<#ffdc73>Vault'
   # This is the starting balance for this
   # currency when a new player joins the server.
+  # HINT: Compatible with multiserver setups.
   startBalance: 200.00
   # The decimal places for this currency.
   # 2 means 0.00, 3 means 0.000 and so on.
-  # If you set this to 0, the currency will be displayed without decimal places.
+  # HINT: If you set this to 0, the currency will be displayed without decimal places.
   decimalPlaces: 2
   # visual currency name in messages and GUIs in plural
   currencyNamePlural: 'Coins'

@@ -255,5 +255,6 @@ public final class LightCoins extends JavaPlugin {
         }
 
         this.messageConfig = new MessageConfig(this.message);
+
     }
 }

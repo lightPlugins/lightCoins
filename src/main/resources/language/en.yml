@@ -1,4 +1,36 @@
-version: 1
+# This file is generated with LightCore used in LightCoins
+#
+#    ___       ___  ________  ___  ___  _________  ________  ________  ________  _______
+#   |\  \     |\  \|\   ____\|\  \|\  \|\___   ___\\   ____\|\   __  \|\   __  \|\  ___ \
+#   \ \  \    \ \  \ \  \___|\ \  \\\  \|___ \  \_\ \  \___|\ \  \|\  \ \  \|\  \ \   __/|
+#    \ \  \    \ \  \ \  \  __\ \   __  \   \ \  \ \ \  \    \ \  \\\  \ \   _  _\ \  \_|/__
+#     \ \  \____\ \  \ \  \|\  \ \  \ \  \   \ \  \ \ \  \____\ \  \\\  \ \  \\  \\ \  \_|\ \
+#      \ \_______\ \__\ \_______\ \__\ \__\   \ \__\ \ \_______\ \_______\ \__\\ _\\ \_______\
+#       \|_______|\|__|\|_______|\|__|\|__|    \|__|  \|_______|\|_______|\|__|\|__|\|_______|
+#
+# -> powered LightCoins - A simple and lightweight coins /virtual currency plugin for your server.
+#    Copyright © 2024 LightStudios
+#
+# Here you can translate all messages of the plugin into your desired language.
+# if you wish to use different languages, create a new file called "language/xx.yml" where "xx" is the language code.
+# Copy the default en.yml content and paste it into the new file. Then translate the messages into the desired language.
+# After that you can change the language in the config.yml file to the new language code.
+#
+# IMPORTANT: Do not use color codes such as '&7' or '#ffdc73' in the messages!
+#            Your console will overflow with errors and the plugin will not work properly.
+#            Instead, use the modern mini message system: "<gray>Text" or "<yellow>Text"
+#            You can find all available colors and formats here: https://docs.advntr.dev/minimessage/format.html
+#            This system also supports hover events, click events and more. Check the documentation for more information.
+# HINT: All the messages are auto translated to PlaceholderAPI placeholders. You can use them in every message.
+# HINT: If your message is too long for your editor, you can easily add a list as a line for some non List messages.
+#       example: -> all methods shows the same message
+#         noPermission: '<red>You do not have permission to do this! You need <dark_red>#permission#<red>!'
+#         noPermission:
+#           - '<red>You do not have permission'
+#           - 'to do this! You need <dark_red>#permission#<red>!'
+#       result: '<red>You do not have permission to do this! You need <dark_red>#permission#<red>!'
+#
+version: 1 # do not touch this, please :( (plugin will not work, probably :o)
 prefix: "<yellow><bold><italic>light<gray>Coins <dark_gray>● <reset>"
 noPermission: "<red>You do not have permission to do this! You need <dark_red>#permission#<red>!"
 wrongSyntax: "<red>Wrong command syntax. <gray>Please use <red>#syntax#"
@@ -9,7 +41,7 @@ somethingWentWrong: "<red>Something went wrong! Infos: #info#"
 reloadSuccess: "<gray>Plugin <yellow>successfully<gray> reloaded!"
 starterCoins: "<gray>You have received <yellow>#coins# <gray>#currency# as a starter gift!"
 playerDeleted: "<gray>You have deleted the player <yellow>#player#<gray>."
-#
+# Vault Economy
 coinsShow: "<gray>You have <yellow>#coins#<gray> coins."
 coinsShowTarget: "<gray>The player <yellow>#player#<gray> has <yellow>#coins# <gray>#currency#"
 coinsAdd: "<gray>You have added <yellow>#coins# <gray>#currency# to <yellow>#player#<gray>."
@@ -17,7 +49,7 @@ coinsAddAll: "<gray>You have added <yellow>#coins# <gray>#currency# to <yellow>#
 coinsAddAllFailed: "<red>Failed to add <dark_red>#coins# <red>#currency# to <dark_red>#amount# players<red>."
 coinsSet: "<gray>You have set the balance of <yellow>#player#<gray> to <yellow>#coins# <gray>#currency#."
 coinsRemove: "<gray>You have removed <yellow>#coins# <gray>#currency# from <yellow>#player#<gray>."
-#
+# Player Commands
 pay: "<gray>You have paid <yellow>#coins# <gray>#currency# to <yellow>#target#<gray>."
 payTarget: "<gray>The player <yellow>#target#<gray> has paid you <yellow>#coins# <gray>#currency#."
 payCooldown: "<red>You have to wait <yellow>#time# <red>seconds before you can pay again!"
@@ -25,7 +57,6 @@ payOnlyOnlinePlayer:
   - "<red>The target player <dark_red>#target# <red>can't be found or is not online! "
   - "<red>You can only pay <dark_red>online players <red>due to security reasons! "
   - "<red>The target player must be on the <dark_red>same server <red>as you!"
-#
 baltop:
   header:
     - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
@@ -44,7 +75,7 @@ virtualCurrencyNotFound: "<red>The currency <dark_red>#currency# <red>could not 
 virtualCurrencyAdd: "<gray>You have added <yellow>#amount# <gray>#currency# to <yellow>#player#<gray>."
 virtualCurrencySet: "<gray>You have set the currency <yellow>#currency#<gray> of player <yellow>#player#<gray> to <yellow>#amount#<gray>."
 virtualCurrencyRemove: "<gray>You have removed <yellow>#amount# <gray>#currency# from <yellow>#player#<gray>."
-# Help command
+# Help messages for all modules
 helpCommand:
   coins:
     - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
@@ -85,8 +116,3 @@ helpCommand:
     - '<gray>● <yellow>/baltop <gray>- List the players with the 10 largest balances'
     - ' '
     - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
-
-
-
-
-
