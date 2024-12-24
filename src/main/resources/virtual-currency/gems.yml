@@ -1,0 +1,6 @@
+displayName: '<dark_gray>Gems'
+startBalance: 0
+decimalPlaces: 0
+currencyNamePlural: 'Gems'
+currencyNameSingular: 'Gem'
+maxBalance: 999999999999999999999999

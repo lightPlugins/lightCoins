@@ -14,11 +14,11 @@ public class CurrencyNameHolder implements LightPlaceholder {
             return null;
         }
 
-        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(offlinePlayer.getUniqueId());
-        if(playerData == null) {
+        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData(offlinePlayer.getUniqueId());
+        if(accountData == null) {
             return "Player not found";
         }
 
-        return playerData.getCoinsData().getFormattedCurrency();
+        return accountData.getCoinsData().getFormattedCurrency();
     }
 }

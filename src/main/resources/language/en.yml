@@ -42,7 +42,7 @@ reloadSuccess: "<gray>Plugin <yellow>successfully<gray> reloaded!"
 starterCoins: "<gray>You have received <yellow>#coins# <gray>#currency# as a starter gift!"
 playerDeleted: "<gray>You have deleted the player <yellow>#player#<gray>."
 # Vault Economy
-coinsShow: "<gray>You have <yellow>#coins#<gray> coins."
+coinsShow: "<gray>You have <yellow>#coins#<gray> #currency#."
 coinsShowTarget: "<gray>The player <yellow>#player#<gray> has <yellow>#coins# <gray>#currency#"
 coinsAdd: "<gray>You have added <yellow>#coins# <gray>#currency# to <yellow>#player#<gray>."
 coinsAddAll: "<gray>You have added <yellow>#coins# <gray>#currency# to <yellow>#amount# players<gray>."

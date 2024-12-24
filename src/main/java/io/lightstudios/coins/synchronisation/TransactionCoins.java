@@ -8,6 +8,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.*;
 
@@ -56,10 +57,26 @@ public class TransactionCoins {
 
             // Write the last transaction to the database asynchronously
             CompletableFuture.runAsync(() -> {
-                LightCoins.instance.getCoinsTable().writeCoinsData(coinsData);
-                // Log the transaction
-                LightCoins.instance.getConsolePrinter().printInfo(
-                        "Processed [" + timestamp + "] transaction for " + uuid + ": " + amount);
+                LightCoins.instance.getCoinsTable().writeCoinsData(coinsData).thenAccept(result -> {
+                    if (result > 0) {
+                        if(LightCoins.instance.getSettingsConfig().enableDebugMultiSync()) {
+                            LightCoins.instance.getConsolePrinter().printInfo(
+                                    "Processed [" + timestamp + "] transaction for " + uuid + ": " + amount);
+                        }
+
+                    } else {
+                        LightCoins.instance.getConsolePrinter().printError(
+                                "Failed [" + timestamp + "] transaction for " + uuid + ": " + amount);
+                    }
+                }).exceptionally(throwable -> {
+                    LightCoins.instance.getConsolePrinter().printError(List.of(
+                            "Failed to write last transaction for " + uuid,
+                            "Amount: " + amount,
+                            "Timestamp: " + timestamp));
+                    throwable.printStackTrace();
+                    return null;
+                });
+
             }).exceptionally(throwable -> {
                 LightCoins.instance.getConsolePrinter().printError("Failed to process last transaction for " + uuid);
                 throwable.printStackTrace();
@@ -67,7 +84,6 @@ public class TransactionCoins {
             });
         }
 
-        LightCoins.instance.getConsolePrinter().printInfo("Cleared transaction queue, ready for next transaction");
         transactionQueue.clear();
     }
 

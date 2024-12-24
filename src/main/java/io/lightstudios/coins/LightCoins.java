@@ -19,9 +19,12 @@ import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
 import io.lightstudios.coins.impl.events.OnPlayerJoin;
 import io.lightstudios.coins.impl.vault.VaultImplementer;
+import io.lightstudios.coins.placeholder.PlaceholderManager;
 import io.lightstudios.coins.storage.CoinsDataTable;
 import io.lightstudios.coins.storage.VirtualDataTable;
+import io.lightstudios.core.LightCore;
 import io.lightstudios.core.commands.manager.CommandManager;
+import io.lightstudios.core.placeholder.PlaceholderRegistrar;
 import io.lightstudios.core.util.ConsolePrinter;
 import io.lightstudios.core.util.files.FileManager;
 import io.lightstudios.core.util.files.MultiFileManager;
@@ -32,6 +35,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.*;
 
 @Getter
@@ -43,6 +47,7 @@ public final class LightCoins extends JavaPlugin {
     private VirtualDataTable virtualDataTable;
     private VaultImplementer vaultImplementer;
     private ConsolePrinter consolePrinter;
+    private PlaceholderManager placeholderManager;
 
     private MessageConfig messageConfig;
     private SettingsConfig settingsConfig;
@@ -89,6 +94,13 @@ public final class LightCoins extends JavaPlugin {
         readVirtualData();
         registerEvents();
         registerCommands();
+
+        if(LightCore.instance.getHookManager().isExistPlaceholderAPI()) {
+            consolePrinter.printInfo("Registering placeholder for LightCoins...");
+            this.placeholderManager = new PlaceholderManager();
+        } else {
+            consolePrinter.printError("PlaceholderAPI not found. Placeholder will not be registered and cant be used.");
+        }
     }
 
     @Override
@@ -117,6 +129,8 @@ public final class LightCoins extends JavaPlugin {
      */
     private void readVirtualCurrencies() {
         try {
+            new FileManager(this, "virtual-currency/_example.yml", true);
+            new FileManager(this, "virtual-currency/gems.yml", true);
             this.virtualCurrencyFiles = new MultiFileManager("plugins/" + getName() + "/virtual-currency/");
         } catch (Exception e) {
             LightCoins.instance.getConsolePrinter().printError("Failed to load virtual currencies.");
@@ -167,6 +181,9 @@ public final class LightCoins extends JavaPlugin {
 
             for(AccountData accountData : LightCoins.instance.getLightCoinsAPI().getAccountData().values()) {
                 if(accountData.getUuid().equals(uuid)) {
+                    if(!accountData.getVirtualCurrencies().isEmpty()) {
+                        accountData.getVirtualCurrencies().clear();
+                    }
                     accountData.getVirtualCurrencies().add(virtualData);
                     consolePrinter.printInfo("Loaded virtual data " + virtualData.getCurrencyName() +
                             " for player: " + accountData.getName());

@@ -1,21 +1,31 @@
 #   ########################################################################################  #
 #
+# This file is generated with LightCore used in LightCoins
+#
+#    ___       ___  ________  ___  ___  _________  ________  ________  ________  _______
+#   |\  \     |\  \|\   ____\|\  \|\  \|\___   ___\\   ____\|\   __  \|\   __  \|\  ___ \
+#   \ \  \    \ \  \ \  \___|\ \  \\\  \|___ \  \_\ \  \___|\ \  \|\  \ \  \|\  \ \   __/|
+#    \ \  \    \ \  \ \  \  __\ \   __  \   \ \  \ \ \  \    \ \  \\\  \ \   _  _\ \  \_|/__
+#     \ \  \____\ \  \ \  \|\  \ \  \ \  \   \ \  \ \ \  \____\ \  \\\  \ \  \\  \\ \  \_|\ \
+#      \ \_______\ \__\ \_______\ \__\ \__\   \ \__\ \ \_______\ \_______\ \__\\ _\\ \_______\
+#       \|_______|\|__|\|_______|\|__|\|__|    \|__|  \|_______|\|_______|\|__|\|__|\|_______|
+#
+# -> powered LightCoins - A simple and lightweight coins / virtual currency plugin for your server.
+#    Copyright © 2024 LightStudios
+#
 #   This is the example virtual currency config. You can use this file as a template for your own currency.
 #   This currency will NOT load and is only here for example purposes.
-#   The file name is the ID of the currency.
+#   The file name is the ID of the currency -> '_example'
 #   You can also create multiple folders within 'virtual-currencies' to group your currencies.
 #
-#   IMPORTANT: If you DELETE one file, the target currencies will
-#              be deleted including all stored Data after server restart.
+#   IMPORTANT: If you DELETE one file, this currency will still exist in the database!
+#              If you create a new currency with the same ID as in the database,
+#              the old data from the database will be used.
 #
-#   You can use legacy or hex colors in every line for visual text.
 #   If you have any problems, join my discord server (https://discord.gg/t9vS3hgWf8)
 #
 #   ########################################################################################  #
 #
-#
-# Should this currency be the standard currency for 'Vault'?
-# This is used for other plugins like shops/jobs or similar.
 #
 # The visual name in messages and GUIs
 displayName: '<#ffdc73>Gems'
@@ -31,5 +41,5 @@ currencyNamePlural: 'Gems'
 # visual currency name in messages and GUIs in singular
 currencyNameSingular: 'Gem'
 # The max possible money amount.
-# If a player reaches this value, he can't get any more money.
-maxBalance: 999,999,999,999,999,999,999,999.99
+# If a player reaches this value, he can't get any more currency.
+maxBalance: 999999999999999999999999

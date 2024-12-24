@@ -61,8 +61,10 @@ public class TransactionVirtual {
             CompletableFuture.runAsync(() -> {
                 LightCoins.instance.getVirtualDataTable().writeVirtualData(virtualData).thenAccept(result -> {
                     if (result > 0) {
-                        LightCoins.instance.getConsolePrinter().printInfo(
-                                "Processed [" + timestamp + "] transaction for " + uuid + ": " + amount);
+                        if(LightCoins.instance.getSettingsConfig().enableDebugMultiSync()) {
+                            LightCoins.instance.getConsolePrinter().printInfo(
+                                    "Processed [" + timestamp + "] transaction for " + uuid + ": " + amount);
+                        }
                         return;
                     } else {
                         LightCoins.instance.getConsolePrinter().printError(
@@ -77,11 +79,6 @@ public class TransactionVirtual {
                     throwable.printStackTrace();
                     return null;
                 });
-                // Log the transaction
-                LightCoins.instance.getConsolePrinter().printDebug(
-                        "Processed [" + timestamp + "] transaction for " + uuid + ": " + amount);
-            }).thenAccept(result -> {
-                LightCoins.instance.getConsolePrinter().printDebug("Cleared transaction queue, waiting for next transactions");
             }).exceptionally(throwable -> {
                 LightCoins.instance.getConsolePrinter().printError("Failed to process last transaction for " + uuid);
                 throwable.printStackTrace();

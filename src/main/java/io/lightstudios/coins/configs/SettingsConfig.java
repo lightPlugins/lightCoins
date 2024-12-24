@@ -23,6 +23,7 @@ public class SettingsConfig {
     public String defaultCurrencyName() { return config.getString("defaultCurrency.displayName");}
     public long syncDelay() { return config.getLong("multiTransactionSync.delay");}
     public long syncPeriod() { return config.getLong("multiTransactionSync.period");}
+    public boolean enableDebugMultiSync() { return config.getBoolean("multiTransactionSync.enableDebug");}
     public BigDecimal defaultCurrencyStartBalance() {
         return BigDecimal.valueOf(config.getDouble("defaultCurrency.startBalance"));
     }

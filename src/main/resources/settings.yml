@@ -1,3 +1,5 @@
+#   ########################################################################################  #
+#
 # This file is generated with LightCore used in LightCoins
 #
 #    ___       ___  ________  ___  ___  _________  ________  ________  ________  _______
@@ -10,6 +12,8 @@
 #
 # -> powered LightCoins - A simple and lightweight coins /virtual currency plugin for your server.
 #    Copyright © 2024 LightStudios
+#
+#   ########################################################################################  #
 #
 # The language file for the baltop command.
 # You can create a new file called "language/xx.yml" where "xx" is the language code
@@ -31,6 +35,8 @@ multiTransactionSync:
   # The delay in milliseconds for the transaction sync.
   # How long should the system wait before the first sync.
   delay: 500
+  # You can enable debug mode to see more information about the current transaction sync.
+  enableDebug: false
 # While I register commands after Server start, you can change the command prefix here.
 # After changing the command prefix, you have to reload the plugin with /lightcoins reload
 # To see autocomplete suggestions for the new command prefix you must rejoin the server!

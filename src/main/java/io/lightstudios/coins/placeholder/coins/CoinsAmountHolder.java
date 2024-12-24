@@ -15,14 +15,14 @@ public class CoinsAmountHolder implements LightPlaceholder {
             return null;
         }
 
-        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(offlinePlayer.getUniqueId());
-        if(playerData == null) {
+        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData(offlinePlayer.getUniqueId());
+        if(accountData == null) {
             return "Player not found";
         }
 
         String placeholder = LightCoins.instance.getSettingsConfig().coinsPlaceholder()
-                .replace("#coins#", playerData.getCoinsData().getFormattedCoins())
-                .replace("#currency#", playerData.getCoinsData().getFormattedCurrency());
+                .replace("#coins#", accountData.getCoinsData().getFormattedCoins())
+                .replace("#currency#", accountData.getCoinsData().getFormattedCurrency());
 
         return LightCore.instance.getColorTranslation().adventureTranslator(placeholder, offlinePlayer.getPlayer());
     }
