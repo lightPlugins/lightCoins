@@ -67,4 +67,5 @@ defaultCurrency:
   currencyNameSingular: 'Coin'
   # The max possible money amount.
   # If a player reaches this value, he can't get any more money.
+  # HINT: This also caps a town account if you are using Towny.
   maxBalance: 999999999999999999999999.99
