@@ -39,6 +39,7 @@ public class MessageConfig {
     public List<String> payTarget() { return toStringList(config.get("payTarget")); }
     public List<String> payCooldown() { return toStringList(config.get("payCooldown")); }
     public List<String> payOnlyOnlinePlayer() { return toStringList(config.get("payOnlyOnlinePlayer")); }
+    public List<String> payNotYourself() { return toStringList(config.get("payNotYourself")); }
 
     public List<String> baltopHeader() { return config.getStringList("baltop.header"); }
     public String baltopContent() { return config.getString("baltop.content"); }

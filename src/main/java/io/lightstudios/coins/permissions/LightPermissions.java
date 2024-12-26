@@ -30,11 +30,9 @@ public enum LightPermissions {
      */
 
     COINS_COMMAND("lightcoins.command.player.coins"),
-    PAY_COMMAND("lightcoins.command.player.coins.remove"),
-    BALTOP_COMMAND("lightcoins.command.player.baltop"),
-
+    PAY_COMMAND("lightcoins.command.player.coins.pay"),
+    BALTOP_COMMAND("lightcoins.command.player.coins.baltop"),
     VIRTUAL_SHOW_COMMAND("lightcoins.command.player.virtual.show"),
-
             ;
 
     private final String perm;

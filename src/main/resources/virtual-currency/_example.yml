@@ -29,6 +29,8 @@
 #
 # The visual name in messages and GUIs
 displayName: '<#ffdc73>Gems'
+# The placeholder for the currency in messages.
+placeholderFormat: '<yellow>#amount# <gray>#currency#'
 # This is the starting balance for this
 # currency when a new player joins the server.
 startBalance: 0.00

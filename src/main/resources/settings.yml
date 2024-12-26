@@ -56,7 +56,7 @@ defaultCurrency:
   # The amount of entries shown in the baltop list via command
   baltopCommandAmount: 10
   # The '%lightcoins_coins%' placeholder.
-  coinsPlaceholder: '<yellow>#coins# <gray>#currency#'
+  placeholderFormat: '<yellow>#coins# <gray>#currency#'
   # The name of the currency used in some messages.
   displayName: '<#ffdc73>Vault'
   # This is the starting balance for this

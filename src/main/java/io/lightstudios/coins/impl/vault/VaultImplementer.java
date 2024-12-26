@@ -181,7 +181,7 @@ public class VaultImplementer implements Economy {
                     "Failed to withdraw coins. Coins Data not found for " + uuid);
         }
 
-        return coinsData.addCoins(formatted);
+        return coinsData.removeCoins(formatted);
     }
 
     @Override
@@ -213,6 +213,7 @@ public class VaultImplementer implements Economy {
      */
     @Override
     public EconomyResponse depositPlayer(String input, double v) {
+        LightCoins.instance.getConsolePrinter().printError("DEPOSIT: " + input + " - " + v);
         UUID uuid = checkUUID(input);
 
         if (uuid == null) {

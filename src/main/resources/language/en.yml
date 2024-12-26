@@ -57,6 +57,7 @@ payOnlyOnlinePlayer:
   - "<red>The target player <dark_red>#target# <red>can't be found or is not online! "
   - "<red>You can only pay <dark_red>online players <red>due to security reasons! "
   - "<red>The target player must be on the <dark_red>same server <red>as you!"
+payNotYourself: "<red>You can't <dark_red>pay <red>yourself!"
 baltop:
   header:
     - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'

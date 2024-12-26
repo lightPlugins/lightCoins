@@ -32,7 +32,18 @@ public class OnPlayerJoin implements Listener {
         AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData().get(uuid);
 
         if (accountData != null) {
-            LightCoins.instance.getConsolePrinter().printInfo("Player data already exists for " + uuid);
+            LightCoins.instance.getConsolePrinter().printInfo("Loading existing Account data for " + uuid);
+            // updating existing AccountPlayer object on PlayerJoinEvent
+            LightCoins.instance.getCoinsTable().findCoinsDataByUUID(uuid)
+                    .thenAccept(accountData::setCoinsData)
+                    .exceptionally(e -> {
+                LightCoins.instance.getConsolePrinter().printError(List.of(
+                        "An error occurred while updating player data for UUID: " + uuid,
+                        "Please check the error logs for more information."
+                ));
+                e.printStackTrace();
+                return null;
+            });
             LightCoins.instance.getConsolePrinter().printInfo("Handling virtual currencies for " + uuid);
             handleVirtualCurrencies(uuid, accountData);
             return;

@@ -71,6 +71,16 @@ public class PayCommand implements LightCommand {
             return false;
         }
 
+        if(args[0].equalsIgnoreCase(player.getName())) {
+            LightCore.instance.getMessageSender().sendPlayerMessage(
+                    player,
+                    LightCoins.instance.getMessageConfig().prefix() +
+                            LightCoins.instance.getMessageConfig().payNotYourself().stream().map(s ->
+                                    s.replace("#player#", player.getName())
+                            ).collect(Collectors.joining()));
+            return false;
+        }
+
         if (cooldown.contains(player)) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,

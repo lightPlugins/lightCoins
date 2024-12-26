@@ -2,7 +2,10 @@ package io.lightstudios.coins.placeholder;
 
 import io.lightstudios.coins.placeholder.coins.CoinsAmountHolder;
 import io.lightstudios.coins.placeholder.coins.CoinsRawAmountHolder;
-import io.lightstudios.coins.placeholder.coins.CurrencyNameHolder;
+import io.lightstudios.coins.placeholder.coins.CoinsCurrencyHolder;
+import io.lightstudios.coins.placeholder.virtual.VirtualAmountHolder;
+import io.lightstudios.coins.placeholder.virtual.VirtualCurrencyHolder;
+import io.lightstudios.coins.placeholder.virtual.VirtualRawAmountHolder;
 import io.lightstudios.core.placeholder.LightPlaceholder;
 import io.lightstudios.core.placeholder.PlaceholderRegistrar;
 
@@ -26,9 +29,14 @@ public class PlaceholderManager {
 
     public void addPlaceHolder() {
         placeholders.addAll(new ArrayList<>(List.of(
+                // Coins
                 new CoinsAmountHolder(),
                 new CoinsRawAmountHolder(),
-                new CurrencyNameHolder()
+                new CoinsCurrencyHolder(),
+                // Virtual
+                new VirtualAmountHolder(),
+                new VirtualCurrencyHolder(),
+                new VirtualRawAmountHolder()
         )));
     }
 

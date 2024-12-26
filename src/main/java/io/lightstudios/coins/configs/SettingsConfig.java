@@ -19,7 +19,7 @@ public class SettingsConfig {
     public String commandsVirtual() { return config.getString("commands.virtual");}
     public String commandsBaltop() { return config.getString("commands.baltop");}
     public String commandsPay() { return config.getString("commands.pay");}
-    public String coinsPlaceholder() { return config.getString("defaultCurrency.coinsPlaceholder");}
+    public String placeholderFormat() { return config.getString("defaultCurrency.placeholderFormat");}
     public String defaultCurrencyName() { return config.getString("defaultCurrency.displayName");}
     public long syncDelay() { return config.getLong("multiTransactionSync.delay");}
     public long syncPeriod() { return config.getLong("multiTransactionSync.period");}

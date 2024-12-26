@@ -1,4 +1,5 @@
 displayName: '<dark_gray>Gems'
+placeholderFormat: '<yellow>#amount# <gray>#currency#'
 startBalance: 0
 decimalPlaces: 0
 currencyNamePlural: 'Gems'

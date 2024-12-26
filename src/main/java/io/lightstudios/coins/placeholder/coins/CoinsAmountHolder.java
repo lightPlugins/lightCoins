@@ -20,7 +20,7 @@ public class CoinsAmountHolder implements LightPlaceholder {
             return "Player not found";
         }
 
-        String placeholder = LightCoins.instance.getSettingsConfig().coinsPlaceholder()
+        String placeholder = LightCoins.instance.getSettingsConfig().placeholderFormat()
                 .replace("#coins#", accountData.getCoinsData().getFormattedCoins())
                 .replace("#currency#", accountData.getCoinsData().getFormattedCurrency());
 

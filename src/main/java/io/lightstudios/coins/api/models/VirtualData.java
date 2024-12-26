@@ -20,6 +20,7 @@ public class VirtualData {
     private File file;
     private String currencyName;
     private String displayName;
+    private String placeholderFormat;
     private BigDecimal startingBalance;
     private int decimalPlaces;
     private String currencySymbolPlural;
@@ -55,6 +56,7 @@ public class VirtualData {
         this.currencySymbolPlural = config.getString("currencyNamePlural");
         this.currencySymbolSingular = config.getString("currencyNameSingular");
         this.maxBalance = BigDecimal.valueOf(config.getDouble("maxBalance"));
+        this.placeholderFormat = config.getString("placeholderFormat");
 
     }
 

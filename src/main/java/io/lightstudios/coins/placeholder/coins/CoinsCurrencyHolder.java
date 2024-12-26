@@ -6,7 +6,7 @@ import io.lightstudios.core.placeholder.LightPlaceholder;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
-public class CurrencyNameHolder implements LightPlaceholder {
+public class CoinsCurrencyHolder implements LightPlaceholder {
     @Override
     public String onRequest(OfflinePlayer offlinePlayer, @NotNull String s) {
 
