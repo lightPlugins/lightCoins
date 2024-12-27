@@ -41,6 +41,7 @@ somethingWentWrong: "<red>Something went wrong! Infos: #info#"
 reloadSuccess: "<gray>Plugin <yellow>successfully<gray> reloaded!"
 starterCoins: "<gray>You have received <yellow>#coins# <gray>#currency# as a starter gift!"
 playerDeleted: "<gray>You have deleted the player <yellow>#player#<gray>."
+onlyConsole: "<red>This command can only be executed by the console!"
 # Vault Economy
 coinsShow: "<gray>You have <yellow>#coins#<gray> #currency#."
 coinsShowTarget: "<gray>The player <yellow>#player#<gray> has <yellow>#coins# <gray>#currency#"

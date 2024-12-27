@@ -23,6 +23,7 @@ public class MessageConfig {
     public List<String> wrongSyntax() { return toStringList(config.get("wrongSyntax")); }
     public List<String> noNumber() { return toStringList(config.get("noNumber")); }
     public List<String> noNegativ() { return toStringList(config.get("noNegativ")); }
+    public List<String> onlyConsole() { return toStringList(config.get("onlyConsole")); }
     public List<String> playerNotFound() { return toStringList(config.get("playerNotFound")); }
     public List<String> somethingWentWrong() { return toStringList(config.get("somethingWentWrong")); }
     public List<String> reloadSuccess() { return toStringList(config.get("reloadSuccess")); }

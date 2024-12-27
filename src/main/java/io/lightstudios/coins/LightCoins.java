@@ -6,6 +6,7 @@ import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.VirtualData;
 import io.lightstudios.coins.commands.overall.admin.DefaultHelpCommand;
 import io.lightstudios.coins.commands.overall.admin.ReloadCommand;
+import io.lightstudios.coins.commands.transfer.TransferCommand;
 import io.lightstudios.coins.commands.vault.admin.*;
 import io.lightstudios.coins.commands.vault.player.BalTopCommand;
 import io.lightstudios.coins.commands.vault.player.HelpCommand;
@@ -24,7 +25,6 @@ import io.lightstudios.coins.storage.CoinsDataTable;
 import io.lightstudios.coins.storage.VirtualDataTable;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.commands.manager.CommandManager;
-import io.lightstudios.core.placeholder.PlaceholderRegistrar;
 import io.lightstudios.core.util.ConsolePrinter;
 import io.lightstudios.core.util.files.FileManager;
 import io.lightstudios.core.util.files.MultiFileManager;
@@ -35,7 +35,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.*;
 
 @Getter
@@ -239,7 +238,8 @@ public final class LightCoins extends JavaPlugin {
 
         new CommandManager(new ArrayList<>(List.of(
                 new ReloadCommand(),
-                new DefaultHelpCommand()
+                new DefaultHelpCommand(),
+                new TransferCommand()
         )), "lightcoins");
     }
 
