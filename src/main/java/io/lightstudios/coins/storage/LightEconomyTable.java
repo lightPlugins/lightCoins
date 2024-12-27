@@ -2,6 +2,7 @@ package io.lightstudios.coins.storage;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsData;
+import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
 
 import java.io.File;
@@ -43,11 +44,23 @@ public class LightEconomyTable {
                 double money = resultSet.getDouble("money");
                 boolean isPlayer = resultSet.getBoolean("isPlayer");
 
-                String userName = "nonplayer_account";
-                if(isPlayer) { userName = name; }
+                String userName = name;
+                UUID accountUUID = UUID.fromString(uuid);
+
+                if(!isPlayer) {
+                    userName = "nonplayer_account";
+                    accountUUID = LightCore.instance.getHookManager().getTownyInterface().getTownyObjectUUID(name);
+                }
+
+                if(accountUUID == null) {
+                    failed.getAndIncrement();
+                    LightCoins.instance.getConsolePrinter().printError("Could not found Towny uuid for town: " + name + " -> skipping ...");
+                    continue;
+                }
+
                 count++;
-                LightCoins.instance.getConsolePrinter().printInfo("Found economy data from LightEconomy: " + name + " (" + uuid + ")");
-                CoinsData coinsData = new CoinsData(UUID.fromString(uuid));
+                LightCoins.instance.getConsolePrinter().printInfo("Found economy data from LightEconomy: " + name + " (" + accountUUID + ")");
+                CoinsData coinsData = new CoinsData(accountUUID);
                 coinsData.setName(userName);
                 coinsData.setCurrentCoins(LightNumbers.convertToBigDecimal(money));
 

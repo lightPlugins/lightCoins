@@ -135,7 +135,7 @@ public class TransferCommand implements LightCommand {
                     "The Server will be restarted in few seconds ..."
             ));
             LightTimers.startTaskWithCounter((task, count) -> {
-                LightCoins.instance.getConsolePrinter().printError("Server will be restarted in " + (10 - count) + " seconds.");
+                LightCoins.instance.getConsolePrinter().printInfo("§cServer will be restarted in §4" + (10 - count) + "§c seconds.");
                 if (count == 10) {
                     task.cancel();
                     LightCoins.instance.getConsolePrinter().printInfo(List.of(
