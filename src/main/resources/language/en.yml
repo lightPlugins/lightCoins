@@ -12,12 +12,12 @@
 #    Copyright © 2024 LightStudios
 #
 # Here you can translate all messages of the plugin into your desired language.
-# if you wish to use different languages, create a new file called "language/xx.yml" where "xx" is the language code.
+# If you wish to use different languages, create a new file called "language/xx.yml" where "xx" is the language code.
 # Copy the default en.yml content and paste it into the new file. Then translate the messages into the desired language.
 # After that you can change the language in the config.yml file to the new language code.
 #
 # IMPORTANT: Do not use color codes such as '&7' or '#ffdc73' in the messages!
-#            Your console will overflow with errors and the plugin will not work properly.
+#            Your console will overflow with errors, and the plugin will not work properly.
 #            Instead, use the modern mini message system: "<gray>Text" or "<yellow>Text"
 #            You can find all available colors and formats here: https://docs.advntr.dev/minimessage/format.html
 #            This system also supports hover events, click events and more. Check the documentation for more information.
@@ -57,7 +57,7 @@ payCooldown: "<red>You have to wait <yellow>#time# <red>seconds before you can p
 payOnlyOnlinePlayer:
   - "<red>The target player <dark_red>#target# <red>can't be found or is not online! "
   - "<red>You can only pay <dark_red>online players <red>due to security reasons! "
-  - "<red>The target player must be on the <dark_red>same server <red>as you!"
+  - "<red>The target player must be on the <dark_red>same proxy <red>as you!"
 payNotYourself: "<red>You can't <dark_red>pay <red>yourself!"
 baltop:
   header:

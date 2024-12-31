@@ -15,6 +15,7 @@ public class SettingsConfig {
 
     public String language() { return config.getString("language");}
     public int baltopCommandAmount() { return config.getInt("defaultCurrency.baltopCommandAmount");}
+    public int payCommandCooldown() { return config.getInt("defaultCurrency.payCommandCooldown");}
     public String commandsCoins() { return config.getString("commands.coins");}
     public String commandsVirtual() { return config.getString("commands.virtual");}
     public String commandsBaltop() { return config.getString("commands.baltop");}

@@ -30,7 +30,7 @@ language: en
 #  delay: 500
 multiTransactionSync:
   # The period in milliseconds for the transaction sync.
-  # How often should check our transaction queue for new transactions and write theme in the database.
+  # How should often check our transaction queue for new transactions and write them in the database.
   period: 500
   # The delay in milliseconds for the transaction sync.
   # How long should the system wait before the first sync.
@@ -53,6 +53,9 @@ commands:
 # The Vault default currency settings.
 # IMPORTANT: These settings only affects the Vault currency and not the custom currencies!
 defaultCurrency:
+  # The command cooldown for the pay command in seconds.
+  # Type -1 to disable the cooldown.
+  payCommandCooldown: 5
   # The amount of entries shown in the baltop list via command
   baltopCommandAmount: 10
   # The '%lightcoins_coins%' placeholder.

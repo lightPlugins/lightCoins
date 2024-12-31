@@ -5,6 +5,7 @@ import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
+import io.lightstudios.core.proxy.messaging.SendProxyRequest;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.LightTimers;
 import io.lightstudios.core.util.interfaces.LightCommand;
@@ -52,7 +53,7 @@ public class PayCommand implements LightCommand {
     public TabCompleter registerTabCompleter() {
         return (commandSender, command, alias, args) -> {
             if (args.length == 1) {
-                return Bukkit.getServer().getOnlinePlayers().stream().map(Player::getName).toList();
+                return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames().stream().toList();
             }
             return null;
         };
@@ -71,7 +72,9 @@ public class PayCommand implements LightCommand {
             return false;
         }
 
-        if(args[0].equalsIgnoreCase(player.getName())) {
+        String targetName = args[0];
+
+        if(targetName.equalsIgnoreCase(player.getName())) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
@@ -91,27 +94,26 @@ public class PayCommand implements LightCommand {
             return false;
         }
 
-        Player target = Bukkit.getServer().getPlayer(args[0]);
+        List<String> availableAccounts = LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
 
-        if(target == null) {
+        if(!availableAccounts.contains(targetName)) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().payOnlyOnlinePlayer().stream().map(s ->
-                                    s.replace("#target#", args[0])
+                                    s.replace("#target#", targetName)
                             ).collect(Collectors.joining()));
-            return false;
         }
 
         AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(player);
-        AccountData targetData = LightCoins.instance.getLightCoinsAPI().getAccountData(player);
+        AccountData targetData = LightCoins.instance.getLightCoinsAPI().getAccountData(targetName);
 
         if(playerData == null || targetData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(s ->
-                                    s.replace("#info#", "Could not find PlayerData for " + args[0])
+                                    s.replace("#info#", "Could not find account data for target or yourself!")
                             ).collect(Collectors.joining()));
             return false;
         }
@@ -140,10 +142,16 @@ public class PayCommand implements LightCommand {
         EconomyResponse playerResponse = coinsPlayer.removeCoins(amount);
         EconomyResponse targetResponse = targetCoinsPlayer.addCoins(amount);
 
+        Player target = Bukkit.getServer().getPlayer(targetName);
+
         if(playerResponse.transactionSuccess() && targetResponse.transactionSuccess()) {
 
-            cooldown.add(player);
-            LightTimers.doSync((task) -> cooldown.remove(player), 5 * 20L);
+            int cooldownTime = LightCoins.instance.getSettingsConfig().payCommandCooldown();
+
+            if(cooldownTime != -1) {
+                cooldown.add(player);
+                LightTimers.doSync((task) -> cooldown.remove(player), cooldownTime * 20L);
+            }
 
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
@@ -152,13 +160,13 @@ public class PayCommand implements LightCommand {
                                     .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
                                     .replace("#currency#", amount.compareTo(BigDecimal.ONE) == 0 ?
                                             coinsPlayer.getNameSingular() : coinsPlayer.getNamePlural())
-                                    .replace("#target#", target.getName())
+                                    .replace("#target#", targetName)
                             ).collect(Collectors.joining()));
 
 
-                if(target.isOnline()) {
+                if(target != null) {
                     LightCore.instance.getMessageSender().sendPlayerMessage(
-                            target.getPlayer(),
+                            target,
                             LightCoins.instance.getMessageConfig().prefix() +
                                     LightCoins.instance.getMessageConfig().payTarget().stream().map(s -> s
                                             .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
@@ -169,12 +177,19 @@ public class PayCommand implements LightCommand {
 
                     return true;
                 } else {
-                    // dummy check for Velocity compatibility
+                    // check for Velocity compatibility
                     // search for the Proxy player and send them a message
+                    SendProxyRequest.sendBalanceLiveUpdate(player, targetData.getUuid(), targetCoinsPlayer.getCurrentCoins());
+                    SendProxyRequest.sendMessageToPlayer(player, targetData.getUuid(), LightCoins.instance.getMessageConfig().prefix() +
+                            LightCoins.instance.getMessageConfig().payTarget().stream().map(s -> s
+                                    .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
+                                    .replace("#currency#", amount.compareTo(BigDecimal.ONE) == 0 ?
+                                            coinsPlayer.getNameSingular() : coinsPlayer.getNamePlural())
+                                    .replace("#target#", player.getName())
+                            ).collect(Collectors.joining()));
                 }
 
             return false;
-
 
         }
 

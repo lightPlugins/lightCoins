@@ -130,13 +130,13 @@ public class TransferCommand implements LightCommand {
             step = 3; // transfer completed
             oldEconomyTable.disconnect();
             LightCoins.instance.getConsolePrinter().printInfo(List.of(
-                    "Transfer completed successfully.",
-                    "If all Data is correct, you can now delete the LightEconomy plugin.",
-                    "The Server will be restarted in few seconds ..."
+                    "§aTransfer completed successfully.",
+                    "If all Data is correct, you can now delete LightEconomy.jar",
+                    "The Server will be restarted in few seconds automatically ..."
             ));
             LightTimers.startTaskWithCounter((task, count) -> {
-                LightCoins.instance.getConsolePrinter().printInfo("§cServer will be restarted in §4" + (10 - count) + "§c seconds.");
-                if (count == 10) {
+                LightCoins.instance.getConsolePrinter().printInfo("§cServer will be restarted in §4" + (15 - count) + "§c seconds.");
+                if (count == 15) {
                     task.cancel();
                     LightCoins.instance.getConsolePrinter().printInfo(List.of(
                             "Server is restarting...",
