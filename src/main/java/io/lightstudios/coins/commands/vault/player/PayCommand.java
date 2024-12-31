@@ -90,6 +90,7 @@ public class PayCommand implements LightCommand {
                             ).collect(Collectors.joining()));
             return false;
         }
+
         Player target = Bukkit.getServer().getPlayer(args[0]);
 
         if(target == null) {
@@ -102,8 +103,8 @@ public class PayCommand implements LightCommand {
             return false;
         }
 
-        AccountData targetData = LightCoins.instance.getLightCoinsAPI().getAccountData(player);
         AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(player);
+        AccountData targetData = LightCoins.instance.getLightCoinsAPI().getAccountData(player);
 
         if(playerData == null || targetData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
