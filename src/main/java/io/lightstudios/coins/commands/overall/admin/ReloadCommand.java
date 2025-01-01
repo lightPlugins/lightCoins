@@ -4,12 +4,9 @@ import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.interfaces.LightCommand;
-import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
@@ -57,12 +54,6 @@ public class ReloadCommand implements LightCommand {
                 player,
                 LightCoins.instance.getMessageConfig().prefix() +
                         String.join("", LightCoins.instance.getMessageConfig().reloadSuccess()));
-
-        ItemStack is = new ItemStack(Material.DIAMOND, 1);
-        ItemMeta meta = is.getItemMeta();
-        meta.setMaxStackSize(99);
-        is.setItemMeta(meta);
-        player.getInventory().addItem(is);
 
         return false;
     }
