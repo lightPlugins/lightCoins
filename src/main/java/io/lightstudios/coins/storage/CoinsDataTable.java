@@ -43,6 +43,7 @@ public class CoinsDataTable {
                         CoinsData coinsPlayer = new CoinsData(uuid);
                         coinsPlayer.setCurrentCoins(coins);
                         coinsPlayer.setName(name);
+                        coinsPlayer.setUuid(uuid);
 
                         coinsDataList.add(coinsPlayer);
                     }

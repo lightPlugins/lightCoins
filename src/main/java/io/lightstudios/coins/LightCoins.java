@@ -19,10 +19,11 @@ import io.lightstudios.coins.commands.virtual.defaults.VirtualShowCommand;
 import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
 import io.lightstudios.coins.impl.events.OnPlayerJoin;
-import io.lightstudios.coins.impl.vault.VaultImplementer;
+import io.lightstudios.coins.impl.vault.VaultImplementerSingle;
 import io.lightstudios.coins.placeholder.PlaceholderManager;
 import io.lightstudios.coins.storage.CoinsDataTable;
 import io.lightstudios.coins.storage.VirtualDataTable;
+import io.lightstudios.coins.synchronisation.subscriber.UpdateCoinsBalance;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.commands.manager.CommandManager;
 import io.lightstudios.core.util.ConsolePrinter;
@@ -44,7 +45,7 @@ public final class LightCoins extends JavaPlugin {
     private LightCoinsAPI lightCoinsAPI;
     private CoinsDataTable coinsTable;
     private VirtualDataTable virtualDataTable;
-    private VaultImplementer vaultImplementer;
+    private VaultImplementerSingle vaultImplementer;
     private ConsolePrinter consolePrinter;
     private PlaceholderManager placeholderManager;
 
@@ -67,7 +68,7 @@ public final class LightCoins extends JavaPlugin {
         instance = this;
         this.consolePrinter = new ConsolePrinter("§7[§rLight§eCoins§7] §r");
         consolePrinter.printInfo("Starting LightCoins...");
-        this.vaultImplementer = new VaultImplementer();
+        this.vaultImplementer = new VaultImplementerSingle();
         // register the vault provider
         consolePrinter.printInfo("Registering Vault Provider...");
 
@@ -93,6 +94,7 @@ public final class LightCoins extends JavaPlugin {
         readVirtualData();
         registerEvents();
         registerCommands();
+        new UpdateCoinsBalance();
 
         if(LightCore.instance.getHookManager().isExistPlaceholderAPI()) {
             consolePrinter.printInfo("Registering placeholder for LightCoins...");

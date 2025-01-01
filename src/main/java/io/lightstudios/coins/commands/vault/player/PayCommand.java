@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class PayCommand implements LightCommand {
@@ -53,7 +54,7 @@ public class PayCommand implements LightCommand {
     public TabCompleter registerTabCompleter() {
         return (commandSender, command, alias, args) -> {
             if (args.length == 1) {
-                return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames().stream().toList();
+                return Bukkit.getServer().getOnlinePlayers().stream().map(Player::getName).toList();
             }
             return null;
         };
@@ -143,6 +144,7 @@ public class PayCommand implements LightCommand {
         EconomyResponse targetResponse = targetCoinsPlayer.addCoins(amount);
 
         Player target = Bukkit.getServer().getPlayer(targetName);
+        UUID targetUUID = target != null ? target.getUniqueId() : targetData.getUuid();
 
         if(playerResponse.transactionSuccess() && targetResponse.transactionSuccess()) {
 
@@ -179,8 +181,7 @@ public class PayCommand implements LightCommand {
                 } else {
                     // check for Velocity compatibility
                     // search for the Proxy player and send them a message
-                    SendProxyRequest.sendBalanceLiveUpdate(player, targetData.getUuid(), targetCoinsPlayer.getCurrentCoins());
-                    SendProxyRequest.sendMessageToPlayer(player, targetData.getUuid(), LightCoins.instance.getMessageConfig().prefix() +
+                    SendProxyRequest.sendMessageToPlayer(player, targetUUID, LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().payTarget().stream().map(s -> s
                                     .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
                                     .replace("#currency#", amount.compareTo(BigDecimal.ONE) == 0 ?

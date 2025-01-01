@@ -17,10 +17,8 @@ import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 
-public class VaultImplementer implements Economy {
+public class VaultImplementerSingle implements Economy {
 
     @Override
     public boolean isEnabled() {

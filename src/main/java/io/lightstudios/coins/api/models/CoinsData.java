@@ -4,6 +4,8 @@ import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.synchronisation.TransactionCoins;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
+import io.lightstudios.core.util.relocations.jedis.Jedis;
+import io.lightstudios.core.util.relocations.jedis.JedisPooled;
 import lombok.Getter;
 import lombok.Setter;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -22,6 +24,8 @@ public class CoinsData {
     private String namePlural;
     private String nameSingular;
     private int decimalPlaces;
+
+    private static final String REDIS_CHANNEL = "coinsDataUpdates";
 
     private static final TransactionCoins transactionManager = new TransactionCoins();
 
@@ -48,6 +52,7 @@ public class CoinsData {
         }
 
         this.currentCoins = coins;
+        if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
         transactionManager.addTransaction(this);
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
@@ -68,6 +73,7 @@ public class CoinsData {
         }
 
         this.currentCoins = this.currentCoins.add(coins);
+        if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
         transactionManager.addTransaction(this);
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
@@ -88,16 +94,10 @@ public class CoinsData {
         }
 
         this.currentCoins = this.currentCoins.subtract(coins);
+        if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
         transactionManager.addTransaction(this);
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
-    }
-
-    public boolean isTownyAccount() {
-        if(LightCore.instance.getHookManager().isExistTowny()) {
-            return LightCore.instance.getHookManager().getTownyInterface().isTownyUUID(uuid);
-        }
-        return false;
     }
 
     public String getFormattedCoins() {
@@ -117,5 +117,23 @@ public class CoinsData {
                     EconomyResponse.ResponseType.FAILURE, "Cannot add negative or zero coins.");
         }
         return new EconomyResponse(0, 0, EconomyResponse.ResponseType.SUCCESS, "");
+    }
+
+    /**
+     * Sends the current coins data to the Redis server and
+     * synchronizes the data with the other servers.
+     */
+    private void sendUpdateToRedis() {
+        try (Jedis jedis = LightCore.instance.getRedisManager().getJedisPool().getResource()) {
+            if (uuid == null || currentCoins == null) {
+                throw new IllegalArgumentException("UUID, amount, or currentCoins cannot be null");
+            }
+            String message = String.format("%s:%s:%s", this.uuid, this.name, this.currentCoins);
+            jedis.publish(REDIS_CHANNEL, message);
+        } catch (Exception e) {
+            // Log the exception or handle it accordingly
+            e.printStackTrace();
+
+        }
     }
 }

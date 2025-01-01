@@ -47,6 +47,9 @@ public class ShowCoinsCommand implements LightCommand {
             if(args.length == 1) {
                 return getSubcommand();
             }
+            if(args.length == 2) {
+                return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
+            }
             return null;
         };
     }
@@ -103,9 +106,9 @@ public class ShowCoinsCommand implements LightCommand {
             return false;
         }
 
-        OfflinePlayer offlinePlayer = Bukkit.getPlayer(args[1]);
+        AccountData targetData = LightCoins.instance.getLightCoinsAPI().getAccountData(args[1]);
 
-        if(offlinePlayer == null) {
+        if(targetData == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
@@ -115,19 +118,7 @@ public class ShowCoinsCommand implements LightCommand {
             return false;
         }
 
-        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(offlinePlayer);
-
-        if(playerData == null) {
-            LightCore.instance.getMessageSender().sendPlayerMessage(
-                    player,
-                    LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
-                                    .replace("#info#", "Could not find your player data")
-                            ).collect(Collectors.joining()));
-            return false;
-        }
-
-        CoinsData coinsPlayer = playerData.getCoinsData();
+        CoinsData coinsPlayer = targetData.getCoinsData();
 
         if(coinsPlayer == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -147,7 +138,7 @@ public class ShowCoinsCommand implements LightCommand {
                 LightCoins.instance.getMessageConfig().prefix() +
                 LightCoins.instance.getMessageConfig().coinsShowTarget().stream().map(str -> str
                         .replace("#coins#", coins)
-                        .replace("#player#", offlinePlayer.getName())
+                        .replace("#player#", coinsPlayer.getName())
                         .replace("#currency#", currency)
                 ).collect(Collectors.joining()));
 

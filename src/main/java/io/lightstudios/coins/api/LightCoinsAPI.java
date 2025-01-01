@@ -4,7 +4,7 @@ import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.VirtualData;
-import io.lightstudios.coins.impl.vault.VaultImplementer;
+import io.lightstudios.coins.impl.vault.VaultImplementerSingle;
 import lombok.Getter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 @Getter
 public class LightCoinsAPI {
@@ -29,7 +30,7 @@ public class LightCoinsAPI {
      * @return the VaultImplementer instance
      * @Author LightStudios
      */
-    public VaultImplementer getImplementer() {
+    public VaultImplementerSingle getImplementer() {
         return LightCoins.instance.getVaultImplementer();
     }
 
@@ -109,6 +110,7 @@ public class LightCoinsAPI {
      * @Author LightStudios
      */
     public CompletableFuture<AccountData> createAccountDataAsync(JavaPlugin instance, UUID uuid, String name) {
+        // Check if the account data is in the local storage (cache)
         if (accountData.containsKey(uuid)) {
             return CompletableFuture.completedFuture(accountData.get(uuid));
         }
@@ -122,35 +124,63 @@ public class LightCoinsAPI {
         data.setCoinsData(coinsData);
         List<VirtualData> virtualDataList = new ArrayList<>();
 
-        List<CompletableFuture<Void>> virtualDataFutures = new ArrayList<>();
-        for (File file : LightCoins.instance.getVirtualCurrencyFiles().getYamlFiles()) {
-            VirtualData virtualData = new VirtualData(file, uuid);
-            CompletableFuture<Void> future = LightCoins.instance.getVirtualDataTable().writeVirtualData(virtualData)
-                    .thenAccept(result -> {
-                        if (result > 0) {
-                            LightCoins.instance.getConsolePrinter().printInfo("Successfully created via §c" + calledBy + "§r new virtual currency for " + name);
-                            virtualDataList.add(virtualData);
-                        } else {
-                            LightCoins.instance.getConsolePrinter().printError("Failed to create via §4" + calledBy + "§c new virtual currency for " + name);
-                        }
-                    });
-            virtualDataFutures.add(future);
-        }
+        // Check if the account data is in the database
+        return LightCoins.instance.getCoinsTable().findCoinsDataByUUID(uuid)
+                .thenCompose(existingCoinsData -> {
+                    if (existingCoinsData != null) {
+                        // If coins data is found in the database, create AccountData from it
+                        AccountData existingAccountData = new AccountData();
+                        existingAccountData.setUuid(existingCoinsData.getUuid());
+                        existingAccountData.setName(existingCoinsData.getName());
+                        existingAccountData.setCoinsData(existingCoinsData);
 
-        return CompletableFuture.allOf(virtualDataFutures.toArray(new CompletableFuture[0]))
-                .thenCompose(v -> {
-                    data.setVirtualCurrencies(virtualDataList);
-                    return LightCoins.instance.getCoinsTable().writeCoinsData(coinsData);
-                })
-                .thenApply(result -> {
-                    if (result > 0) {
-                        LightCoins.instance.getConsolePrinter().printInfo("Successfully created via §c" + calledBy + "§r new account data for " + name);
-                        accountData.put(uuid, data);
-                        return data;
+                        // Read VirtualData from the database
+                        return LightCoins.instance.getVirtualDataTable().findVirtualDataByUUID(uuid)
+                                .thenApply(existingVirtualDataList -> {
+                                    if (existingVirtualDataList != null) {
+                                        existingAccountData.setVirtualCurrencies(existingVirtualDataList);
+                                    }
+                                    // Load it into the cache and return it
+                                    accountData.put(uuid, existingAccountData);
+                                    return existingAccountData;
+                                });
                     } else {
-                        LightCoins.instance.getConsolePrinter().printError("Failed to create via §4" + calledBy + "§c new account data for " + name);
-                        return null;
+                        // If account data is not found in the database, create new account data
+                        List<CompletableFuture<Void>> virtualDataFutures = new ArrayList<>();
+                        for (File file : LightCoins.instance.getVirtualCurrencyFiles().getYamlFiles()) {
+                            VirtualData virtualData = new VirtualData(file, uuid);
+                            CompletableFuture<Void> future = LightCoins.instance.getVirtualDataTable().writeVirtualData(virtualData)
+                                    .thenAccept(result -> {
+                                        if (result > 0) {
+                                            LightCoins.instance.getConsolePrinter().printInfo("Successfully created via §c" + calledBy + "§r new virtual currency for " + name);
+                                            virtualDataList.add(virtualData);
+                                        } else {
+                                            LightCoins.instance.getConsolePrinter().printError("Failed to create via §4" + calledBy + "§c new virtual currency for " + name);
+                                        }
+                                    });
+                            virtualDataFutures.add(future);
+                        }
+
+                        return CompletableFuture.allOf(virtualDataFutures.toArray(new CompletableFuture[0]))
+                                .thenCompose(v -> {
+                                    data.setVirtualCurrencies(virtualDataList);
+                                    return LightCoins.instance.getCoinsTable().writeCoinsData(coinsData);
+                                })
+                                .thenApply(result -> {
+                                    if (result > 0) {
+                                        LightCoins.instance.getConsolePrinter().printInfo("Successfully created via §c" + calledBy + "§r new account data for " + name);
+                                        accountData.put(uuid, data);
+                                        return data;
+                                    } else {
+                                        LightCoins.instance.getConsolePrinter().printError("Failed to create via §4" + calledBy + "§c new account data for " + name);
+                                        throw new CompletionException(new Exception("Failed to write coins data to the database"));
+                                    }
+                                });
                     }
+                })
+                .exceptionally(ex -> {
+                    LightCoins.instance.getConsolePrinter().printError("An error occurred while creating account data: " + ex.getMessage());
+                    return null;
                 });
     }
 }
