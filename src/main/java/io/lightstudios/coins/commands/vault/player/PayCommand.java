@@ -241,30 +241,34 @@ public class PayCommand implements LightCommand {
         CoinsData targetCoinsPlayer = targetData.getCoinsData();
 
         EconomyResponse playerResponse = coinsPlayer.removeCoins(amount);
-        EconomyResponse targetResponse = targetCoinsPlayer.addCoins(amount);
+
 
         Player target = Bukkit.getServer().getPlayer(targetName);
         UUID targetUUID = target != null ? target.getUniqueId() : targetData.getUuid();
 
-        if(playerResponse.transactionSuccess() && targetResponse.transactionSuccess()) {
+        if(playerResponse.transactionSuccess()) {
+            // first remove the coins from the player, then add them to the target
+            EconomyResponse targetResponse = targetCoinsPlayer.addCoins(amount);
 
-            int cooldownTime = LightCoins.instance.getSettingsConfig().payCommandCooldown();
+            if(targetResponse.transactionSuccess()) {
 
-            if(cooldownTime != -1) {
-                cooldown.add(player);
-                LightTimers.doSync((task) -> cooldown.remove(player), cooldownTime * 20L);
-            }
+                int cooldownTime = LightCoins.instance.getSettingsConfig().payCommandCooldown();
 
-            LightCore.instance.getMessageSender().sendPlayerMessage(
-                    player,
-                    LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().pay().stream().map(s -> s
-                                    .replace("#coins#", LightNumbers.formatForMessages(amount,
-                                            LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
-                                    .replace("#currency#", amount.compareTo(BigDecimal.ONE) == 0 ?
-                                            coinsPlayer.getNameSingular() : coinsPlayer.getNamePlural())
-                                    .replace("#target#", targetName)
-                            ).collect(Collectors.joining()));
+                if(cooldownTime != -1) {
+                    cooldown.add(player);
+                    LightTimers.doSync((task) -> cooldown.remove(player), cooldownTime * 20L);
+                }
+
+                LightCore.instance.getMessageSender().sendPlayerMessage(
+                        player,
+                        LightCoins.instance.getMessageConfig().prefix() +
+                                LightCoins.instance.getMessageConfig().pay().stream().map(s -> s
+                                        .replace("#coins#", LightNumbers.formatForMessages(amount,
+                                                LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
+                                        .replace("#currency#", amount.compareTo(BigDecimal.ONE) == 0 ?
+                                                coinsPlayer.getNameSingular() : coinsPlayer.getNamePlural())
+                                        .replace("#target#", targetName)
+                                ).collect(Collectors.joining()));
 
 
                 if(target != null) {
@@ -292,8 +296,22 @@ public class PayCommand implements LightCommand {
                             ).collect(Collectors.joining()));
                 }
 
-            return false;
-
+                return false;
+            } else {
+                LightCore.instance.getMessageSender().sendPlayerMessage(
+                        player,
+                        LightCoins.instance.getMessageConfig().prefix() +
+                                LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(s ->
+                                        s.replace("#info#", targetResponse.errorMessage)
+                                ).collect(Collectors.joining()));
+            }
+        } else {
+            LightCore.instance.getMessageSender().sendPlayerMessage(
+                    player,
+                    LightCoins.instance.getMessageConfig().prefix() +
+                            LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(s ->
+                                    s.replace("#info#", playerResponse.errorMessage)
+                            ).collect(Collectors.joining()));
         }
 
         return false;
