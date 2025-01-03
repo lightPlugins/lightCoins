@@ -28,6 +28,7 @@ import io.lightstudios.coins.synchronisation.subscriber.UpdateCoinsBalance;
 import io.lightstudios.coins.synchronisation.subscriber.UpdateVirtualBalance;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.commands.manager.CommandManager;
+import io.lightstudios.core.database.model.DatabaseTypes;
 import io.lightstudios.core.util.ConsolePrinter;
 import io.lightstudios.core.util.files.FileManager;
 import io.lightstudios.core.util.files.MultiFileManager;
@@ -72,6 +73,7 @@ public final class LightCoins extends JavaPlugin {
         this.consolePrinter = new ConsolePrinter("§7[§rLight§eCoins§7] §r");
         consolePrinter.printInfo("Starting LightCoins...");
         this.vaultImplementer = new VaultImplementerSingle();
+        this.vaultImplementerSQL = new VaultImplementerSQL();
         // register the vault provider
         consolePrinter.printInfo("Registering Vault Provider...");
 
@@ -215,15 +217,18 @@ public final class LightCoins extends JavaPlugin {
         if(!LightCore.instance.getSettings().syncType().equalsIgnoreCase("redis") &&
                 LightCore.instance.getSettings().multiServerEnabled()) {
             getConsolePrinter().printInfo(List.of(
-                    "Redis is §cnot enabled. §rUsing direct database access for Vault provider.",
+                    "Redis is §cnot enabled while server sync is enabled. §rUsing direct database access for Vault provider.",
                     "This is not recommended and can cause issues with performance, if you have a lot of players."
             ));
             vaultProvider = this.vaultImplementerSQL;
-        } else {
+        } else if(LightCore.instance.isRedis &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
             getConsolePrinter().printInfo(List.of(
-                    "Redis is §aenabled. §rUsing Redis for Vault provider.",
+                    "Redis is §aenabled while server sync is enabled. §rUsing Redis for Vault provider.",
                     "This is recommended and should be used if you have a lot of players."
             ));
+            vaultProvider = this.vaultImplementer;
+        } else {
             vaultProvider = this.vaultImplementer;
         }
         Bukkit.getServicesManager().register(Economy.class, vaultProvider, this, ServicePriority.Highest);

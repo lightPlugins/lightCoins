@@ -170,7 +170,8 @@ public class PayCommand implements LightCommand {
                         player,
                         LightCoins.instance.getMessageConfig().prefix() +
                                 LightCoins.instance.getMessageConfig().pay().stream().map(s -> s
-                                        .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
+                                        .replace("#coins#", LightNumbers.formatForMessages(amount,
+                                                LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
                                         .replace("#currency#", amount.compareTo(BigDecimal.ONE) == 0 ?
                                                 coinsPlayer.getNameSingular() : coinsPlayer.getNamePlural())
                                         .replace("#target#", targetName)
@@ -182,16 +183,33 @@ public class PayCommand implements LightCommand {
                             target.getPlayer(),
                             LightCoins.instance.getMessageConfig().prefix() +
                                     LightCoins.instance.getMessageConfig().payTarget().stream().map(s -> s
-                                            .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
+                                            .replace("#coins#", LightNumbers.formatForMessages(amount,
+                                                    LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
                                             .replace("#currency#", amount.compareTo(BigDecimal.ONE) == 0 ?
                                                     coinsPlayer.getNameSingular() : coinsPlayer.getNamePlural())
                                             .replace("#target#", player.getName())
                                     ).collect(Collectors.joining()));
 
                     return false;
+                } else {
+                    SendProxyRequest.sendMessageToPlayer(player, target.getUniqueId(), LightCoins.instance.getMessageConfig().prefix() +
+                            LightCoins.instance.getMessageConfig().payTarget().stream().map(s -> s
+                                    .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
+                                    .replace("#currency#", amount.compareTo(BigDecimal.ONE) == 0 ?
+                                            coinsPlayer.getNameSingular() : coinsPlayer.getNamePlural())
+                                    .replace("#target#", player.getName())
+                            ).collect(Collectors.joining()));
                 }
                 return false;
             }
+
+            LightCore.instance.getMessageSender().sendPlayerMessage(
+                    player,
+                    LightCoins.instance.getMessageConfig().prefix() +
+                            LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(s ->
+                                    s.replace("#info#", playerResponse.errorMessage + " " + targetResponse.errorMessage)
+                            ).collect(Collectors.joining()));
+
             return false;
         }
 
@@ -241,7 +259,8 @@ public class PayCommand implements LightCommand {
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().pay().stream().map(s -> s
-                                    .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
+                                    .replace("#coins#", LightNumbers.formatForMessages(amount,
+                                            LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
                                     .replace("#currency#", amount.compareTo(BigDecimal.ONE) == 0 ?
                                             coinsPlayer.getNameSingular() : coinsPlayer.getNamePlural())
                                     .replace("#target#", targetName)
@@ -253,7 +272,8 @@ public class PayCommand implements LightCommand {
                             target,
                             LightCoins.instance.getMessageConfig().prefix() +
                                     LightCoins.instance.getMessageConfig().payTarget().stream().map(s -> s
-                                            .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
+                                            .replace("#coins#", LightNumbers.formatForMessages(amount,
+                                                    LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
                                             .replace("#currency#", amount.compareTo(BigDecimal.ONE) == 0 ?
                                                     coinsPlayer.getNameSingular() : coinsPlayer.getNamePlural())
                                             .replace("#target#", player.getName())

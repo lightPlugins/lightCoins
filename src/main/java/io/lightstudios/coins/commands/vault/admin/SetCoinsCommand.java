@@ -104,8 +104,24 @@ public class SetCoinsCommand implements LightCommand {
         if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
                 LightCore.instance.getSettings().multiServerEnabled()) {
 
+            OfflinePlayer target = Arrays.stream(Bukkit.getServer().getOfflinePlayers())
+                    .filter(offlinePlayer -> offlinePlayer.getName() != null && offlinePlayer.getName().equalsIgnoreCase(args[1]))
+                    .findFirst()
+                    .orElse(null);
 
-            CoinsData coinsPlayer = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(player.getUniqueId()).join();
+
+            if(target == null) {
+                LightCore.instance.getMessageSender().sendPlayerMessage(
+                        player,
+                        LightCoins.instance.getMessageConfig().prefix() +
+                                LightCoins.instance.getMessageConfig().playerNotFound().stream().map(str -> str
+                                        .replace("#player#", targetName)
+                                ).collect(Collectors.joining()));
+                return false;
+            }
+
+
+            CoinsData coinsPlayer = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(target.getUniqueId()).join();
 
             if(coinsPlayer == null) {
                 LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -125,7 +141,8 @@ public class SetCoinsCommand implements LightCommand {
                         List.of(
                                 LightCoins.instance.getMessageConfig().prefix() +
                                         LightCoins.instance.getMessageConfig().coinsSet().stream().map(str -> str
-                                                .replace("#coins#", coinsPlayer.getFormattedCoins())
+                                                .replace("#coins#", LightNumbers.formatForMessages(amount,
+                                                        LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
                                                 .replace("#currency#", coinsPlayer.getFormattedCurrency())
                                                 .replace("#player#", coinsPlayer.getName())
                                         ).collect(Collectors.joining())
@@ -163,7 +180,8 @@ public class SetCoinsCommand implements LightCommand {
                     List.of(
                             LightCoins.instance.getMessageConfig().prefix() +
                                     LightCoins.instance.getMessageConfig().coinsSet().stream().map(str -> str
-                                            .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
+                                            .replace("#coins#", LightNumbers.formatForMessages(amount,
+                                                    LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
                                             .replace("#currency#", coinsPlayer.getFormattedCurrency())
                                             .replace("#player#", coinsPlayer.getName())
                                     ).collect(Collectors.joining())

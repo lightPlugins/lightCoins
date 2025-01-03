@@ -188,7 +188,7 @@ public class VirtualRemoveCommand implements LightCommand {
             return false;
         }
 
-        VirtualResponse response = virtualData.addBalance(amount);
+        VirtualResponse response = virtualData.removeBalance(amount);
 
         if(!response.transactionSuccess()) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -256,7 +256,7 @@ public class VirtualRemoveCommand implements LightCommand {
                 return false;
             }
 
-            VirtualResponse response = virtualData.addBalance(amount);
+            VirtualResponse response = virtualData.removeBalance(amount);
 
             if(!response.transactionSuccess()) {
                 LightCoins.instance.getConsolePrinter().printError("Transaction failed: " + response.errorMessage);

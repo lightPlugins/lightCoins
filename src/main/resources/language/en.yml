@@ -71,7 +71,7 @@ baltop:
     - ' '
     - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
 # Virtual Currencies
-virtualShow: "<gray>You have <yellow>#amount# <gray>#currency#."
+virtualShow: "<gray>The player <yellow>#player# <gray>have <yellow>#amount# <gray>#currency#."
 virtualCurrencyNotFound: "<red>The currency <dark_red>#currency# <red>could not be found!"
 virtualCurrencyAdd: "<gray>You have added <yellow>#amount# <gray>#currency# to <yellow>#player#<gray>."
 virtualCurrencySet: "<gray>You have set the currency <yellow>#currency#<gray> of player <yellow>#player#<gray> to <yellow>#amount#<gray>."

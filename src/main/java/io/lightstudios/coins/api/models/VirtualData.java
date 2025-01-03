@@ -156,7 +156,7 @@ public class VirtualData {
 
             return result.stream()
                     .filter(virtualData -> virtualData.getCurrencyName().equals(this.currencyName))
-                    .anyMatch(virtualData -> this.currentBalance.compareTo(virtualData.getCurrentBalance()) >= 0);
+                    .anyMatch(virtualData -> virtualData.getCurrentBalance().compareTo(amount) >= 0);
         } else {
             return this.currentBalance.compareTo(amount) >= 0;
         }

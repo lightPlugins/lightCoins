@@ -14,7 +14,7 @@ public class VirtualAmountHolder implements LightPlaceholder {
     @Override
     public String onRequest(OfflinePlayer offlinePlayer, @NotNull String s) {
         // %lightcoins_virtual_gems%
-        if(!s.contains("virtual_")) {
+        if(!s.contains("virtual_") && s.contains("virtual_raw") && s.contains("virtual_currency")) {
             return null;
         }
 

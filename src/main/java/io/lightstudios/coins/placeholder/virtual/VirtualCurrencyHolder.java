@@ -22,7 +22,7 @@ public class VirtualCurrencyHolder implements LightPlaceholder {
         if(split.length < 3) {
             return "Out of Bounds <> 3 -> " + s;
         }
-        String currencyName = split[2];
+        String currencyName = split[3];
 
         if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
                 LightCore.instance.getSettings().multiServerEnabled()) {
@@ -50,7 +50,7 @@ public class VirtualCurrencyHolder implements LightPlaceholder {
         VirtualData virtualData = accountData.getVirtualCurrencyByName(currencyName);
 
         if(virtualData == null) {
-            return "Currency not found: " + currencyName;
+            return "2Currency not found: " + currencyName;
         }
 
         return virtualData.getFormattedCurrencySymbol();
