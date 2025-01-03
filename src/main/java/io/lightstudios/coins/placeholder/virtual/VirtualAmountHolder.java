@@ -14,15 +14,15 @@ public class VirtualAmountHolder implements LightPlaceholder {
     @Override
     public String onRequest(OfflinePlayer offlinePlayer, @NotNull String s) {
         // %lightcoins_virtual_gems%
-        if(!s.contains("virtual_") && s.contains("virtual_raw") && s.contains("virtual_currency")) {
+        if(!s.contains("virtual_amount_") ) {
             return null;
         }
 
         String[] split = s.split("_");
-        if(split.length < 2) {
-            return "Out of Bounds <> 2 -> " + s;
+        if(split.length < 3) {
+            return null;
         }
-        String currencyName = split[1];
+        String currencyName = split[2];
 
         if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
                 LightCore.instance.getSettings().multiServerEnabled()) {

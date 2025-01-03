@@ -20,9 +20,9 @@ public class VirtualRawAmountHolder implements LightPlaceholder {
 
         String[] split = s.split("_");
         if(split.length < 3) {
-            return "Out of Bounds -> " + s;
+            return null;
         }
-        String currencyName = split[3];
+        String currencyName = split[2];
 
         if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
                 LightCore.instance.getSettings().multiServerEnabled()) {
