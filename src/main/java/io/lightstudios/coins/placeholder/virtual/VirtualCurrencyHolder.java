@@ -3,9 +3,12 @@ package io.lightstudios.coins.placeholder.virtual;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.VirtualData;
+import io.lightstudios.core.LightCore;
 import io.lightstudios.core.placeholder.LightPlaceholder;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class VirtualCurrencyHolder implements LightPlaceholder {
     @Override
@@ -17,9 +20,25 @@ public class VirtualCurrencyHolder implements LightPlaceholder {
 
         String[] split = s.split("_");
         if(split.length < 3) {
-            return "Out of Bounds -> " + s;
+            return "Out of Bounds <> 3 -> " + s;
         }
         String currencyName = split[2];
+
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+
+            List<VirtualData> virtualDataList = LightCoins.instance.getVirtualDataTable().readVirtualData().join();
+            VirtualData virtualData = virtualDataList.stream()
+                    .filter(data -> data.getPlayerUUID().equals(offlinePlayer.getUniqueId()) && data.getCurrencyName().equalsIgnoreCase(currencyName))
+                    .findFirst()
+                    .orElse(null);
+
+            if(virtualData == null) {
+                return "Currency/Player not found: " + currencyName + " - " + offlinePlayer.getName();
+            }
+
+            return virtualData.getFormattedCurrencySymbol();
+
+        }
 
         AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData(offlinePlayer.getUniqueId());
 

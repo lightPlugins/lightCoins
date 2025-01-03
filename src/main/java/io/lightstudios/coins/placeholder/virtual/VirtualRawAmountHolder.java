@@ -3,9 +3,12 @@ package io.lightstudios.coins.placeholder.virtual;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.VirtualData;
+import io.lightstudios.core.LightCore;
 import io.lightstudios.core.placeholder.LightPlaceholder;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class VirtualRawAmountHolder implements LightPlaceholder {
     @Override
@@ -21,6 +24,21 @@ public class VirtualRawAmountHolder implements LightPlaceholder {
         }
         String currencyName = split[2];
 
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+
+            List<VirtualData> virtualDataList = LightCoins.instance.getVirtualDataTable().readVirtualData().join();
+            VirtualData virtualData = virtualDataList.stream()
+                    .filter(data -> data.getPlayerUUID().equals(offlinePlayer.getUniqueId()) && data.getCurrencyName().equalsIgnoreCase(currencyName))
+                    .findFirst()
+                    .orElse(null);
+
+            if(virtualData == null) {
+                return "Currency/Player not found: " + currencyName + " - " + offlinePlayer.getName();
+            }
+
+            return virtualData.getCurrentBalance().toPlainString();
+        }
+
         AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData(offlinePlayer.getUniqueId());
 
         if(accountData == null) {
@@ -33,6 +51,6 @@ public class VirtualRawAmountHolder implements LightPlaceholder {
             return "Currency not found: " + currencyName;
         }
 
-        return String.valueOf(virtualData.getCurrentBalance().doubleValue());
+        return virtualData.getCurrentBalance().toPlainString();
     }
 }
