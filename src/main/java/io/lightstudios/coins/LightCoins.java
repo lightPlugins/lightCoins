@@ -213,8 +213,16 @@ public final class LightCoins extends JavaPlugin {
         Economy vaultProvider;
 
         if(!LightCore.instance.getSettings().syncType().equalsIgnoreCase("redis")) {
+            getConsolePrinter().printInfo(List.of(
+                    "Redis is §cnot enabled. §rUsing direct database access for Vault provider.",
+                    "This is not recommended and can cause issues with performance, if you have a lot of players."
+            ));
             vaultProvider = this.vaultImplementerSQL;
         } else {
+            getConsolePrinter().printInfo(List.of(
+                    "Redis is §aenabled. §rUsing Redis for Vault provider.",
+                    "This is recommended and should be used if you have a lot of players."
+            ));
             vaultProvider = this.vaultImplementer;
         }
         Bukkit.getServicesManager().register(Economy.class, vaultProvider, this, ServicePriority.Highest);
