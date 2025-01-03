@@ -282,7 +282,6 @@ public class PayCommand implements LightCommand {
                                                     coinsPlayer.getNameSingular() : coinsPlayer.getNamePlural())
                                             .replace("#target#", player.getName())
                                     ).collect(Collectors.joining()));
-
                     return true;
                 } else {
                     // check for Velocity compatibility
@@ -295,7 +294,6 @@ public class PayCommand implements LightCommand {
                                     .replace("#target#", player.getName())
                             ).collect(Collectors.joining()));
                 }
-
                 return false;
             } else {
 
@@ -315,9 +313,9 @@ public class PayCommand implements LightCommand {
                 LightCoins.instance.getConsolePrinter().printError(List.of(
                         "Could not transfer the coins back to the player after a failed transaction",
                         "via /pay command !",
-                        "Player: " + player.getName(),
-                        "Amount: " + amount,
-                        "Error: " + targetResponse.errorMessage
+                        "Player: §4" + player.getName(),
+                        "Amount: §4" + amount,
+                        "Error: §4" + targetResponse.errorMessage
                 ));
             }
         } else {
