@@ -54,7 +54,8 @@ public class VirtualRemoveCommand implements LightCommand {
             }
 
             if(args.length == 2) {
-                if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+                if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                        LightCore.instance.getSettings().multiServerEnabled()) {
                     return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList();
                 } else {
                     return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
@@ -104,7 +105,8 @@ public class VirtualRemoveCommand implements LightCommand {
             return false;
         }
 
-        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
 
             OfflinePlayer target = Arrays.stream(Bukkit.getServer().getOfflinePlayers())
                     .filter(offlinePlayer -> offlinePlayer.getName() != null && offlinePlayer.getName().equalsIgnoreCase(targetName))
@@ -218,7 +220,8 @@ public class VirtualRemoveCommand implements LightCommand {
             return false;
         }
 
-        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
 
             OfflinePlayer target = Arrays.stream(Bukkit.getServer().getOfflinePlayers())
                     .filter(offlinePlayer -> offlinePlayer.getName() != null && offlinePlayer.getName().equalsIgnoreCase(args[1]))

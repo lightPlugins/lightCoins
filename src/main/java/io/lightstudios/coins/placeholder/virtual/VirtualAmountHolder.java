@@ -24,7 +24,8 @@ public class VirtualAmountHolder implements LightPlaceholder {
         }
         String currencyName = split[1];
 
-        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
 
             List<VirtualData> virtualDataList = LightCoins.instance.getVirtualDataTable().readVirtualData().join();
             VirtualData virtualData = virtualDataList.stream()

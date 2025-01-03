@@ -212,7 +212,8 @@ public final class LightCoins extends JavaPlugin {
 
         Economy vaultProvider;
 
-        if(!LightCore.instance.getSettings().syncType().equalsIgnoreCase("redis")) {
+        if(!LightCore.instance.getSettings().syncType().equalsIgnoreCase("redis") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
             getConsolePrinter().printInfo(List.of(
                     "Redis is §cnot enabled. §rUsing direct database access for Vault provider.",
                     "This is not recommended and can cause issues with performance, if you have a lot of players."

@@ -16,7 +16,8 @@ public class CoinsRawAmountHolder implements LightPlaceholder {
             return null;
         }
 
-        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
 
             CoinsData coinsData = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(offlinePlayer.getUniqueId()).join();
 

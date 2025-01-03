@@ -56,7 +56,8 @@ public class PayCommand implements LightCommand {
     public TabCompleter registerTabCompleter() {
         return (commandSender, command, alias, args) -> {
             if (args.length == 1) {
-                if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+                if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                        LightCore.instance.getSettings().multiServerEnabled()) {
                     // only support offline players from the target server !
                     return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList();
                 } else {
@@ -121,7 +122,8 @@ public class PayCommand implements LightCommand {
             return false;
         }
 
-        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
 
             CoinsData coinsPlayer = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(player.getUniqueId()).join();
 

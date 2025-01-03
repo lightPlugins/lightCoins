@@ -54,7 +54,8 @@ public class CoinsData {
 
         this.currentCoins = coins;
         // Update the data in the database directly or through the transaction manager (redis)
-        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+        LightCore.instance.getSettings().multiServerEnabled()) {
             LightCoins.instance.getCoinsTable().writeCoinsData(this).join();
         } else {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
@@ -81,7 +82,8 @@ public class CoinsData {
 
         this.currentCoins = this.currentCoins.add(coins);
         // Update the data in the database directly or through the transaction manager (redis)
-        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
             LightCoins.instance.getCoinsTable().writeCoinsData(this).join();
         } else {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
@@ -108,7 +110,8 @@ public class CoinsData {
 
         this.currentCoins = this.currentCoins.subtract(coins);
         // Update the data in the database directly or through the transaction manager (redis)
-        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
             LightCoins.instance.getCoinsTable().writeCoinsData(this).join();
         } else {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
@@ -129,7 +132,8 @@ public class CoinsData {
 
     public boolean hasEnough(BigDecimal coins) {
         // Read the data in the database directly or through the locale cache manager (redis)
-        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
             CoinsData result = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(uuid).join();
             return result.getCurrentCoins().compareTo(coins) >= 0;
         } else {

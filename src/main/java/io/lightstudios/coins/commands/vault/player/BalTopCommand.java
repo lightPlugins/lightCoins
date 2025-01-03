@@ -54,7 +54,8 @@ public class BalTopCommand implements LightCommand {
 
         List<AccountData> allPlayers;
 
-        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
 
             List<CoinsData> allCoinsData = LightCoins.instance.getCoinsTable().readCoinsData().join();
             List<AccountData> tempAccountList = new ArrayList<>();

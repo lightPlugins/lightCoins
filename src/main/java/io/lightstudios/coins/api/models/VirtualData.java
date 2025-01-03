@@ -78,7 +78,8 @@ public class VirtualData {
 
         this.currentBalance = amount;
 
-        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
             LightCoins.instance.getVirtualDataTable().writeVirtualData(this).join();
         } else {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
@@ -107,7 +108,8 @@ public class VirtualData {
 
         this.currentBalance = this.currentBalance.add(amount);
 
-        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
             LightCoins.instance.getVirtualDataTable().writeVirtualData(this).join();
         } else {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
@@ -136,7 +138,8 @@ public class VirtualData {
 
         this.currentBalance = this.currentBalance.subtract(amount);
 
-        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
             LightCoins.instance.getVirtualDataTable().writeVirtualData(this).join();
         } else {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
@@ -147,7 +150,8 @@ public class VirtualData {
     }
 
     public boolean hasEnough(BigDecimal amount) {
-        if (LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+        if (LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
             List<VirtualData> result = LightCoins.instance.getVirtualDataTable().findVirtualDataByUUID(this.playerUUID).join();
 
             return result.stream()

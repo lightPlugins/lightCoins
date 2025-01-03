@@ -55,7 +55,8 @@ public class SetCoinsCommand implements LightCommand {
             }
 
             if(args.length == 2) {
-                if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+                if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                        LightCore.instance.getSettings().multiServerEnabled()) {
                     // only support offline players from the target server !
                     return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList();
                 } else {
@@ -70,7 +71,6 @@ public class SetCoinsCommand implements LightCommand {
 
     @Override
     public boolean performAsPlayer(Player player, String[] args) {
-
         if(args.length != 3) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
@@ -81,27 +81,7 @@ public class SetCoinsCommand implements LightCommand {
             return false;
         }
 
-        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData(args[1]);
-
-        if(accountData == null) {
-            LightCore.instance.getMessageSender().sendPlayerMessage(
-                    player,
-                    LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().playerNotFound().stream().map(str -> str
-                                    .replace("#player#", args[1])
-                            ).collect(Collectors.joining()));
-            return false;
-        }
-
-        if(accountData.getName() == null) {
-            LightCore.instance.getMessageSender().sendPlayerMessage(
-                    player,
-                    LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().playerNotFound().stream().map(str -> str
-                                    .replace("#player#", args[1])
-                            ).collect(Collectors.joining()));
-            return false;
-        }
+        String targetName = args[1];
 
         BigDecimal amount = LightNumbers.parseMoney(args[2]);
 
@@ -117,11 +97,64 @@ public class SetCoinsCommand implements LightCommand {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().noNegativ());
+                            String.join("", LightCoins.instance.getMessageConfig().noNegativ()));
             return false;
         }
 
-        CoinsData coinsPlayer = accountData.getCoinsData();
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
+
+
+            CoinsData coinsPlayer = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(player.getUniqueId()).join();
+
+            if(coinsPlayer == null) {
+                LightCore.instance.getMessageSender().sendPlayerMessage(
+                        player,
+                        LightCoins.instance.getMessageConfig().prefix() +
+                                LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
+                                        .replace("#info#", "Could not find data from: " + targetName)
+                                ).collect(Collectors.joining()));
+                return false;
+            }
+
+            EconomyResponse response = coinsPlayer.setCoins(amount);
+
+            if(response.transactionSuccess()) {
+                LightCore.instance.getMessageSender().sendPlayerMessage(
+                        player,
+                        List.of(
+                                LightCoins.instance.getMessageConfig().prefix() +
+                                        LightCoins.instance.getMessageConfig().coinsSet().stream().map(str -> str
+                                                .replace("#coins#", coinsPlayer.getFormattedCoins())
+                                                .replace("#currency#", coinsPlayer.getFormattedCurrency())
+                                                .replace("#player#", coinsPlayer.getName())
+                                        ).collect(Collectors.joining())
+                        )
+                );
+                return true;
+            } else {
+                LightCore.instance.getMessageSender().sendPlayerMessage(
+                        player,
+                        LightCoins.instance.getMessageConfig().prefix() +
+                                LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
+                                        .replace("#info#", response.errorMessage)
+                                ).collect(Collectors.joining()));
+                return false;
+            }
+        }
+
+        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(targetName);
+        if(playerData == null) {
+            LightCore.instance.getMessageSender().sendPlayerMessage(
+                    player,
+                    LightCoins.instance.getMessageConfig().prefix() +
+                            LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
+                                    .replace("#info#", "Could not find player data")
+                            ).collect(Collectors.joining()));
+            return false;
+        }
+
+        CoinsData coinsPlayer = playerData.getCoinsData();
         EconomyResponse response = coinsPlayer.setCoins(amount);
 
         if(response.transactionSuccess()) {
@@ -132,7 +165,7 @@ public class SetCoinsCommand implements LightCommand {
                                     LightCoins.instance.getMessageConfig().coinsSet().stream().map(str -> str
                                             .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
                                             .replace("#currency#", coinsPlayer.getFormattedCurrency())
-                                            .replace("#player#", accountData.getName())
+                                            .replace("#player#", coinsPlayer.getName())
                                     ).collect(Collectors.joining())
                     )
             );
