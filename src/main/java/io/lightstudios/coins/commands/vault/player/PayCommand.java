@@ -298,12 +298,27 @@ public class PayCommand implements LightCommand {
 
                 return false;
             } else {
-                LightCore.instance.getMessageSender().sendPlayerMessage(
-                        player,
-                        LightCoins.instance.getMessageConfig().prefix() +
-                                LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(s ->
-                                        s.replace("#info#", targetResponse.errorMessage)
-                                ).collect(Collectors.joining()));
+
+                EconomyResponse transferBack = coinsPlayer.addCoins(amount);
+
+                if(transferBack.transactionSuccess()) {
+                    LightCore.instance.getMessageSender().sendPlayerMessage(
+                            player,
+                            LightCoins.instance.getMessageConfig().prefix() +
+                                    LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(s ->
+                                            s.replace("#info#", targetResponse.errorMessage)
+                                    ).collect(Collectors.joining()));
+
+                    return false;
+                }
+
+                LightCoins.instance.getConsolePrinter().printError(List.of(
+                        "Could not transfer the coins back to the player after a failed transaction",
+                        "via /pay command !",
+                        "Player: " + player.getName(),
+                        "Amount: " + amount,
+                        "Error: " + targetResponse.errorMessage
+                ));
             }
         } else {
             LightCore.instance.getMessageSender().sendPlayerMessage(
