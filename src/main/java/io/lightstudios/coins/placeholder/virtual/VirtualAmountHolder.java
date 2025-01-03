@@ -8,6 +8,8 @@ import io.lightstudios.core.placeholder.LightPlaceholder;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class VirtualAmountHolder implements LightPlaceholder {
     @Override
     public String onRequest(OfflinePlayer offlinePlayer, @NotNull String s) {
@@ -18,9 +20,29 @@ public class VirtualAmountHolder implements LightPlaceholder {
 
         String[] split = s.split("_");
         if(split.length < 2) {
-            return "Out of Bounds -> " + s;
+            return "Out of Bounds <> 2 -> " + s;
         }
         String currencyName = split[1];
+
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+
+            List<VirtualData> virtualDataList = LightCoins.instance.getVirtualDataTable().readVirtualData().join();
+            VirtualData virtualData = virtualDataList.stream()
+                    .filter(data -> data.getPlayerUUID().equals(offlinePlayer.getUniqueId()) && data.getCurrencyName().equalsIgnoreCase(currencyName))
+                    .findFirst()
+                    .orElse(null);
+
+            if(virtualData == null) {
+                return "Currency not found: " + currencyName;
+            }
+
+            String placeholder = virtualData.getPlaceholderFormat()
+                    .replace("#amount#", virtualData.getFormattedBalance())
+                    .replace("#currency#", virtualData.getFormattedCurrencySymbol());
+
+            return LightCore.instance.getColorTranslation().adventureTranslator(placeholder, offlinePlayer.getPlayer());
+
+        }
 
         AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData(offlinePlayer.getUniqueId());
 

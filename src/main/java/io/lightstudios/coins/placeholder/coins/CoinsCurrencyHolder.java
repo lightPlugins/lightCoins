@@ -2,6 +2,7 @@ package io.lightstudios.coins.placeholder.coins;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.AccountData;
+import io.lightstudios.core.LightCore;
 import io.lightstudios.core.placeholder.LightPlaceholder;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
@@ -10,15 +11,15 @@ public class CoinsCurrencyHolder implements LightPlaceholder {
     @Override
     public String onRequest(OfflinePlayer offlinePlayer, @NotNull String s) {
 
-        if(!s.equalsIgnoreCase("currency_name")) {
-            return null;
+        if(s.equalsIgnoreCase("currency_name_singular")) {
+            return LightCoins.instance.getSettingsConfig().defaultCurrencyNameSingular();
         }
 
-        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData(offlinePlayer.getUniqueId());
-        if(accountData == null) {
-            return "Player not found";
+        if(s.equalsIgnoreCase("currency_name_plural")) {
+            return LightCoins.instance.getSettingsConfig().defaultCurrencyNamePlural();
         }
 
-        return accountData.getCoinsData().getFormattedCurrency();
+        return null;
+
     }
 }
