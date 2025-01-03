@@ -19,11 +19,13 @@ import io.lightstudios.coins.commands.virtual.defaults.VirtualShowCommand;
 import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
 import io.lightstudios.coins.impl.events.OnPlayerJoin;
+import io.lightstudios.coins.impl.vault.VaultImplementerSQL;
 import io.lightstudios.coins.impl.vault.VaultImplementerSingle;
 import io.lightstudios.coins.placeholder.PlaceholderManager;
 import io.lightstudios.coins.storage.CoinsDataTable;
 import io.lightstudios.coins.storage.VirtualDataTable;
 import io.lightstudios.coins.synchronisation.subscriber.UpdateCoinsBalance;
+import io.lightstudios.coins.synchronisation.subscriber.UpdateVirtualBalance;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.commands.manager.CommandManager;
 import io.lightstudios.core.util.ConsolePrinter;
@@ -46,6 +48,7 @@ public final class LightCoins extends JavaPlugin {
     private CoinsDataTable coinsTable;
     private VirtualDataTable virtualDataTable;
     private VaultImplementerSingle vaultImplementer;
+    private VaultImplementerSQL vaultImplementerSQL;
     private ConsolePrinter consolePrinter;
     private PlaceholderManager placeholderManager;
 
@@ -94,7 +97,9 @@ public final class LightCoins extends JavaPlugin {
         readVirtualData();
         registerEvents();
         registerCommands();
+        // Redis synchronisation subscribers
         new UpdateCoinsBalance();
+        new UpdateVirtualBalance();
 
         if(LightCore.instance.getHookManager().isExistPlaceholderAPI()) {
             consolePrinter.printInfo("Registering placeholder for LightCoins...");
@@ -200,9 +205,18 @@ public final class LightCoins extends JavaPlugin {
 
     /**
      * Registers the Vault provider for LightCoins
+     * The Vault provider is used to interact with other plugins that use Vault
+     * If Redis is not enabled, vaultImplementerSQL is used (direct Database access in sync -> not recommended)
      */
     private void registerVaultProvider() {
-        Economy vaultProvider = this.vaultImplementer;
+
+        Economy vaultProvider;
+
+        if(!LightCore.instance.getSettings().syncType().equalsIgnoreCase("redis")) {
+            vaultProvider = this.vaultImplementerSQL;
+        } else {
+            vaultProvider = this.vaultImplementer;
+        }
         Bukkit.getServicesManager().register(Economy.class, vaultProvider, this, ServicePriority.Highest);
         RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
         if(rsp != null) {

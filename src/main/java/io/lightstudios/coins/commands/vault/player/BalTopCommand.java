@@ -52,7 +52,23 @@ public class BalTopCommand implements LightCommand {
         int x = LightCoins.instance.getSettingsConfig().baltopCommandAmount();
         int decimalPlaces = LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces();
 
-        List<AccountData> allPlayers = new ArrayList<>(LightCoins.instance.getLightCoinsAPI().getAccountData().values());
+        List<AccountData> allPlayers;
+
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+
+            List<CoinsData> allCoinsData = LightCoins.instance.getCoinsTable().readCoinsData().join();
+            List<AccountData> tempAccountList = new ArrayList<>();
+            for(CoinsData coinsData : allCoinsData) {
+                AccountData accountData = new AccountData();
+                accountData.setName(coinsData.getName());
+                accountData.setUuid(coinsData.getUuid());
+                accountData.setCoinsData(coinsData);
+                tempAccountList.add(accountData);
+            }
+            allPlayers = tempAccountList;
+        } else {
+            allPlayers = new ArrayList<>(LightCoins.instance.getLightCoinsAPI().getAccountData().values());
+        }
 
         List<AccountData> sortedPlayers = allPlayers.stream()
                 .filter(p -> p.getName() != null && !p.getName().equalsIgnoreCase("nonplayer_account"))

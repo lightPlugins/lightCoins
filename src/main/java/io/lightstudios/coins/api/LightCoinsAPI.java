@@ -121,6 +121,7 @@ public class LightCoinsAPI {
         data.setUuid(uuid);
         CoinsData coinsData = new CoinsData(uuid);
         coinsData.setName(name);
+        coinsData.setUuid(uuid);
         data.setCoinsData(coinsData);
         List<VirtualData> virtualDataList = new ArrayList<>();
 

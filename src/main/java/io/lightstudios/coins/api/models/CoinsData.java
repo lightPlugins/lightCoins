@@ -11,6 +11,7 @@ import lombok.Setter;
 import net.milkbowl.vault.economy.EconomyResponse;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -52,8 +53,14 @@ public class CoinsData {
         }
 
         this.currentCoins = coins;
-        if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
-        transactionManager.addTransaction(this);
+        // Update the data in the database directly or through the transaction manager (redis)
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+            LightCoins.instance.getCoinsTable().writeCoinsData(this).join();
+        } else {
+            if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
+            transactionManager.addTransaction(this);
+        }
+
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
     }
@@ -73,8 +80,14 @@ public class CoinsData {
         }
 
         this.currentCoins = this.currentCoins.add(coins);
-        if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
-        transactionManager.addTransaction(this);
+        // Update the data in the database directly or through the transaction manager (redis)
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+            LightCoins.instance.getCoinsTable().writeCoinsData(this).join();
+        } else {
+            if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
+            transactionManager.addTransaction(this);
+        }
+
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
     }
@@ -94,8 +107,14 @@ public class CoinsData {
         }
 
         this.currentCoins = this.currentCoins.subtract(coins);
-        if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
-        transactionManager.addTransaction(this);
+        // Update the data in the database directly or through the transaction manager (redis)
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+            LightCoins.instance.getCoinsTable().writeCoinsData(this).join();
+        } else {
+            if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
+            transactionManager.addTransaction(this);
+        }
+
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
     }
@@ -103,12 +122,19 @@ public class CoinsData {
     public String getFormattedCoins() {
         return LightNumbers.formatForMessages(currentCoins, LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces());
     }
+
     public String getFormattedCurrency() {
         return currentCoins.compareTo(BigDecimal.ONE) == 0 ? nameSingular : namePlural;
     }
 
     public boolean hasEnough(BigDecimal coins) {
-        return this.currentCoins.compareTo(coins) >= 0;
+        // Read the data in the database directly or through the locale cache manager (redis)
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+            CoinsData result = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(uuid).join();
+            return result.getCurrentCoins().compareTo(coins) >= 0;
+        } else {
+            return this.currentCoins.compareTo(coins) >= 0;
+        }
     }
 
     private EconomyResponse checkDefaults(BigDecimal coinsToAdd) {
@@ -126,6 +152,13 @@ public class CoinsData {
     private void sendUpdateToRedis() {
         try (Jedis jedis = LightCore.instance.getRedisManager().getJedisPool().getResource()) {
             if (uuid == null || currentCoins == null) {
+                LightCoins.instance.getConsolePrinter().printError(List.of(
+                        "UUID, amount, or currentBalance cannot be null in CoinsData!",
+                        "UUID: " + uuid,
+                        "Current Coins: " + currentCoins,
+                        "Could not send update to Redis. This behavior is unexpected",
+                        "and you should report this to the plugin developer!"
+                ));
                 throw new IllegalArgumentException("UUID, amount, or currentCoins cannot be null");
             }
             String message = String.format("%s:%s:%s", this.uuid, this.name, this.currentCoins);

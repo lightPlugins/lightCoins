@@ -56,8 +56,7 @@ payTarget: "<gray>The player <yellow>#target#<gray> has paid you <yellow>#coins#
 payCooldown: "<red>You have to wait <yellow>#time# <red>seconds before you can pay again!"
 payOnlyOnlinePlayer:
   - "<red>The target player <dark_red>#target# <red>can't be found or is not online! "
-  - "<red>You can only pay <dark_red>online players <red>due to security reasons! "
-  - "<red>The target player must be on the <dark_red>same proxy <red>as you!"
+  - "<red>You can only pay <dark_red>players on the local Server <red>due to security reasons!"
 payNotYourself: "<red>You can't <dark_red>pay <red>yourself!"
 baltop:
   header:

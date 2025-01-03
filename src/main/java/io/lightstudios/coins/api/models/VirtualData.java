@@ -3,7 +3,9 @@ package io.lightstudios.coins.api.models;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.VirtualResponse;
 import io.lightstudios.coins.synchronisation.TransactionVirtual;
+import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
+import io.lightstudios.core.util.relocations.jedis.Jedis;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -11,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -32,6 +35,7 @@ public class VirtualData {
     private BigDecimal currentBalance;
 
     private static final TransactionVirtual transactionVirtual = new TransactionVirtual();
+    private static final String REDIS_CHANNEL = "virtualDataUpdates";
 
     public VirtualData(File file, UUID uuid) {
         this.file = file;
@@ -73,7 +77,13 @@ public class VirtualData {
         }
 
         this.currentBalance = amount;
-        transactionVirtual.addTransaction(this);
+
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+            LightCoins.instance.getVirtualDataTable().writeVirtualData(this).join();
+        } else {
+            if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
+            transactionVirtual.addTransaction(this);
+        }
 
         return new VirtualResponse(amount, this.currentBalance, defaultResponse.type, defaultResponse.errorMessage);
     }
@@ -96,7 +106,13 @@ public class VirtualData {
         }
 
         this.currentBalance = this.currentBalance.add(amount);
-        transactionVirtual.addTransaction(this);
+
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+            LightCoins.instance.getVirtualDataTable().writeVirtualData(this).join();
+        } else {
+            if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
+            transactionVirtual.addTransaction(this);
+        }
 
         return new VirtualResponse(amount, this.currentBalance, defaultResponse.type, defaultResponse.errorMessage);
     }
@@ -119,13 +135,27 @@ public class VirtualData {
         }
 
         this.currentBalance = this.currentBalance.subtract(amount);
-        transactionVirtual.addTransaction(this);
+
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+            LightCoins.instance.getVirtualDataTable().writeVirtualData(this).join();
+        } else {
+            if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
+            transactionVirtual.addTransaction(this);
+        }
 
         return new VirtualResponse(amount, this.currentBalance, defaultResponse.type, defaultResponse.errorMessage);
     }
 
     public boolean hasEnough(BigDecimal amount) {
-        return this.currentBalance.compareTo(amount) >= 0;
+        if (LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+            List<VirtualData> result = LightCoins.instance.getVirtualDataTable().findVirtualDataByUUID(this.playerUUID).join();
+
+            return result.stream()
+                    .filter(virtualData -> virtualData.getCurrencyName().equals(this.currencyName))
+                    .anyMatch(virtualData -> this.currentBalance.compareTo(virtualData.getCurrentBalance()) >= 0);
+        } else {
+            return this.currentBalance.compareTo(amount) >= 0;
+        }
     }
 
 
@@ -150,6 +180,34 @@ public class VirtualData {
     }
     public String getFormattedCurrencySymbol() {
         return currentBalance.compareTo(BigDecimal.ONE) == 0 ? currencySymbolSingular : currencySymbolPlural;
+    }
+
+    /**
+     * Sends the current balance data to the Redis server and
+     * synchronizes the data with the other servers.
+     */
+    private void sendUpdateToRedis() {
+        try (Jedis jedis = LightCore.instance.getRedisManager().getJedisPool().getResource()) {
+            if (playerUUID == null || currentBalance == null) {
+                LightCoins.instance.getConsolePrinter().printError(List.of(
+                        "UUID, amount, or currentBalance cannot be null in VirtualData!",
+                        "UUID: " + playerUUID,
+                        "Current Balance: " + currentBalance,
+                        "Could not send update to Redis. This behavior is unexpected",
+                        "and you should report this to the plugin developer!"
+                ));
+                throw new IllegalArgumentException("UUID, amount, or currentBalance cannot be null");
+            }
+            // message format: uuid:name:currency:balance
+            String message = String.format(
+                    "%s:%s:%s:%s",
+                    this.playerUUID, this.playerName, this.currencyName, this.currentBalance);
+            jedis.publish(REDIS_CHANNEL, message);
+        } catch (Exception e) {
+            // Log the exception or handle it accordingly
+            e.printStackTrace();
+
+        }
     }
 
 }

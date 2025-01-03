@@ -11,12 +11,14 @@ import io.lightstudios.core.util.LightTimers;
 import io.lightstudios.core.util.interfaces.LightCommand;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -54,7 +56,13 @@ public class PayCommand implements LightCommand {
     public TabCompleter registerTabCompleter() {
         return (commandSender, command, alias, args) -> {
             if (args.length == 1) {
-                return Bukkit.getServer().getOnlinePlayers().stream().map(Player::getName).toList();
+                if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+                    // only support offline players from the target server !
+                    return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList();
+                } else {
+                    // support all players from the network
+                    return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
+                }
             }
             return null;
         };
@@ -95,30 +103,6 @@ public class PayCommand implements LightCommand {
             return false;
         }
 
-        List<String> availableAccounts = LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
-
-        if(!availableAccounts.contains(targetName)) {
-            LightCore.instance.getMessageSender().sendPlayerMessage(
-                    player,
-                    LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().payOnlyOnlinePlayer().stream().map(s ->
-                                    s.replace("#target#", targetName)
-                            ).collect(Collectors.joining()));
-        }
-
-        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(player);
-        AccountData targetData = LightCoins.instance.getLightCoinsAPI().getAccountData(targetName);
-
-        if(playerData == null || targetData == null) {
-            LightCore.instance.getMessageSender().sendPlayerMessage(
-                    player,
-                    LightCoins.instance.getMessageConfig().prefix() +
-                            LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(s ->
-                                    s.replace("#info#", "Could not find account data for target or yourself!")
-                            ).collect(Collectors.joining()));
-            return false;
-        }
-
         BigDecimal amount = LightNumbers.parseMoney(args[1]);
 
         if(amount == null) {
@@ -134,6 +118,102 @@ public class PayCommand implements LightCommand {
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().noNegativ());
+            return false;
+        }
+
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+
+            CoinsData coinsPlayer = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(player.getUniqueId()).join();
+
+            OfflinePlayer target = Arrays.stream(Bukkit.getServer().getOfflinePlayers())
+                    .filter(offlinePlayer -> offlinePlayer.getName() != null && offlinePlayer.getName().equalsIgnoreCase(targetName))
+                    .findFirst()
+                    .orElse(null);
+
+            if(target == null) {
+                LightCore.instance.getMessageSender().sendPlayerMessage(
+                        player,
+                        LightCoins.instance.getMessageConfig().prefix() +
+                                LightCoins.instance.getMessageConfig().payOnlyOnlinePlayer().stream().map(s ->
+                                        s.replace("#target#", targetName)
+                                ).collect(Collectors.joining()));
+                return false;
+            }
+
+            CoinsData coinsTarget = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(target.getUniqueId()).join();
+
+            if(coinsPlayer == null) {
+                LightCore.instance.getMessageSender().sendPlayerMessage(
+                        player,
+                        LightCoins.instance.getMessageConfig().prefix() +
+                                LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(s ->
+                                        s.replace("#info#", "Could not find account data for: " + targetName)
+                                ).collect(Collectors.joining()));
+                return false;
+            }
+
+            EconomyResponse playerResponse = coinsPlayer.removeCoins(amount);
+            EconomyResponse targetResponse = coinsTarget.addCoins(amount);
+
+            if(playerResponse.transactionSuccess() && targetResponse.transactionSuccess()) {
+
+                int cooldownTime = LightCoins.instance.getSettingsConfig().payCommandCooldown();
+
+                if(cooldownTime != -1) {
+                    cooldown.add(player);
+                    LightTimers.doSync((task) -> cooldown.remove(player), cooldownTime * 20L);
+                }
+
+                LightCore.instance.getMessageSender().sendPlayerMessage(
+                        player,
+                        LightCoins.instance.getMessageConfig().prefix() +
+                                LightCoins.instance.getMessageConfig().pay().stream().map(s -> s
+                                        .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
+                                        .replace("#currency#", amount.compareTo(BigDecimal.ONE) == 0 ?
+                                                coinsPlayer.getNameSingular() : coinsPlayer.getNamePlural())
+                                        .replace("#target#", targetName)
+                                ).collect(Collectors.joining()));
+
+
+                if(target.isOnline()) {
+                    LightCore.instance.getMessageSender().sendPlayerMessage(
+                            target.getPlayer(),
+                            LightCoins.instance.getMessageConfig().prefix() +
+                                    LightCoins.instance.getMessageConfig().payTarget().stream().map(s -> s
+                                            .replace("#coins#", LightNumbers.formatForMessages(amount, 2))
+                                            .replace("#currency#", amount.compareTo(BigDecimal.ONE) == 0 ?
+                                                    coinsPlayer.getNameSingular() : coinsPlayer.getNamePlural())
+                                            .replace("#target#", player.getName())
+                                    ).collect(Collectors.joining()));
+
+                    return false;
+                }
+                return false;
+            }
+            return false;
+        }
+
+        List<String> availableAccounts = LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
+
+        if(!availableAccounts.contains(targetName)) {
+            LightCore.instance.getMessageSender().sendPlayerMessage(
+                    player,
+                    LightCoins.instance.getMessageConfig().prefix() +
+                            LightCoins.instance.getMessageConfig().playerNotFound().stream().map(s ->
+                                    s.replace("#player#", targetName)
+                            ).collect(Collectors.joining()));
+        }
+
+        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(player);
+        AccountData targetData = LightCoins.instance.getLightCoinsAPI().getAccountData(targetName);
+
+        if(playerData == null || targetData == null) {
+            LightCore.instance.getMessageSender().sendPlayerMessage(
+                    player,
+                    LightCoins.instance.getMessageConfig().prefix() +
+                            LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(s ->
+                                    s.replace("#info#", "Could not find account data for target: " + targetName)
+                            ).collect(Collectors.joining()));
             return false;
         }
 

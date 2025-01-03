@@ -131,7 +131,6 @@ public class TransferCommand implements LightCommand {
             oldEconomyTable.disconnect();
             LightCoins.instance.getConsolePrinter().printInfo(List.of(
                     "§aTransfer completed successfully.",
-                    "If all Data is correct, you can now delete LightEconomy.jar",
                     "The Server will be restarted in few seconds automatically ..."
             ));
             LightTimers.startTaskWithCounter((task, count) -> {

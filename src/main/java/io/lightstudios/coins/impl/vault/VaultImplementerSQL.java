@@ -1,8 +1,8 @@
 package io.lightstudios.coins.impl.vault;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
+import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.impl.events.custom.LightCoinsDepositEvent;
 import io.lightstudios.coins.impl.events.custom.LightCoinsWithdrawEvent;
 import io.lightstudios.core.LightCore;
@@ -17,8 +17,9 @@ import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
-public class VaultImplementerSingle implements Economy {
+public class VaultImplementerSQL implements Economy {
 
     @Override
     public boolean isEnabled() {
@@ -27,7 +28,7 @@ public class VaultImplementerSingle implements Economy {
 
     @Override
     public String getName() {
-        return "LightCoinsRedis";
+        return "LightCoinsMysql";
     }
 
     @Override
@@ -83,26 +84,24 @@ public class VaultImplementerSingle implements Economy {
 
     @Override
     public double getBalance(String input) {
-
         UUID uuid = checkUUID(input);
 
         if (uuid == null) {
             return 0;
         }
 
-        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData().get(uuid);
-
-        if(accountData == null) {
+        CompletableFuture<CoinsData> coinsDataFuture = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(uuid);
+        try {
+            CoinsData result = coinsDataFuture.get(); // Block until the result is available
+            return result.getCurrentCoins().doubleValue();
+        } catch (Exception e) {
+            LightCoins.instance.getConsolePrinter().printError(List.of(
+                    "An error occurred while reading coins data from the database!",
+                    "Please check the error logs for more information."
+            ));
+            e.printStackTrace();
             return 0;
         }
-
-        CoinsData coinsData = accountData.getCoinsData();
-
-        if(coinsData == null) {
-            return 0;
-        }
-
-        return coinsData.getCurrentCoins().doubleValue();
     }
 
     @Override
@@ -165,21 +164,20 @@ public class VaultImplementerSingle implements Economy {
 
         final BigDecimal formatted = LightNumbers.formatBigDecimal(BigDecimal.valueOf(v));
 
-        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData().get(uuid);
-
-        if(accountData == null) {
-            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE,
-                    "Failed to withdraw coins. Account Data not found for " + uuid);
+        CompletableFuture<CoinsData> coinsDataFuture = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(uuid);
+        try {
+            CoinsData result = coinsDataFuture.get(); // Block until the result is available
+            return result.removeCoins(formatted);
+        } catch (Exception e) {
+            LightCoins.instance.getConsolePrinter().printError(List.of(
+                    "An error occurred while reading coins data from the database!",
+                    "Please check the error logs for more information."
+            ));
+            e.printStackTrace();
         }
 
-        CoinsData coinsData = accountData.getCoinsData();
-
-        if(coinsData == null) {
-            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE,
-                    "Failed to withdraw coins. Coins Data not found for " + uuid);
-        }
-
-        return coinsData.removeCoins(formatted);
+        return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
+                "Failed to withdraw coins. An error occurred while reading coins data from the database.");
     }
 
     @Override
@@ -213,37 +211,35 @@ public class VaultImplementerSingle implements Economy {
     public EconomyResponse depositPlayer(String input, double v) {
         LightCoins.instance.getConsolePrinter().printError("DEPOSIT: " + input + " - " + v);
         UUID uuid = checkUUID(input);
-
         if (uuid == null) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
-                    "Failed to deposit coins. Invalid UUID format: " + input);
+                    "Failed to withdraw coins. Invalid UUID format: " + input);
+        }
+
+        LightCoinsWithdrawEvent withdrawEvent = new LightCoinsWithdrawEvent(input, new BigDecimal(v));
+        v = withdrawEvent.getAmount().doubleValue();
+
+        if (withdrawEvent.isCancelled()) {
+            return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
+                    "Withdraw cancelled by LightCoinsWithdrawEvent.");
         }
 
         final BigDecimal formatted = LightNumbers.formatBigDecimal(BigDecimal.valueOf(v));
-        LightCoinsDepositEvent depositEvent = new LightCoinsDepositEvent(uuid.toString(), formatted);
 
-        if (depositEvent.isCancelled()) {
-            return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
-                    "Deposit cancelled by LightCoinsDepositEvent.");
+        CompletableFuture<CoinsData> coinsDataFuture = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(uuid);
+        try {
+            CoinsData result = coinsDataFuture.get(); // Block until the result is available
+            return result.addCoins(formatted);
+        } catch (Exception e) {
+            LightCoins.instance.getConsolePrinter().printError(List.of(
+                    "An error occurred while reading coins data from the database!",
+                    "Please check the error logs for more information."
+            ));
+            e.printStackTrace();
         }
 
-        v = depositEvent.getAmount().doubleValue();
-
-        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData().get(uuid);
-
-        if(accountData == null) {
-            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE,
-                    "Failed to deposit coins. Account Data not found for " + uuid);
-        }
-
-        CoinsData coinsData = accountData.getCoinsData();
-
-        if(coinsData == null) {
-            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE,
-                    "Failed to deposit coins. Coins Data not found for " + uuid);
-        }
-
-        return coinsData.addCoins(formatted);
+        return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
+                "Failed to withdraw coins. An error occurred while reading coins data from the database.");
     }
 
     @Override
@@ -290,38 +286,17 @@ public class VaultImplementerSingle implements Economy {
             return false;
         }
 
-        boolean isTownyAccount;
+        boolean isTowny = false;
         if(LightCore.instance.getHookManager().isExistTowny()) {
             TownyInterface townyInterface = LightCore.instance.getHookManager().getTownyInterface();
-            isTownyAccount = townyInterface.isTownyUUID(uuid);
-        } else {
-            isTownyAccount = false;
+            isTowny = townyInterface.isTownyUUID(uuid);
         }
-        AccountData accountData = new AccountData();
-        OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
-        CoinsData coinsData = new CoinsData(uuid);
-        accountData.setUuid(uuid);
-        accountData.setName(isTownyAccount ? "nonplayer_account" : offlinePlayer.getName());
-        accountData.setOfflinePlayer(offlinePlayer);
-        coinsData.setName(isTownyAccount ? "nonplayer_account" : offlinePlayer.getName());
-        accountData.setCoinsData(coinsData);
-        try {
-            int result = LightCoins.instance.getCoinsTable().writeCoinsData(coinsData).join();
-            if (result == 1) {
-                LightCoins.instance.getLightCoinsAPI().getAccountData().put(uuid, accountData);
-                return true;
-            } else {
-                LightCoins.instance.getConsolePrinter().printError("Failed to create account account for " + uuid);
-                return false;
-            }
-        } catch (Exception e) {
-            LightCoins.instance.getConsolePrinter().printError(List.of(
-                    "An error occurred while writing account data to the database!",
-                    "Please check the error logs for more information."
-            ));
-            e.printStackTrace();
-            return false;
-        }
+
+        CompletableFuture<AccountData> accountDataFuture = LightCoins.instance.getLightCoinsAPI()
+                .createAccountDataAsync(LightCoins.instance, uuid,
+                        isTowny ? "nonplayer_account" : Bukkit.getOfflinePlayer(uuid).getName());
+
+        return accountDataFuture.join() != null;
     }
 
     @Override
