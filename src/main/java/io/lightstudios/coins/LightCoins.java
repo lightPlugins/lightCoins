@@ -138,8 +138,9 @@ public final class LightCoins extends JavaPlugin {
     private void readVirtualCurrencies() {
         try {
             new FileManager(this, "virtual-currency/_example.yml", true);
-            new FileManager(this, "virtual-currency/gems.yml", true);
+            // new FileManager(this, "virtual-currency/gems.yml", true);
             this.virtualCurrencyFiles = new MultiFileManager("plugins/" + getName() + "/virtual-currency/");
+            this.virtualCurrencyFiles.reload();
         } catch (Exception e) {
             LightCoins.instance.getConsolePrinter().printError("Failed to load virtual currencies.");
             throw new RuntimeException("Failed to load virtual currencies.");

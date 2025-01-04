@@ -24,7 +24,8 @@ public class CoinsAmountFormattedHolder implements LightPlaceholder {
             return "Player not found: " + offlinePlayer.getName();
         }
 
-        return formatBalance(balance);
+        int decimalPlaces = getDecimalPlaces(offlinePlayer);
+        return formatBalance(balance, decimalPlaces);
     }
 
     private BigDecimal getBalance(OfflinePlayer offlinePlayer) {
@@ -47,22 +48,26 @@ public class CoinsAmountFormattedHolder implements LightPlaceholder {
         return accountData.getCoinsData().getCurrentCoins();
     }
 
-    private String formatBalance(BigDecimal balance) {
+    private int getDecimalPlaces(OfflinePlayer offlinePlayer) {
+        return LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces();
+    }
+
+    private String formatBalance(BigDecimal balance, int decimalPlaces) {
         BigDecimal thousand = new BigDecimal(1000);
         BigDecimal million = new BigDecimal(1000000);
         BigDecimal billion = new BigDecimal(1000000000);
         BigDecimal trillion = new BigDecimal(1000000000000L);
 
         if (balance.compareTo(trillion) >= 0) {
-            return balance.divide(trillion, RoundingMode.DOWN).setScale(1, RoundingMode.DOWN) + "t";
+            return balance.divide(trillion, 2, RoundingMode.DOWN) + "t";
         } else if (balance.compareTo(billion) >= 0) {
-            return balance.divide(billion, RoundingMode.DOWN).setScale(1, RoundingMode.DOWN) + "b";
+            return balance.divide(billion, 2, RoundingMode.DOWN) + "b";
         } else if (balance.compareTo(million) >= 0) {
-            return balance.divide(million, RoundingMode.DOWN).setScale(1, RoundingMode.DOWN) + "m";
+            return balance.divide(million, 2, RoundingMode.DOWN) + "m";
         } else if (balance.compareTo(thousand) >= 0) {
-            return balance.divide(thousand, RoundingMode.DOWN).setScale(1, RoundingMode.DOWN) + "k";
+            return balance.divide(thousand, 2, RoundingMode.DOWN) + "k";
         } else {
-            return balance.toPlainString();
+            return balance.setScale(decimalPlaces, RoundingMode.DOWN).toPlainString();
         }
     }
 }

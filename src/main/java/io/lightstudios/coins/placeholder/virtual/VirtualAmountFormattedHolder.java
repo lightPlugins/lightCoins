@@ -31,7 +31,8 @@ public class VirtualAmountFormattedHolder implements LightPlaceholder {
             return "Currency/Player not found: " + currencyName + " - " + offlinePlayer.getName();
         }
 
-        return formatBalance(balance);
+        int decimalPlaces = getDecimalPlaces(offlinePlayer, currencyName);
+        return formatBalance(balance, decimalPlaces);
     }
 
     private BigDecimal getBalance(OfflinePlayer offlinePlayer, String currencyName) {
@@ -66,22 +67,36 @@ public class VirtualAmountFormattedHolder implements LightPlaceholder {
         return virtualData.getCurrentBalance();
     }
 
-    private String formatBalance(BigDecimal balance) {
+    private int getDecimalPlaces(OfflinePlayer offlinePlayer, String currencyName) {
+        AccountData accountData = LightCoins.instance.getLightCoinsAPI().getAccountData(offlinePlayer.getUniqueId());
+        if (accountData == null) {
+            return 0;
+        }
+
+        VirtualData virtualData = accountData.getVirtualCurrencyByName(currencyName);
+        if (virtualData == null) {
+            return 0;
+        }
+
+        return virtualData.getDecimalPlaces();
+    }
+
+    private String formatBalance(BigDecimal balance, int decimalPlaces) {
         BigDecimal thousand = new BigDecimal(1000);
         BigDecimal million = new BigDecimal(1000000);
         BigDecimal billion = new BigDecimal(1000000000);
         BigDecimal trillion = new BigDecimal(1000000000000L);
 
         if (balance.compareTo(trillion) >= 0) {
-            return balance.divide(trillion, RoundingMode.DOWN).setScale(1, RoundingMode.DOWN) + "t";
+            return balance.divide(trillion, decimalPlaces, RoundingMode.DOWN) + "t";
         } else if (balance.compareTo(billion) >= 0) {
-            return balance.divide(billion, RoundingMode.DOWN).setScale(1, RoundingMode.DOWN) + "b";
+            return balance.divide(billion, decimalPlaces, RoundingMode.DOWN) + "b";
         } else if (balance.compareTo(million) >= 0) {
-            return balance.divide(million, RoundingMode.DOWN).setScale(1, RoundingMode.DOWN) + "m";
+            return balance.divide(million, decimalPlaces, RoundingMode.DOWN) + "m";
         } else if (balance.compareTo(thousand) >= 0) {
-            return balance.divide(thousand, RoundingMode.DOWN).setScale(1, RoundingMode.DOWN) + "k";
+            return balance.divide(thousand, decimalPlaces, RoundingMode.DOWN) + "k";
         } else {
-            return balance.toPlainString();
+            return balance.setScale(decimalPlaces, RoundingMode.DOWN).toPlainString();
         }
     }
 }

@@ -149,6 +149,7 @@ public class VirtualShowCommand implements LightCommand {
                             LightCoins.instance.getMessageConfig().virtualShow().stream().map(str -> str
                                     .replace("#currency#", virtualData.getFormattedCurrencySymbol())
                                     .replace("#amount#", virtualData.getFormattedBalance())
+                                    .replace("#player#", virtualData.getPlayerName())
                             ).collect(Collectors.joining()));
 
             return true;

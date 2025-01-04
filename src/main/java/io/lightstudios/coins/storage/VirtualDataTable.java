@@ -45,10 +45,10 @@ public class VirtualDataTable {
                                 f -> f.getName().replace(".yml", "").equals(currencyName)).findFirst().orElse(null);
 
                         if(file == null) {
-                            LightCoins.instance.getConsolePrinter().printError(List.of(
+                            LightCoins.instance.getConsolePrinter().printDebug(List.of(
                                     "An error occurred while reading virtual data from the database!",
                                     "The currency file for " + currencyName + " was not found!"
-                            ));
+                            ), 1);
                             continue;
                         }
 
@@ -100,10 +100,10 @@ public class VirtualDataTable {
                                     f -> f.getName().replace(".yml", "").equals(currencyName)).findFirst().orElse(null);
 
                             if(file == null) {
-                                LightCoins.instance.getConsolePrinter().printError(List.of(
+                                LightCoins.instance.getConsolePrinter().printDebug(List.of(
                                         "An error occurred while reading virtual data from the database!",
                                         "The currency file for " + currencyName + " was not found!"
-                                ));
+                                ), 1);
                                 continue;
                             }
 
