@@ -5,3 +5,9 @@ decimalPlaces: 0
 currencyNamePlural: 'Gems'
 currencyNameSingular: 'Gem'
 maxBalance: 999999999999999999999999
+voucher:
+  enable: true
+  commandCooldown: 5
+  minValue: 100.00
+  maxValue: 100000.00
+  item: token

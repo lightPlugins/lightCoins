@@ -45,3 +45,20 @@ currencyNameSingular: 'Gem'
 # The max possible money amount.
 # If a player reaches this value, he can't get any more currency.
 maxBalance: 999999999999999999999999
+# The voucher system for the default currency.
+# Players can create vouchers with a value between the min and max value.
+# and redeem them for the currency with right-click.
+voucher:
+  # Enable or disable the voucher system for this virtual currency.
+  enable: true
+  # The command cooldown for the voucher command in seconds.
+  commandCooldown: 5
+  # The min value for the voucher to create.
+  minValue: 100.00
+  # The max value for the voucher to create.
+  maxValue: 100000.00
+    # The physical item for the voucher.
+    # HOW TO: In /LightCoins/items/.. you can create the item.
+    # This is the file name without the extension.
+    # example: 'voucher-item' (/LightCoins/items/voucher-item.yml)
+  item: token
