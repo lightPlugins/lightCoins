@@ -14,6 +14,7 @@ public enum LightPermissions {
     COINS_ADD_COMMAND("lightcoins.command.admin.coins.add"),
     COINS_SET_COMMAND("lightcoins.command.admin.coins.set"),
     COINS_REMOVE_COMMAND("lightcoins.command.admin.coins.remove"),
+    COINS_SHOW_COMMAND("lightcoins.command.admin.coins.show"),
     COINS_HELP_ADMIN_COMMAND("lightcoins.command.admin.coins.help"),
     RELOAD_COMMAND("lightcoins.command.admin.reload"),
     DEFAULT_HELP_COMMAND("lightcoins.command.admin.help"),
@@ -29,7 +30,6 @@ public enum LightPermissions {
         Player Command Permissions
      */
 
-    COINS_COMMAND("lightcoins.command.player.coins"),
     PAY_COMMAND("lightcoins.command.player.coins.pay"),
     BALTOP_COMMAND("lightcoins.command.player.coins.baltop"),
     VIRTUAL_SHOW_COMMAND("lightcoins.command.player.virtual.show"),
