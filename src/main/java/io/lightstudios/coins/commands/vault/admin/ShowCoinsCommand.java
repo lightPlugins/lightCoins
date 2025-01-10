@@ -39,7 +39,7 @@ public class ShowCoinsCommand implements LightCommand {
 
     @Override
     public String getPermission() {
-        return LightPermissions.COINS_COMMAND.getPerm();
+        return LightPermissions.COINS_SHOW_COMMAND.getPerm();
     }
 
     @Override
@@ -130,7 +130,7 @@ public class ShowCoinsCommand implements LightCommand {
             return false;
         }
 
-        if(!player.hasPermission(LightPermissions.COINS_COMMAND.getPerm())) {
+        if(!player.hasPermission(LightPermissions.COINS_SHOW_COMMAND.getPerm())) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
