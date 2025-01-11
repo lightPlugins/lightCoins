@@ -20,7 +20,7 @@ item: token
 # Requirement system to redeem the voucher.
 redeemRequirements:
   '0':
-    id: math
+    id: math-simple
     args:
       a: '%lightcoins_virtual_raw_gems%'
       b: '100'

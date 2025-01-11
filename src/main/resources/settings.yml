@@ -50,8 +50,6 @@ commands:
   baltop: 'baltop'
   # The command prefix for the vault pay command
   pay: 'pay'
-  # The command prefix for the voucher command
-  voucher: 'voucher'
 # The Vault default currency settings.
 # IMPORTANT: These settings only affects the Vault currency and not the custom currencies!
 defaultCurrency:
