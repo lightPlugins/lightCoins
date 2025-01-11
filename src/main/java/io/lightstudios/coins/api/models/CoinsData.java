@@ -28,7 +28,7 @@ public class CoinsData {
 
     private static final String REDIS_CHANNEL = "coinsDataUpdates";
 
-    private static final TransactionCoins transactionManager = new TransactionCoins();
+    private final TransactionCoins transactionManager = new TransactionCoins();
 
     public CoinsData(UUID uuid) {
         this.uuid = uuid;
@@ -39,9 +39,9 @@ public class CoinsData {
         this.nameSingular = LightCoins.instance.getSettingsConfig().defaultCurrencyNameSingular();
         this.decimalPlaces = LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces();
 
-        transactionManager.setDelay(LightCoins.instance.getSettingsConfig().syncDelay());
-        transactionManager.setPeriod(LightCoins.instance.getSettingsConfig().syncPeriod());
-        transactionManager.startTransactions();
+        this.transactionManager.setDelay(LightCoins.instance.getSettingsConfig().syncDelay());
+        this.transactionManager.setPeriod(LightCoins.instance.getSettingsConfig().syncPeriod());
+        this.transactionManager.startTransactions();
 
     }
 
@@ -59,7 +59,7 @@ public class CoinsData {
             LightCoins.instance.getCoinsTable().writeCoinsData(this).join();
         } else {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
-            transactionManager.addTransaction(this);
+            this.transactionManager.addTransaction(this);
         }
 
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
@@ -87,7 +87,7 @@ public class CoinsData {
             LightCoins.instance.getCoinsTable().writeCoinsData(this).join();
         } else {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
-            transactionManager.addTransaction(this);
+            this.transactionManager.addTransaction(this);
         }
 
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
@@ -115,7 +115,7 @@ public class CoinsData {
             LightCoins.instance.getCoinsTable().writeCoinsData(this).join();
         } else {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
-            transactionManager.addTransaction(this);
+            this.transactionManager.addTransaction(this);
         }
 
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
