@@ -36,16 +36,16 @@ public class VirtualData {
 
     private static final String REDIS_CHANNEL = "virtualDataUpdates";
 
-    private final TransactionVirtual transactionVirtual = new TransactionVirtual();
+    private static final TransactionVirtual transactionVirtual = new TransactionVirtual();
 
     public VirtualData(File file, UUID uuid) {
         this.file = file;
         this.playerUUID = uuid;
         this.currentBalance = new BigDecimal(0);
 
-        this.transactionVirtual.setDelay(LightCoins.instance.getSettingsConfig().syncDelay());
-        this.transactionVirtual.setPeriod(LightCoins.instance.getSettingsConfig().syncPeriod());
-        this.transactionVirtual.startTransactions();
+        transactionVirtual.setDelay(LightCoins.instance.getSettingsConfig().syncDelay());
+        transactionVirtual.setPeriod(LightCoins.instance.getSettingsConfig().syncPeriod());
+        transactionVirtual.startTransactions();
 
         readCurrencyFile();
     }
@@ -84,7 +84,7 @@ public class VirtualData {
             LightCoins.instance.getVirtualDataTable().writeVirtualData(this).join();
         } else {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
-            this.transactionVirtual.addTransaction(this);
+            transactionVirtual.addTransaction(this);
         }
 
         return new VirtualResponse(amount, this.currentBalance, defaultResponse.type, defaultResponse.errorMessage);
@@ -114,7 +114,7 @@ public class VirtualData {
             LightCoins.instance.getVirtualDataTable().writeVirtualData(this).join();
         } else {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
-            this.transactionVirtual.addTransaction(this);
+            transactionVirtual.addTransaction(this);
         }
 
         return new VirtualResponse(amount, this.currentBalance, defaultResponse.type, defaultResponse.errorMessage);
@@ -144,7 +144,7 @@ public class VirtualData {
             LightCoins.instance.getVirtualDataTable().writeVirtualData(this).join();
         } else {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
-            this.transactionVirtual.addTransaction(this);
+            transactionVirtual.addTransaction(this);
         }
 
         return new VirtualResponse(amount, this.currentBalance, defaultResponse.type, defaultResponse.errorMessage);
