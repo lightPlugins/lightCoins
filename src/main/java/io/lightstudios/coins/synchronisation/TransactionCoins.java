@@ -33,7 +33,7 @@ public class TransactionCoins {
         transactionQueue.add(new Transaction(coinsData, timestamp));
     }
 
-    private void processTransactions() {
+    private synchronized void processTransactions() {
         if (transactionQueue.isEmpty()) {
             return;
         }
@@ -46,31 +46,31 @@ public class TransactionCoins {
 
         if (lastTransaction != null) {
             UUID uuid = lastTransaction.coinsData.getUuid();
-            String name = lastTransaction.coinsData.getName();
             BigDecimal amount = lastTransaction.coinsData.getCurrentCoins();
             String timestamp = lastTransaction.timestamp();
 
             // Create a CoinsData object
-            CoinsData coinsData = new CoinsData(uuid);
-            coinsData.setName(name);
-            coinsData.setCoins(amount);
+            // CoinsData coinsData = new CoinsData(uuid);
+            // coinsData.setName(name);
+            // coinsData.setCoins(amount);
 
             // Write the last transaction to the database asynchronously
+            Transaction finalLastTransaction = lastTransaction;
             CompletableFuture.runAsync(() -> {
-                LightCoins.instance.getCoinsTable().writeCoinsData(coinsData).thenAccept(result -> {
+                LightCoins.instance.getCoinsTable().writeCoinsData(finalLastTransaction.coinsData).thenAccept(result -> {
                     if (result > 0) {
                         if(LightCoins.instance.getSettingsConfig().enableDebugMultiSync()) {
                             LightCoins.instance.getConsolePrinter().printInfo(
-                                    "Processed [" + timestamp + "] transaction for " + uuid + ": " + amount);
+                                    "Processed [" + timestamp + "] vault transaction for " + uuid + ": " + amount);
                         }
 
                     } else {
                         LightCoins.instance.getConsolePrinter().printError(
-                                "Failed [" + timestamp + "] transaction for " + uuid + ": " + amount);
+                                "Failed [" + timestamp + "] vault transaction for " + uuid + ": " + amount);
                     }
                 }).exceptionally(throwable -> {
                     LightCoins.instance.getConsolePrinter().printError(List.of(
-                            "Failed to write last transaction for " + uuid,
+                            "Failed to write last vault transaction for " + uuid,
                             "Amount: " + amount,
                             "Timestamp: " + timestamp));
                     throwable.printStackTrace();
@@ -78,7 +78,7 @@ public class TransactionCoins {
                 });
 
             }).exceptionally(throwable -> {
-                LightCoins.instance.getConsolePrinter().printError("Failed to process last transaction for " + uuid);
+                LightCoins.instance.getConsolePrinter().printError("Failed to process last vault transaction for " + uuid);
                 throwable.printStackTrace();
                 return null;
             });
