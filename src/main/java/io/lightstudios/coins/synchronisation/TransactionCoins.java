@@ -68,23 +68,25 @@ public class TransactionCoins {
                         LightCoins.instance.getConsolePrinter().printError(
                                 "Failed [" + timestamp + "] vault transaction for " + uuid + ": " + amount);
                     }
+                    // Remove the processed transaction from the queue
+                    transactionQueue.remove(finalLastTransaction);
                 }).exceptionally(throwable -> {
                     LightCoins.instance.getConsolePrinter().printError(List.of(
                             "Failed to write last vault transaction for " + uuid,
                             "Amount: " + amount,
                             "Timestamp: " + timestamp));
                     throwable.printStackTrace();
+                    transactionQueue.remove(finalLastTransaction);
                     return null;
                 });
 
             }).exceptionally(throwable -> {
                 LightCoins.instance.getConsolePrinter().printError("Failed to process last vault transaction for " + uuid);
                 throwable.printStackTrace();
+                transactionQueue.remove(finalLastTransaction);
                 return null;
             });
         }
-
-        transactionQueue.clear();
     }
 
     private record Transaction(CoinsData coinsData, String timestamp) {
