@@ -34,7 +34,7 @@ public class TransactionVirtual {
         transactionQueue.add(new Transaction(virtualData, timestamp));
     }
 
-    private void processTransactions() {
+    private synchronized void processTransactions() {
         if (transactionQueue.isEmpty()) {
             return;
         }
@@ -47,47 +47,45 @@ public class TransactionVirtual {
 
         if (lastTransaction != null) {
             UUID uuid = lastTransaction.virtualData.getPlayerUUID();
-            String name = lastTransaction.virtualData.getPlayerName();
             BigDecimal amount = lastTransaction.virtualData.getCurrentBalance();
             String timestamp = lastTransaction.timestamp();
-            File file = lastTransaction.virtualData.getFile();
 
             // Create a CoinsData object
-            VirtualData virtualData = new VirtualData(file, uuid);
-            virtualData.setPlayerName(name);
-            virtualData.setBalance(amount);
+            // VirtualData virtualData = new VirtualData(file, uuid);
+            // virtualData.setPlayerName(name);
+            // virtualData.setBalance(amount);
 
             // Write the last transaction to the database asynchronously
+            Transaction finalLastTransaction = lastTransaction;
             CompletableFuture.runAsync(() -> {
-                LightCoins.instance.getVirtualDataTable().writeVirtualData(virtualData).thenAccept(result -> {
+                LightCoins.instance.getVirtualDataTable().writeVirtualData(finalLastTransaction.virtualData).thenAccept(result -> {
                     if (result > 0) {
                         if(LightCoins.instance.getSettingsConfig().enableDebugMultiSync()) {
                             LightCoins.instance.getConsolePrinter().printInfo(
-                                    "Processed [" + timestamp + "] transaction for " + uuid + ": " + amount);
+                                    "Processed [" + timestamp + "] virtual transaction for " + uuid + ": " + amount);
                         }
-                        return;
                     } else {
                         LightCoins.instance.getConsolePrinter().printError(
-                                "Failed [" + timestamp + "] transaction for " + uuid + ": " + amount);
+                                "Failed [" + timestamp + "] virtual transaction for " + uuid + ": " + amount);
                     }
-                    return;
+                    // Remove the processed transaction from the queue
+                    transactionQueue.remove(finalLastTransaction);
                 }).exceptionally(throwable -> {
                     LightCoins.instance.getConsolePrinter().printError(List.of(
                             "Failed to write last transaction for " + uuid,
                             "Amount: " + amount,
                             "Timestamp: " + timestamp));
                     throwable.printStackTrace();
+                    transactionQueue.remove(finalLastTransaction);
                     return null;
                 });
             }).exceptionally(throwable -> {
-                LightCoins.instance.getConsolePrinter().printError("Failed to process last transaction for " + uuid);
+                LightCoins.instance.getConsolePrinter().printError("Failed to process last virtual transaction for " + uuid);
                 throwable.printStackTrace();
+                transactionQueue.remove(finalLastTransaction);
                 return null;
             });
         }
-
-
-        transactionQueue.clear();
     }
 
     private record Transaction(VirtualData virtualData, String timestamp) {

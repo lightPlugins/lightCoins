@@ -63,7 +63,6 @@ public class TransactionCoins {
                             LightCoins.instance.getConsolePrinter().printInfo(
                                     "Processed [" + timestamp + "] vault transaction for " + uuid + ": " + amount);
                         }
-
                     } else {
                         LightCoins.instance.getConsolePrinter().printError(
                                 "Failed [" + timestamp + "] vault transaction for " + uuid + ": " + amount);
@@ -79,7 +78,6 @@ public class TransactionCoins {
                     transactionQueue.remove(finalLastTransaction);
                     return null;
                 });
-
             }).exceptionally(throwable -> {
                 LightCoins.instance.getConsolePrinter().printError("Failed to process last vault transaction for " + uuid);
                 throwable.printStackTrace();
