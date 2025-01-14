@@ -49,7 +49,7 @@ public class VirtualData {
 
         readCurrencyFile();
     }
-    // test
+    // test another
     private void readCurrencyFile() {
         // Read the currency file and set the values
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
