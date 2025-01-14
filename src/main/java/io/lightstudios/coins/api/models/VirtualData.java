@@ -65,6 +65,11 @@ public class VirtualData {
 
     }
 
+    /**
+     * Sets the balance of the player
+     * @param amount the balance to set
+     * @return VirtualResponse of the transaction
+     */
     public VirtualResponse setBalance(BigDecimal amount) {
         VirtualResponse defaultResponse = checkDefaults(amount);
 
@@ -150,6 +155,11 @@ public class VirtualData {
         return new VirtualResponse(amount, this.currentBalance, defaultResponse.type, defaultResponse.errorMessage);
     }
 
+    /**
+     * Check if the player has enough balance
+     * @param amount the balance to check
+     * @return boolean if the player has enough balance
+     */
     public boolean hasEnough(BigDecimal amount) {
         if (LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
                 LightCore.instance.getSettings().multiServerEnabled()) {
@@ -162,7 +172,6 @@ public class VirtualData {
             return this.currentBalance.compareTo(amount) >= 0;
         }
     }
-
 
     /**
      * Check the default values of the transaction
@@ -180,9 +189,18 @@ public class VirtualData {
                 VirtualResponse.VirtualResponseType.SUCCESS, "");
     }
 
+    /**
+     * Get the formatted balance
+     * @return String of the formatted balance
+     */
     public String getFormattedBalance() {
         return LightNumbers.formatForMessages(currentBalance, decimalPlaces);
     }
+
+    /**
+     * Get the formatted currency (plural/singular) symbol
+     * @return String of the formatted currency symbol
+     */
     public String getFormattedCurrencySymbol() {
         return currentBalance.compareTo(BigDecimal.ONE) == 0 ? currencySymbolSingular : currencySymbolPlural;
     }
@@ -214,5 +232,4 @@ public class VirtualData {
 
         }
     }
-
 }

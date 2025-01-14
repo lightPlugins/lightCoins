@@ -44,6 +44,11 @@ public class CoinsData {
 
     }
 
+    /**
+     * Sets the coins for the player.
+     * @param coins The amount of coins to set.
+     * @return The response of the transaction.
+     */
     public EconomyResponse setCoins(BigDecimal coins) {
         EconomyResponse defaultResponse = checkDefaults(coins);
         if(!defaultResponse.transactionSuccess()) {
@@ -65,7 +70,11 @@ public class CoinsData {
                 EconomyResponse.ResponseType.SUCCESS, "");
     }
 
-
+    /**
+     * Adds coins to the player's balance.
+     * @param coins The amount of coins to add.
+     * @return The response of the transaction.
+     */
     public EconomyResponse addCoins(BigDecimal coins) {
 
         EconomyResponse defaultResponse = checkDefaults(coins);
@@ -93,6 +102,11 @@ public class CoinsData {
                 EconomyResponse.ResponseType.SUCCESS, "");
     }
 
+    /**
+     * Removes coins from the player's balance.
+     * @param coins The amount of coins to remove.
+     * @return The response of the transaction.
+     */
     public EconomyResponse removeCoins(BigDecimal coins) {
 
         EconomyResponse defaultResponse = checkDefaults(coins);
@@ -121,14 +135,26 @@ public class CoinsData {
                 EconomyResponse.ResponseType.SUCCESS, "");
     }
 
+    /**
+     * Get the formatted coins for messages.
+     * @return The response of the transaction.
+     */
     public String getFormattedCoins() {
         return LightNumbers.formatForMessages(currentCoins, LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces());
     }
-
+    /**
+     * Get the formatted currency (plural/singular) for messages.
+     * @return The response of the transaction.
+     */
     public String getFormattedCurrency() {
         return currentCoins.compareTo(BigDecimal.ONE) == 0 ? nameSingular : namePlural;
     }
 
+    /**
+     * Check if the player has enough coins.
+     * @param coins The amount of coins to check.
+     * @return The response of the transaction.
+     */
     public boolean hasEnough(BigDecimal coins) {
         // Read the data in the database directly or through the locale cache manager (redis)
         if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
