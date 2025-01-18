@@ -1,8 +1,25 @@
-# Default ignored files
-/shelf/
-/workspace.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
+# Gradle
+.gradle
+**/build/
+!src/**/build/
+gradletasknamecache
+!gradle-wrapper.jar
+gradle-app.setting
+
+# IntelliJ IDEA
+.idea
+*.iml
+*.iws
+out/
+
+# Eclipse
+.project
+.classpath
+.cproject
+.settings/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
