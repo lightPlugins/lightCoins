@@ -1,6 +1,7 @@
 plugins {
     java
     id("io.freefair.lombok") version "8.11"
+    id("maven-publish")
 }
 
 group = "io.lightstudios.coins"
