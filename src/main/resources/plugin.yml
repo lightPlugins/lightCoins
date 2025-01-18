@@ -1,5 +1,5 @@
-name: lightCoins
-version: '0.0.7'
+name: ${name}
+version: ${version}
 main: io.lightstudios.coins.LightCoins
 api-version: '1.21'
 depend: ["lightCore"]
