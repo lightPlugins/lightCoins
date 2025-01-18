@@ -57,3 +57,16 @@ java {
         languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                from (components["java"])
+                groupId = "com.github.lightPlugins"
+                artifactId = "lightCoins"
+                version = rootProject.version.toString()
+            }
+        }
+    }
+}
