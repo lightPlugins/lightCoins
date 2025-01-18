@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.lightstudios.coins"
-version = "0.0.7"
+version = "0.1.0"
 
 repositories {
     mavenCentral()
