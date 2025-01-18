@@ -55,7 +55,5 @@ tasks {
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
-        vendor.set(JvmVendorSpec.AMAZON)
-        implementation.set(JvmImplementation.VENDOR_SPECIFIC)
     }
 }
