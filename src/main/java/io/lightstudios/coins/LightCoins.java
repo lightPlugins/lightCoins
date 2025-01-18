@@ -94,7 +94,7 @@ public final class LightCoins extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        // read existing player data from the database and populate the playerData map in LightCoinsAPI
+        // read existing player data from the database and populate the playerData map in LightCoinsAPI.
         readPlayerData();
         readVirtualData();
         registerEvents();
