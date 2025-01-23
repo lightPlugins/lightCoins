@@ -57,6 +57,8 @@ public class MessageConfig {
     public List<String> helpCommandDefault() { return config.getStringList("helpCommand.default"); }
     public List<String> helpCommandPlayer() { return config.getStringList("helpCommand.player"); }
 
+    public List<String> loseCoinsOnDeath() { return config.getStringList("loseCoinsOnDeath"); }
+
 
 
 

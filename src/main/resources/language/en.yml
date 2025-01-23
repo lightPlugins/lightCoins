@@ -117,3 +117,4 @@ helpCommand:
     - '<gray>● <yellow>/baltop <gray>- List the players with the 10 largest balances'
     - ' '
     - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+loseCoinsOnDeath: "<gray>You have lost <yellow>#coins# <gray>#currency# due to your death."

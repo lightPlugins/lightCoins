@@ -4,8 +4,8 @@ import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.core.LightCore;
-import io.lightstudios.core.util.relocations.jedis.Jedis;
-import io.lightstudios.core.util.relocations.jedis.JedisPubSub;
+import io.lightstudios.core.util.libs.jedis.Jedis;
+import io.lightstudios.core.util.libs.jedis.JedisPubSub;
 
 import java.math.BigDecimal;
 import java.util.UUID;

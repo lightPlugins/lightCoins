@@ -1,6 +1,7 @@
 plugins {
     java
     id("io.freefair.lombok") version "8.11"
+    id("com.gradleup.shadow") version "8.3.5"
     id("maven-publish")
 }
 
@@ -29,8 +30,14 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
         exclude(group = "org.bukkit", module = "bukkit")
     }
-    compileOnly("com.github.lightPlugins:lightCore:0.4.0")
+    compileOnly("com.github.lightPlugins:lightCore:0.4.2")
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.9")
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
 tasks {
@@ -50,23 +57,30 @@ tasks {
     compileJava {
         options.encoding = "UTF-8"
     }
-}
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+    build {
+        dependsOn(shadowJar)
+    }
+
+    shadowJar {
+        archiveClassifier.set("")
     }
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            create<MavenPublication>("maven") {
-                from (components["java"])
-                groupId = "com.github.lightPlugins"
-                artifactId = "lightCoins"
-                version = rootProject.version.toString()
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifact(tasks.shadowJar.get()) {
+                classifier = null
             }
+            groupId = "com.github.lightPlugins"
+            artifactId = "lightCore"
+            version = rootProject.version.toString()
         }
     }
+}
+
+tasks.named("publishMavenPublicationToMavenLocal") {
+    dependsOn(tasks.shadowJar)
+    dependsOn(tasks.jar)
 }

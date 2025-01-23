@@ -78,3 +78,23 @@ defaultCurrency:
   # If a player reaches this value, he can't get any more money.
   # HINT: This also caps a town account if you are using Towny.
   maxBalance: 999999999999999999999999.99
+# Lose Coins System - Only for Vault currency.
+# This system allows you to lose a percentage of your coins when the player die.
+loseCoinsOnDeath:
+  # Enable or disable the loss coins system.
+  enable: false
+  # The permission to bypass the loss coins system.
+  bypassPermission: 'lightcoins.losecoins.bypass'
+  # The percentage of coins the player will lose when he dies.
+  percentage: 10
+  # The minimum amount of coins the player can lose.
+  minAmount: 100
+  # The maximum amount of coins the player can lose.
+  maxAmount: 1000
+  # Some Blacklist for different types.
+  # HINT: You can use the LightCoins WorldGuard flag 'lightcoins-losecoins-bypass' to disable
+  #       the loss coins system in each region too. You NEED to have WorldGuard installed to use this feature.
+  blacklist:
+    # The worlds where the player can't lose coins.
+    worlds:
+      - 'DisabledWorld'

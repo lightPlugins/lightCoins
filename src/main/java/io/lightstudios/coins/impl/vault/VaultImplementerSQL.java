@@ -3,7 +3,6 @@ package io.lightstudios.coins.impl.vault;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.CoinsData;
-import io.lightstudios.coins.impl.events.custom.LightCoinsDepositEvent;
 import io.lightstudios.coins.impl.events.custom.LightCoinsWithdrawEvent;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.hooks.towny.TownyInterface;

@@ -1,9 +1,11 @@
 package io.lightstudios.coins.configs;
 
 import io.lightstudios.core.util.files.FileManager;
+import io.lightstudios.core.util.libs.jedis.gears.resps.StreamTriggerInfo;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class SettingsConfig {
 
@@ -34,4 +36,10 @@ public class SettingsConfig {
     public BigDecimal defaultCurrencyMaxBalance() {
         return BigDecimal.valueOf(config.getDouble("defaultCurrency.maxBalance"));
     }
+    public boolean enableLoseCoinsOnDeath() { return config.getBoolean("loseCoinsOnDeath.enable");}
+    public String loseCoinsBypassPermission() { return config.getString("loseCoinsOnDeath.bypassPermission");}
+    public double loseCoinsPercentage() { return config.getDouble("loseCoinsOnDeath.percentage");}
+    public double loseCoinsMinAmount() { return config.getDouble("loseCoinsOnDeath.minAmount");}
+    public double loseCoinsMaxAmount() { return config.getDouble("loseCoinsOnDeath.maxAmount");}
+    public List<String> loseCoinsBlacklistWorlds() { return config.getStringList("loseCoinsOnDeath.blacklist.worlds");}
 }

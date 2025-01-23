@@ -28,7 +28,6 @@ import io.lightstudios.coins.synchronisation.subscriber.UpdateCoinsBalance;
 import io.lightstudios.coins.synchronisation.subscriber.UpdateVirtualBalance;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.commands.manager.CommandManager;
-import io.lightstudios.core.database.model.DatabaseTypes;
 import io.lightstudios.core.util.ConsolePrinter;
 import io.lightstudios.core.util.files.FileManager;
 import io.lightstudios.core.util.files.MultiFileManager;
