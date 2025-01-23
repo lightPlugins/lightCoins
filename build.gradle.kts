@@ -29,7 +29,7 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
         exclude(group = "org.bukkit", module = "bukkit")
     }
-    compileOnly("com.github.lightPlugins:lightCore:0.3.8")
+    compileOnly("com.github.lightPlugins:lightCore:0.4.0")
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.9")
 }
 
