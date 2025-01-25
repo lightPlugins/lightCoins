@@ -32,6 +32,7 @@ dependencies {
     }
     compileOnly("com.github.lightPlugins:lightCore:0.4.2")
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.9")
+    implementation("org.bstats:bstats-bukkit:3.0.2")
 }
 
 java {
@@ -64,6 +65,7 @@ tasks {
 
     shadowJar {
         archiveClassifier.set("")
+        relocate("org.bstats", "io.lightstudios.core.util.libs.bstats")
     }
 }
 

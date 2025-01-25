@@ -7,7 +7,6 @@ import io.lightstudios.coins.impl.events.custom.LightCoinsLoseCoinsEvent;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
 import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
