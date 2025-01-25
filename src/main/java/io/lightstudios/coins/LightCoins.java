@@ -18,6 +18,7 @@ import io.lightstudios.coins.commands.virtual.admin.VirtualSetCommand;
 import io.lightstudios.coins.commands.virtual.defaults.VirtualShowCommand;
 import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
+import io.lightstudios.coins.impl.events.OnPlayerDeath;
 import io.lightstudios.coins.impl.events.OnPlayerJoin;
 import io.lightstudios.coins.impl.vault.VaultImplementerSQL;
 import io.lightstudios.coins.impl.vault.VaultImplementerSingle;
@@ -152,6 +153,7 @@ public final class LightCoins extends JavaPlugin {
     private void registerEvents() {
         // creates a new player data object for a player when they join the server
         getServer().getPluginManager().registerEvents(new OnPlayerJoin(), this);
+        getServer().getPluginManager().registerEvents(new OnPlayerDeath(), this);
     }
 
     /**
