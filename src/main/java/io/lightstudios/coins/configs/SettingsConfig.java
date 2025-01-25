@@ -42,4 +42,5 @@ public class SettingsConfig {
     public double loseCoinsMinAmount() { return config.getDouble("loseCoinsOnDeath.minAmount");}
     public double loseCoinsMaxAmount() { return config.getDouble("loseCoinsOnDeath.maxAmount");}
     public List<String> loseCoinsBlacklistWorlds() { return config.getStringList("loseCoinsOnDeath.blacklist.worlds");}
+    public List<String> loseCoinsDeathCause() { return config.getStringList("loseCoinsOnDeath.deathCause");}
 }

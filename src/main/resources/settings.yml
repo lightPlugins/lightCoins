@@ -79,10 +79,16 @@ defaultCurrency:
   # HINT: This also caps a town account if you are using Towny.
   maxBalance: 999999999999999999999999.99
 # Lose Coins System - Only for Vault currency.
-# This system allows you to lose a percentage of your coins when the player die.
+# This system allows you to lose a percentage of your coins when the player dies.
 loseCoinsOnDeath:
   # Enable or disable the loss coins system.
   enable: false
+  # The death causes where the player can lose coins.
+  # '*' means all death causes.
+  # You can also add specific death causes like 'FALL' or 'FIRE'.
+  # See https://jd.papermc.io/paper/1.21.4/org/bukkit/event/entity/PlayerDeathEvent.html
+  deathCause:
+    - '*'
   # The permission to bypass the loss coins system.
   bypassPermission: 'lightcoins.losecoins.bypass'
   # The percentage of coins the player will lose when he dies.
@@ -90,7 +96,7 @@ loseCoinsOnDeath:
   # The minimum amount of coins the player can lose.
   minAmount: 100
   # The maximum amount of coins the player can lose.
-  maxAmount: 1000
+  maxAmount: 100000
   # Some Blacklist for different types.
   # HINT: You can use the LightCoins WorldGuard flag 'lightcoins-losecoins-bypass' to disable
   #       the loss coins system in each region too. You NEED to have WorldGuard installed to use this feature.
