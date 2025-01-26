@@ -74,7 +74,7 @@ publishing {
                 classifier = null
             }
             groupId = "com.github.lightPlugins"
-            artifactId = "lightCore"
+            artifactId = "lightCoins"
             version = rootProject.version.toString()
         }
     }
