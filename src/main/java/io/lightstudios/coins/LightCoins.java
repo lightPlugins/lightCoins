@@ -34,7 +34,6 @@ import io.lightstudios.core.util.files.FileManager;
 import io.lightstudios.core.util.files.MultiFileManager;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
@@ -112,7 +111,6 @@ public final class LightCoins extends JavaPlugin {
         }
         // bStats metrics for LightCoins -> ID: 24557
         consolePrinter.printInfo("Starting new bStats metrics instance ...");
-        new Metrics(this, 24557);
     }
 
     @Override
