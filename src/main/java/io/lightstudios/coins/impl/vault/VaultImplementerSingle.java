@@ -148,7 +148,6 @@ public class VaultImplementerSingle implements Economy {
 
     @Override
     public EconomyResponse withdrawPlayer(String input, double v) {
-        LightCoins.instance.getConsolePrinter().printError("WITHDRAW: " + input + " - " + v);
         UUID uuid = checkUUID(input);
         if (uuid == null) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
@@ -211,7 +210,6 @@ public class VaultImplementerSingle implements Economy {
      */
     @Override
     public EconomyResponse depositPlayer(String input, double v) {
-        LightCoins.instance.getConsolePrinter().printError("DEPOSIT: " + input + " - " + v);
         UUID uuid = checkUUID(input);
 
         if (uuid == null) {
