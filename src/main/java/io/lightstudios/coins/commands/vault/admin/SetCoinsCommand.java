@@ -200,7 +200,77 @@ public class SetCoinsCommand implements LightCommand {
     }
 
     @Override
-    public boolean performAsConsole(ConsoleCommandSender consoleCommandSender, String[] strings) {
-        return false;
+    public boolean performAsConsole(ConsoleCommandSender consoleCommandSender, String[] args) {
+
+        if(args.length != 3) {
+            LightCoins.instance.getConsolePrinter().printError("Wrong syntax. Please use: " + getSyntax());
+            return false;
+        }
+
+        String targetName = args[1];
+
+        BigDecimal amount = LightNumbers.parseMoney(args[2]);
+
+        if(amount == null) {
+            LightCoins.instance.getConsolePrinter().printError("Please use a valid number.");
+            return false;
+        }
+
+        if(amount.compareTo(BigDecimal.ZERO) <= 0) {
+            LightCoins.instance.getConsolePrinter().printError("Please use a positive number.");
+            return false;
+        }
+
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
+
+            OfflinePlayer target = Arrays.stream(Bukkit.getServer().getOfflinePlayers())
+                    .filter(offlinePlayer -> offlinePlayer.getName() != null && offlinePlayer.getName().equalsIgnoreCase(args[1]))
+                    .findFirst()
+                    .orElse(null);
+
+
+            if(target == null) {
+                LightCoins.instance.getConsolePrinter().printError("Could not find player: " + targetName);
+                return false;
+            }
+
+
+            CoinsData coinsPlayer = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(target.getUniqueId()).join();
+
+            if(coinsPlayer == null) {
+                LightCoins.instance.getConsolePrinter().printError("Could not find data from: " + targetName);
+                return false;
+            }
+
+            EconomyResponse response = coinsPlayer.setCoins(amount);
+
+            if(response.transactionSuccess()) {
+                LightCoins.instance.getConsolePrinter().printInfo(
+                        "Set " + amount + " " + coinsPlayer.getFormattedCurrency() + " for " + coinsPlayer.getName());
+                return true;
+            } else {
+                LightCoins.instance.getConsolePrinter().printError("Transaction failed with reason: " + response.errorMessage);
+                return false;
+            }
+        }
+
+        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(targetName);
+        if(playerData == null) {
+            LightCoins.instance.getConsolePrinter().printError("Could not find player data");
+            return false;
+        }
+
+        CoinsData coinsPlayer = playerData.getCoinsData();
+        EconomyResponse response = coinsPlayer.setCoins(amount);
+
+        if(response.transactionSuccess()) {
+            LightCoins.instance.getConsolePrinter().printInfo(
+                    "Set " + amount + " " + coinsPlayer.getFormattedCurrency() + " for " + coinsPlayer.getName());
+            return true;
+        } else {
+            LightCoins.instance.getConsolePrinter().printError("Transaction failed with reason: " + response.errorMessage);
+            return false;
+        }
     }
 }
