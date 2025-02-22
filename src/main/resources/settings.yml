@@ -104,3 +104,27 @@ loseCoinsOnDeath:
     # The worlds where the player can't lose coins.
     worlds:
       - 'DisabledWorld'
+# This is the protection system for LightCoins to prevent dupes or other exploits.
+# It's highly recommended to enable some systems to protect your economy.
+protections:
+  # The protection system for the pay command.
+  # If the player pays too much coins via /pay, the admin gets notified and optionally can confirm the payment
+  # if adminMustConfirm is enabled.
+  tooMuchPay:
+    # Enable or disable the pay protection system.
+    # All related data will store in the database.
+    # So all triggers will save even after a server restart.
+    enable: true
+    # The Amount of money the player pays at once to trigger the protection.
+    # This value is summed up for each player over the last hour/day.
+    triggers:
+      # The amount of money the player pays at once.
+      amountAtOnce: 100000
+      # The amount of money the player pays per hour.
+      amountPerHour: 1000000
+      # The amount of money the player pays per day.
+      amountPerDay: 10000000
+    # If enabled, the admin must confirm the payment.
+    # If disabled, the player gets a warning message and the payment will be canceled.
+    # However, the player must wait for the time reset or an admin to confirm the payment.
+    adminMustConfirm: true
