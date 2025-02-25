@@ -32,10 +32,13 @@ public class MessageConfig {
     public List<String> coinsShow() { return toStringList(config.get("coinsShow")); }
     public List<String> coinsShowTarget() { return toStringList(config.get("coinsShowTarget")); }
     public List<String> coinsAdd() { return toStringList(config.get("coinsAdd")); }
+    public List<String> coinsAddTarget() { return toStringList(config.get("coinsAddTarget")); }
     public List<String> coinsAddAll() { return toStringList(config.get("coinsAddAll")); }
     public List<String> coinsAddAllFailed() { return toStringList(config.get("coinsAddAllFailed")); }
     public List<String> coinsSet() { return toStringList(config.get("coinsSet")); }
+    public List<String> coinsSetTarget() { return toStringList(config.get("coinsSetTarget")); }
     public List<String> coinsRemove() { return toStringList(config.get("coinsRemove")); }
+    public List<String> coinsRemoveTarget() { return toStringList(config.get("coinsRemoveTarget")); }
     public List<String> pay() { return toStringList(config.get("pay")); }
     public List<String> payTarget() { return toStringList(config.get("payTarget")); }
     public List<String> payCooldown() { return toStringList(config.get("payCooldown")); }

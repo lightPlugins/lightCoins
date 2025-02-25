@@ -5,6 +5,7 @@ import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
+import io.lightstudios.core.proxy.messaging.SendProxyRequest;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.interfaces.LightCommand;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -145,6 +146,35 @@ public class RemoveCoinsCommand implements LightCommand {
                                         ).collect(Collectors.joining())
                         )
                 );
+
+                // send a message to the target player if he is online on the same server
+                if(LightCoins.instance.getSettingsConfig().sendTargetMessages()) {
+                    if(target.isOnline()) {
+                        LightCore.instance.getMessageSender().sendPlayerMessage(
+                                target.getPlayer(),
+                                List.of(
+                                        LightCoins.instance.getMessageConfig().prefix() +
+                                                LightCoins.instance.getMessageConfig().coinsRemoveTarget().stream().map(str -> str
+                                                        .replace("#coins#", LightNumbers.formatForMessages(amount,
+                                                                LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
+                                                        .replace("#currency#", coinsPlayer.getFormattedCurrency())
+                                                        .replace("#player#", coinsPlayer.getName())
+                                                ).collect(Collectors.joining())
+                                )
+                        );
+                    } else {
+                        // try to send a message to the target player on another server via proxy.
+                        SendProxyRequest.sendMessageToPlayer(player, target.getUniqueId(),
+                                LightCoins.instance.getMessageConfig().prefix() +
+                                        LightCoins.instance.getMessageConfig().coinsRemoveTarget().stream().map(str -> str
+                                                .replace("#coins#", LightNumbers.formatForMessages(amount,
+                                                        LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
+                                                .replace("#currency#", coinsPlayer.getFormattedCurrency())
+                                                .replace("#player#", coinsPlayer.getName())
+                                        ).collect(Collectors.joining())
+                        );
+                    }
+                }
                 return true;
             } else {
                 LightCore.instance.getMessageSender().sendPlayerMessage(

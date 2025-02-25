@@ -36,6 +36,9 @@ public class SettingsConfig {
     public BigDecimal defaultCurrencyMaxBalance() {
         return BigDecimal.valueOf(config.getDouble("defaultCurrency.maxBalance"));
     }
+    public boolean sendTargetMessages() { return config.getBoolean("defaultCurrency.sendTargetMessages");}
+
+
     public boolean enableLoseCoinsOnDeath() { return config.getBoolean("loseCoinsOnDeath.enable");}
     public String loseCoinsBypassPermission() { return config.getString("loseCoinsOnDeath.bypassPermission");}
     public double loseCoinsPercentage() { return config.getDouble("loseCoinsOnDeath.percentage");}

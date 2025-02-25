@@ -78,6 +78,8 @@ defaultCurrency:
   # If a player reaches this value, he can't get any more money.
   # HINT: This also caps a town account if you are using Towny.
   maxBalance: 999999999999999999999999.99
+  # Should the target player receive a message when he gets money via add/remove/set command ?
+  sendTargetMessages: true
 # Lose Coins System - Only for Vault currency.
 # This system allows you to lose a percentage of your coins when the player dies.
 loseCoinsOnDeath:
@@ -117,13 +119,13 @@ protections:
     enable: true
     # The Amount of money the player pays at once to trigger the protection.
     # This value is summed up for each player over the last hour/day.
+    # This system uses a range to prevent predictable patterns.
     triggers:
       # The amount of money the player pays at once.
-      amountAtOnce: 100000
-      # The amount of money the player pays per hour.
-      amountPerHour: 1000000
-      # The amount of money the player pays per day.
-      amountPerDay: 10000000
+      # It uses a random value between min and max.
+      amountAtOnce:
+        min: 900000
+        max: 1100000
     # If enabled, the admin must confirm the payment.
     # If disabled, the player gets a warning message, and the payment will be canceled.
     # However, the player must wait for the time reset, or an admin to confirm the payment.
