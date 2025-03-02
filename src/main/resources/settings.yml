@@ -117,6 +117,8 @@ protections:
     # All related data will store in the database.
     # So all triggers will save even after a server restart.
     enable: true
+    # The permission to bypass the protection system.
+    bypassPermission: 'lightcoins.protections.toomuchpay.bypass'
     # The Amount of money the player pays at once to trigger the protection.
     # This value is summed up for each player over the last hour/day.
     # This system uses a range to prevent predictable patterns.
@@ -131,7 +133,5 @@ protections:
     # However, the player must wait for the time reset, or an admin to confirm the payment.
     adminMustConfirm: true
     # The time in seconds the player can't pay after the trigger.
-    # If the player tries to pay, he gets a warning message.
-    preventPayAfterTrigger:
-      enable: true
-      time: 3600
+    # After this time, the previous payment will auto cancel and the player can pay again.
+    adminMustConfirmTimeout: 1800 # 30 minutes

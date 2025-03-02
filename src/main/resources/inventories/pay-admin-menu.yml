@@ -1,0 +1,52 @@
+#   ########################################################################################  #
+#
+# This file is generated with LightCore used in LightCoins
+#
+#    ___       ___  ________  ___  ___  _________  ________  ________  ________  _______
+#   |\  \     |\  \|\   ____\|\  \|\  \|\___   ___\\   ____\|\   __  \|\   __  \|\  ___ \
+#   \ \  \    \ \  \ \  \___|\ \  \\\  \|___ \  \_\ \  \___|\ \  \|\  \ \  \|\  \ \   __/|
+#    \ \  \    \ \  \ \  \  __\ \   __  \   \ \  \ \ \  \    \ \  \\\  \ \   _  _\ \  \_|/__
+#     \ \  \____\ \  \ \  \|\  \ \  \ \  \   \ \  \ \ \  \____\ \  \\\  \ \  \\  \\ \  \_|\ \
+#      \ \_______\ \__\ \_______\ \__\ \__\   \ \__\ \ \_______\ \_______\ \__\\ _\\ \_______\
+#       \|_______|\|__|\|_______|\|__|\|__|    \|__|  \|_______|\|_______|\|__|\|__|\|_______|
+#
+# -> powered LightCoins - A simple and lightweight coins /virtual currency plugin for your server.
+#    Copyright © 2024 LightStudios
+#
+#   ########################################################################################  #
+#
+# Here you can change the settings for the pay admin menu.
+title: '&6Pay Admin Menu'
+size: 54
+# empty slots will be filled with this item
+background:
+  args:
+    item: 'black_stained_glass_pane 1 hide_attributes hide_enchantments'
+    enchantments:
+      - 'protection 1'
+    displayname: '&7'
+    modelData: 123456
+    lore: []
+# needed content for the inventory without pages
+# DO NOT REMOVE ANY OF THESE ITEMS !!
+specialContent: { }
+# needed content for the inventory for pages
+# DO NOT REMOVE ANY OF THESE ITEMS !!
+pageContent:
+  - id: pending
+    args:
+      material: 'RED_STAINED_GLASS_PANE'
+      name: '&c&lPending'
+      lore:
+        - '&7Click to view pending transactions.'
+# extra items that will be added to the inventory
+# here you can add items that are not part of the required inventory content
+extraContent:
+  '0':
+    args:
+      item: 'black_stained_glass_pane 1 hide_attributes hide_enchantments'
+      enchantments:
+        - 'protection 1'
+      displayname: '&7'
+      modelData: 123456
+      lore: []

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class PayCommand implements LightCommand {
@@ -105,6 +106,36 @@ public class PayCommand implements LightCommand {
         }
 
         BigDecimal amount = LightNumbers.parseMoney(args[1]);
+
+        // protection system for tooMuchPay
+        if(LightCoins.instance.getSettingsConfig().tooMuchPayEnabled() &!
+                // check if the player has the bypass permission and skipp the check
+                player.hasPermission(LightCoins.instance.getSettingsConfig().tooMuchPayBypassPermission())) {
+
+            // check if the player is already in the onCheck list
+            if(isOnCheck(player)) {
+                LightCore.instance.getMessageSender().sendPlayerMessage(
+                        player,
+                        LightCoins.instance.getMessageConfig().prefix() +
+                                LightCoins.instance.getMessageConfig().tooMuchPayBlocked().stream().map(s ->
+                                        s.replace("#player#", player.getName())
+                                ).collect(Collectors.joining()));
+                return false;
+
+            }
+
+            // check if the amount is in the range
+            if(isAmountInRange(amount)) {
+                addOnCheck(player, amount, player.getUniqueId(), targetName);
+                LightCore.instance.getMessageSender().sendPlayerMessage(
+                        player,
+                        LightCoins.instance.getMessageConfig().prefix() +
+                                LightCoins.instance.getMessageConfig().tooMuchPayWarning().stream().map(s ->
+                                        s.replace("#player#", player.getName())
+                                ).collect(Collectors.joining()));
+                return false;
+            }
+        }
 
         if(amount == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -334,5 +365,33 @@ public class PayCommand implements LightCommand {
     public boolean performAsConsole(ConsoleCommandSender consoleCommandSender, String[] strings) {
         LightCoins.instance.getConsolePrinter().printError("This command can only be executed by a player");
         return false;
+    }
+
+    private boolean isOnCheck(Player player) {
+        // Check if the player is in the onCheck list
+        return LightCoins.instance.getOnCheck().contains(player);
+    }
+
+    private boolean isAmountInRange(BigDecimal amount) {
+        BigDecimal minAmount = LightCoins.instance.getSettingsConfig().tooMuchPayTriggerMin();
+        BigDecimal maxAmount = LightCoins.instance.getSettingsConfig().tooMuchPayTriggerMax();
+
+        // Generate a random value between minAmount and maxAmount
+        BigDecimal randomValue = minAmount.add(BigDecimal.valueOf(ThreadLocalRandom.current().nextDouble())
+                .multiply(maxAmount.subtract(minAmount)));
+
+        // Check if the amount is greater than or equal to the random value
+        return amount.compareTo(randomValue) >= 0;
+    }
+
+    private void addOnCheck(Player player, BigDecimal amount, UUID sender, String receiverName) {
+
+        int timeout = LightCoins.instance.getSettingsConfig().tooMuchPayAdminMustConfirmTimeout();
+        // Add the player to the onCheck list
+        if(!isOnCheck(player)) {
+            LightCoins.instance.getOnCheck().add(player);
+            // Create a timer to remove the player from the onCheck list after the timeout
+            LightTimers.doSync((task) -> LightCoins.instance.getOnCheck().remove(player), timeout * 20L);
+        }
     }
 }

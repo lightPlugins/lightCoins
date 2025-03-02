@@ -36,6 +36,7 @@ import io.lightstudios.core.util.libs.bstats.bukkit.Metrics;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -66,6 +67,7 @@ public final class LightCoins extends JavaPlugin {
     private CommandManager virtualCommands;
     private CommandManager balTopCommands;
     private CommandManager payCommands;
+    private final List<Player> onCheck = new ArrayList<>();
 
     @Override
     public void onLoad() {

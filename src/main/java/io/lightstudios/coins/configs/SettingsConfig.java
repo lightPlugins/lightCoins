@@ -46,4 +46,18 @@ public class SettingsConfig {
     public double loseCoinsMaxAmount() { return config.getDouble("loseCoinsOnDeath.maxAmount");}
     public List<String> loseCoinsBlacklistWorlds() { return config.getStringList("loseCoinsOnDeath.blacklist.worlds");}
     public List<String> loseCoinsDeathCause() { return config.getStringList("loseCoinsOnDeath.deathCause");}
+
+    // Protections
+    public boolean tooMuchPayEnabled() { return config.getBoolean("protections.tooMuchPay.enable");}
+    public String tooMuchPayBypassPermission() { return config.getString("protections.tooMuchPay.bypassPermission");}
+    public BigDecimal tooMuchPayTriggerMin() {
+        return BigDecimal.valueOf(config.getDouble("protections.tooMuchPay.triggers.amountAtOnce.min"));
+    }
+    public BigDecimal tooMuchPayTriggerMax() {
+        return BigDecimal.valueOf(config.getDouble("protections.tooMuchPay.triggers.amountAtOnce.max"));
+    }
+    public boolean tooMuchPayAdminMustConfirm() { return config.getBoolean("protections.tooMuchPay.adminMustConfirm");}
+    public int tooMuchPayAdminMustConfirmTimeout() { return config.getInt("protections.tooMuchPay.adminMustConfirmTimeout");}
+
+
 }

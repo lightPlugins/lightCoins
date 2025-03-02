@@ -121,3 +121,16 @@ helpCommand:
     - ' '
     - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
 loseCoinsOnDeath: "<gray>You have lost <yellow>#coins# <gray>#currency# due to your death."
+# Protection System
+tooMuchPayWarning:
+  - "<gray><strikethrough>-----</strikethrough><red>●<gray><strikethrough>-----</strikethrough> <red><bold><italic>PAYMENT WARNING <reset><gray><strikethrough>-----</strikethrough><red>●<gray><strikethrough>-----</strikethrough>"
+  - ' '
+  - "  <red>Our system has detected an <dark_red>unusually high payment<red>!"
+  - "  <red>For security reasons, this payment has been blocked, and the admins have been notified."
+  - "  <red>You must wait <dark_red>30 minutes<red> before you can make another payment, "
+  - "  <red>unless an admin manually unlocks it."
+  - ' '
+  - '<gray><strikethrough>-----</strikethrough><red>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><red>●<gray>⏺<red>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><red>●<gray><strikethrough>-----</strikethrough>'
+tooMuchPayConfirmed: "<gray>The admin <yellow>#player# <gray>has <green>confirmed <gray>the previous payment. You can now make payments again."
+tooMuchPayCanceled: "<gray>The admin <yellow>#player# <gray>has <red>canceled <gray>the previous payment. You can now make payments again."
+tooMuchPayBlocked: "<red>Due to a recently failed payment, you are unable to make <dark_red>further transactions<red>. Please try again later."
