@@ -87,6 +87,12 @@ public class AddAllCommand implements LightCommand {
             return false;
         }
 
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
+
+
+        }
+
         HashMap<UUID, AccountData> accounts = LightCoins.instance.getLightCoinsAPI().getAccountData();
 
         int failedTransactions = 0;
