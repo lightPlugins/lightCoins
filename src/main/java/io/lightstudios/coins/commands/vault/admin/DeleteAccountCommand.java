@@ -49,16 +49,20 @@ public class DeleteAccountCommand implements LightCommand {
     public TabCompleter registerTabCompleter() {
         return (sender, command, alias, args) -> {
 
-            if(args.length == 2) {
-                if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
-                    // only support offline players from the target server !
-                    return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList();
-                } else {
-                    // support all players from the network
-                    return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
+            if(sender.hasPermission(getPermission())) {
+                if(args.length == 1) {
+                    return getSubcommand();
+                }
+                if(args.length == 2) {
+                    if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql")) {
+                        // only support offline players from the target server !
+                        return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList();
+                    } else {
+                        // support all players from the network
+                        return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
+                    }
                 }
             }
-
             return null;
         };
     }

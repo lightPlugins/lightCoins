@@ -46,18 +46,20 @@ public class ShowCoinsCommand implements LightCommand {
     @Override
     public TabCompleter registerTabCompleter() {
         return (sender, command, alias, args) -> {
-            if(args.length == 1) {
-                return getSubcommand();
-            }
 
-            if(args.length == 2) {
-                if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
-                        LightCore.instance.getSettings().multiServerEnabled()) {
-                    // only support offline players from the target server !
-                    return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList());
-                } else {
-                    // support all players from the network
-                    return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
+            if(sender.hasPermission(getPermission())) {
+                if(args.length == 1) {
+                    return getSubcommand();
+                }
+                if(args.length == 2) {
+                    if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                            LightCore.instance.getSettings().multiServerEnabled()) {
+                        // only support offline players from the target server !
+                        return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList());
+                    } else {
+                        // support all players from the network
+                        return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
+                    }
                 }
             }
             return null;

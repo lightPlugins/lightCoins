@@ -107,35 +107,38 @@ public class PayCommand implements LightCommand {
 
         BigDecimal amount = LightNumbers.parseMoney(args[1]);
 
-        // protection system for tooMuchPay
-        if(LightCoins.instance.getSettingsConfig().tooMuchPayEnabled() &!
-                // check if the player has the bypass permission and skipp the check
-                player.hasPermission(LightCoins.instance.getSettingsConfig().tooMuchPayBypassPermission())) {
-
-            // check if the player is already in the onCheck list
-            if(isOnCheck(player)) {
-                LightCore.instance.getMessageSender().sendPlayerMessage(
-                        player,
-                        LightCoins.instance.getMessageConfig().prefix() +
-                                LightCoins.instance.getMessageConfig().tooMuchPayBlocked().stream().map(s ->
-                                        s.replace("#player#", player.getName())
-                                ).collect(Collectors.joining()));
-                return false;
-
-            }
-
-            // check if the amount is in the range
-            if(isAmountInRange(amount)) {
-                addOnCheck(player, amount, player.getUniqueId(), targetName);
-                LightCore.instance.getMessageSender().sendPlayerMessage(
-                        player,
-                        LightCoins.instance.getMessageConfig().prefix() +
-                                LightCoins.instance.getMessageConfig().tooMuchPayWarning().stream().map(s ->
-                                        s.replace("#player#", player.getName())
-                                ).collect(Collectors.joining()));
-                return false;
-            }
-        }
+//        ****************************************************
+//        protection system for tooMuchPay - NOT ENABLED YET
+//        ****************************************************
+//
+//        if(LightCoins.instance.getSettingsConfig().tooMuchPayEnabled() &!
+//                // check if the player has the bypass permission and skipp the check
+//                player.hasPermission(LightCoins.instance.getSettingsConfig().tooMuchPayBypassPermission())) {
+//
+//            // check if the player is already in the onCheck list
+//            if(isOnCheck(player)) {
+//                LightCore.instance.getMessageSender().sendPlayerMessage(
+//                        player,
+//                        LightCoins.instance.getMessageConfig().prefix() +
+//                                LightCoins.instance.getMessageConfig().tooMuchPayBlocked().stream().map(s ->
+//                                        s.replace("#player#", player.getName())
+//                                ).collect(Collectors.joining()));
+//                return false;
+//
+//            }
+//
+//            // check if the amount is in the range
+//            if(isAmountInRange(amount)) {
+//                addOnCheck(player, amount, player.getUniqueId(), targetName);
+//                LightCore.instance.getMessageSender().sendPlayerMessage(
+//                        player,
+//                        LightCoins.instance.getMessageConfig().prefix() +
+//                                LightCoins.instance.getMessageConfig().tooMuchPayWarning().stream().map(s ->
+//                                        s.replace("#player#", player.getName())
+//                                ).collect(Collectors.joining()));
+//                return false;
+//            }
+//        }
 
         if(amount == null) {
             LightCore.instance.getMessageSender().sendPlayerMessage(

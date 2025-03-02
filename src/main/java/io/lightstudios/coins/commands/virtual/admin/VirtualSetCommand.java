@@ -48,24 +48,25 @@ public class VirtualSetCommand implements LightCommand {
     @Override
     public TabCompleter registerTabCompleter() {
         return (sender, command, alias, args) -> {
-            if (args.length == 1) {
-                return getSubcommand();
-            }
+            if(sender.hasPermission(getPermission())) {
+                if (args.length == 1) {
+                    return getSubcommand();
+                }
 
-            if (args.length == 2) {
-                if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
-                        LightCore.instance.getSettings().multiServerEnabled()) {
-                    return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList();
-                } else {
-                    return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
+                if (args.length == 2) {
+                    if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                            LightCore.instance.getSettings().multiServerEnabled()) {
+                        return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList();
+                    } else {
+                        return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
+                    }
+                }
+
+                if(args.length == 3) {
+                    return LightCoins.instance.getVirtualCurrencyFiles().getYamlFiles().stream()
+                            .map(file -> file.getName().replace(".yml", "")).toList();
                 }
             }
-
-            if(args.length == 3) {
-                return LightCoins.instance.getVirtualCurrencyFiles().getYamlFiles().stream()
-                        .map(file -> file.getName().replace(".yml", "")).toList();
-            }
-
             return null;
         };
     }
