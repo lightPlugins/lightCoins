@@ -5,9 +5,11 @@ import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
+import io.lightstudios.core.player.title.AnimatedTitleSender;
 import io.lightstudios.core.proxy.messaging.SendProxyRequest;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.interfaces.LightCommand;
+import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -133,6 +135,7 @@ public class AddCoinsCommand implements LightCommand {
                 return false;
             }
 
+            BigDecimal currentCoins = coinsPlayer.getCurrentCoins();
             EconomyResponse response = coinsPlayer.addCoins(amount);
 
             if(response.transactionSuccess()) {
@@ -163,6 +166,10 @@ public class AddCoinsCommand implements LightCommand {
                                                 ).collect(Collectors.joining())
                                 )
                         );
+
+                        sendTitle(target.getPlayer(), currentCoins, (currentCoins.add(amount)));
+
+
                     } else {
                         // try to send a message to the target player on another server via proxy.
                         SendProxyRequest.sendMessageToPlayer(player, target.getUniqueId(),
@@ -200,6 +207,7 @@ public class AddCoinsCommand implements LightCommand {
         }
 
         CoinsData coinsPlayer = playerData.getCoinsData();
+        BigDecimal currentCoins = coinsPlayer.getCurrentCoins();
         EconomyResponse response = coinsPlayer.addCoins(amount);
 
         if(response.transactionSuccess()) {
@@ -217,11 +225,11 @@ public class AddCoinsCommand implements LightCommand {
             );
             // send a message to the target player if he is online on the same server
             if(LightCoins.instance.getSettingsConfig().sendTargetMessages()) {
-                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(coinsPlayer.getUuid());
+                OfflinePlayer target = Bukkit.getOfflinePlayer(coinsPlayer.getUuid());
 
-                if(offlinePlayer.isOnline()) {
+                if(target.isOnline()) {
                     LightCore.instance.getMessageSender().sendPlayerMessage(
-                            offlinePlayer.getPlayer(),
+                            target.getPlayer(),
                             List.of(
                                     LightCoins.instance.getMessageConfig().prefix() +
                                             LightCoins.instance.getMessageConfig().coinsAddTarget().stream().map(str -> str
@@ -232,9 +240,10 @@ public class AddCoinsCommand implements LightCommand {
                                             ).collect(Collectors.joining())
                             )
                     );
+                    sendTitle(target.getPlayer(), currentCoins, (currentCoins.add(amount)));
                 } else {
                     // try to send a message to the target player on another server via proxy.
-                    SendProxyRequest.sendMessageToPlayer(player, offlinePlayer.getUniqueId(),
+                    SendProxyRequest.sendMessageToPlayer(player, target.getUniqueId(),
                             LightCoins.instance.getMessageConfig().prefix() +
                                     LightCoins.instance.getMessageConfig().coinsAddTarget().stream().map(str -> str
                                             .replace("#coins#", LightNumbers.formatForMessages(amount,
@@ -330,5 +339,22 @@ public class AddCoinsCommand implements LightCommand {
             LightCoins.instance.getConsolePrinter().printError("Transaction failed with reason: " + response.errorMessage);
             return false;
         }
+    }
+
+    private void sendTitle(Player player,  BigDecimal startValue, BigDecimal newAmount) {
+        // animated title:
+        AnimatedTitleSender titleSender = new AnimatedTitleSender();
+
+        // Oberer Titel mit Platzhalter "#counter#" und Farben
+        Component upperTitle = Component.text("<red>New Title Animations");
+
+        // Unterer Titel mit Platzhalter "#counter#" und Farben
+        Component lowerTitle = Component.text("<gray>Your Balance: <yellow>#counter# <gray>Coins");
+
+        // Dauer der Animation in Millisekunden
+        long animationDuration = 500; // 10 Sekunden
+
+        // Animierten Titel mit benutzerdefiniertem Startwert senden
+        titleSender.sendCountUpTitle(player, upperTitle, lowerTitle, startValue, newAmount, animationDuration);
     }
 }
