@@ -121,16 +121,38 @@ helpCommand:
     - ' '
     - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
 loseCoinsOnDeath: "<gray>You have lost <yellow>#coins# <gray>#currency# due to your death."
-# Protection System
-tooMuchPayWarning:
-  - "<gray><strikethrough>-----</strikethrough><red>●<gray><strikethrough>-----</strikethrough> <red><bold><italic>PAYMENT WARNING <reset><gray><strikethrough>-----</strikethrough><red>●<gray><strikethrough>-----</strikethrough>"
-  - ' '
-  - "  <red>Our system has detected an <dark_red>unusually high payment<red>!"
-  - "  <red>For security reasons, this payment has been blocked, and the admins have been notified."
-  - "  <red>You must wait <dark_red>30 minutes<red> before you can make another payment, "
-  - "  <red>unless an admin manually unlocks it."
-  - ' '
-  - '<gray><strikethrough>-----</strikethrough><red>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><red>●<gray>⏺<red>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><red>●<gray><strikethrough>-----</strikethrough>'
-tooMuchPayConfirmed: "<gray>The admin <yellow>#player# <gray>has <green>confirmed <gray>the previous payment. You can now make payments again."
-tooMuchPayCanceled: "<gray>The admin <yellow>#player# <gray>has <red>canceled <gray>the previous payment. You can now make payments again."
-tooMuchPayBlocked: "<red>Due to a recently failed payment, you are unable to make <dark_red>further transactions<red>. Please try again later."
+# titles
+titles:
+  transactions:
+    static:
+      onDeposit:
+        upperTitle: "<gray>You <green>received"
+        lowerTitle: "<green>#amount# <gray>#currency#"
+      onWithdraw:
+        upperTitle: "<gray>You <red>payed"
+        lowerTitle: "<red>#amount# <gray>#currency#"
+      onPay:
+        upperTitle: "<yellow>#target# <gray>payed you"
+        lowerTitle: "<yellow>#amount# <gray>#currency#"
+    animated:
+      onDeposit:
+        start:
+          upperTitle: "<green>DEPOSIT"
+          lowerTitle: "<gray>Your Balance: <green>#counter# <gray>#currency#"
+        end:
+          upperTitle: "<gray>You <green>received"
+          lowerTitle: "<green>#amount# <gray>#currency#"
+      onWithdraw:
+        start:
+          upperTitle: "<red>WITHDRAW"
+          lowerTitle: "<gray>Your Balance: <red>#counter# <gray>#currency#"
+        end:
+          upperTitle: "<gray>You <red>payed"
+          lowerTitle: "<red>#amount# <gray>#currency#"
+      onPay:
+        start:
+          upperTitle: "<green>PAYMENT"
+          lowerTitle: "<gray>Your Balance: <green>#counter# <gray>#currency#"
+        end:
+          upperTitle: "<yellow>#target# <gray>payed you"
+          lowerTitle: "<yellow>#amount# <gray>#currency#"

@@ -18,6 +18,7 @@ import io.lightstudios.coins.commands.virtual.admin.VirtualSetCommand;
 import io.lightstudios.coins.commands.virtual.defaults.VirtualShowCommand;
 import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
+import io.lightstudios.coins.configs.TitleConfig;
 import io.lightstudios.coins.impl.events.OnPlayerDeath;
 import io.lightstudios.coins.impl.events.OnPlayerJoin;
 import io.lightstudios.coins.impl.vault.VaultImplementerSQL;
@@ -57,11 +58,13 @@ public final class LightCoins extends JavaPlugin {
 
     private MessageConfig messageConfig;
     private SettingsConfig settingsConfig;
+    private TitleConfig titleConfig;
 
     private MultiFileManager virtualCurrencyFiles;
 
     private FileManager settings;
     private FileManager message;
+    private FileManager titles;
 
     private CommandManager vaultCommands;
     private CommandManager virtualCommands;
@@ -135,7 +138,9 @@ public final class LightCoins extends JavaPlugin {
      */
     private void readAndWriteConfigs() {
         this.settings = new FileManager(this, "settings.yml", true);
+        this.titles = new FileManager(this, "titles.yml", true);
         this.settingsConfig = new SettingsConfig(this.settings);
+        this.titleConfig = new TitleConfig(this.titles);
     }
     /**
      * Reads the virtual currencies from the virtual-currency folder and

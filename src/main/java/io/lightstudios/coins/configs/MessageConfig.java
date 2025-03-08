@@ -62,10 +62,10 @@ public class MessageConfig {
 
     public List<String> loseCoinsOnDeath() { return toStringList(config.get("loseCoinsOnDeath")); }
     // protection system
-    public List<String> tooMuchPayWarning() { return config.getStringList("protections.tooMuchPayWarning"); }
-    public List<String> tooMuchPayConfirmed() { return toStringList(config.get("protections.tooMuchPayConfirmed")); }
-    public List<String> tooMuchPayCanceled() { return toStringList(config.get("protections.tooMuchPayCanceled")); }
-    public List<String> tooMuchPayBlocked() { return toStringList(config.get("protections.tooMuchPayBlocked")); }
+    // public List<String> tooMuchPayWarning() { return config.getStringList("protections.tooMuchPayWarning"); }
+    // public List<String> tooMuchPayConfirmed() { return toStringList(config.get("protections.tooMuchPayConfirmed")); }
+    // public List<String> tooMuchPayCanceled() { return toStringList(config.get("protections.tooMuchPayCanceled")); }
+    // public List<String> tooMuchPayBlocked() { return toStringList(config.get("protections.tooMuchPayBlocked")); }
 
 
 
