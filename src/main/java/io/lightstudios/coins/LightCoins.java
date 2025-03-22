@@ -30,6 +30,7 @@ import io.lightstudios.coins.synchronisation.subscriber.UpdateCoinsBalance;
 import io.lightstudios.coins.synchronisation.subscriber.UpdateVirtualBalance;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.commands.manager.CommandManager;
+import io.lightstudios.core.player.title.countupdown.AnimatedCountTitleSettings;
 import io.lightstudios.core.util.ConsolePrinter;
 import io.lightstudios.core.util.files.FileManager;
 import io.lightstudios.core.util.files.MultiFileManager;
@@ -314,6 +315,12 @@ public final class LightCoins extends JavaPlugin {
         }
 
         this.messageConfig = new MessageConfig(this.message);
+
+    }
+
+    private void readTitles() {
+
+
 
     }
 }
