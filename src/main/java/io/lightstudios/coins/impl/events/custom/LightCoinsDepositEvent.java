@@ -15,6 +15,8 @@ public class LightCoinsDepositEvent extends Event implements Cancellable {
     @Getter
     private final String uuid;
     @Getter
+    private final BigDecimal newBalance;
+    @Getter
     private BigDecimal amount;
     private boolean isCancelled;
     @Getter
@@ -25,9 +27,10 @@ public class LightCoinsDepositEvent extends Event implements Cancellable {
         return HANDLERS;
     }
 
-    public LightCoinsDepositEvent(String uuid, BigDecimal amount) {
+    public LightCoinsDepositEvent(String uuid, BigDecimal amount, BigDecimal newBalance) {
         this.uuid = uuid;
         this.amount = amount;
+        this.newBalance = newBalance;
         this.responseType = EconomyResponse.ResponseType.NOT_IMPLEMENTED;
     }
 

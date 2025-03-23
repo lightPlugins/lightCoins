@@ -217,8 +217,10 @@ public class VaultImplementerSingle implements Economy {
                     "Failed to deposit coins. Invalid UUID format: " + input);
         }
 
+        BigDecimal currentBalance = LightNumbers.formatBigDecimal(BigDecimal.valueOf(getBalance(uuid.toString())));
+
         final BigDecimal formatted = LightNumbers.formatBigDecimal(BigDecimal.valueOf(v));
-        LightCoinsDepositEvent depositEvent = new LightCoinsDepositEvent(uuid.toString(), formatted);
+        LightCoinsDepositEvent depositEvent = new LightCoinsDepositEvent(uuid.toString(), formatted, (formatted.add(currentBalance)));
 
         if (depositEvent.isCancelled()) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,

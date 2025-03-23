@@ -3,6 +3,7 @@ package io.lightstudios.coins.impl.vault;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.CoinsData;
+import io.lightstudios.coins.impl.events.custom.LightCoinsDepositEvent;
 import io.lightstudios.coins.impl.events.custom.LightCoinsWithdrawEvent;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.hooks.towny.TownyInterface;
@@ -213,12 +214,15 @@ public class VaultImplementerSQL implements Economy {
                     "Failed to withdraw coins. Invalid UUID format: " + input);
         }
 
-        LightCoinsWithdrawEvent withdrawEvent = new LightCoinsWithdrawEvent(input, new BigDecimal(v));
-        v = withdrawEvent.getAmount().doubleValue();
+        BigDecimal currentBalance = LightNumbers.formatBigDecimal(BigDecimal.valueOf(getBalance(uuid.toString())));
+        BigDecimal amount = LightNumbers.formatBigDecimal(BigDecimal.valueOf(v));
 
-        if (withdrawEvent.isCancelled()) {
+        LightCoinsDepositEvent depositEvent = new LightCoinsDepositEvent(input, amount, amount.add(currentBalance));
+        v = depositEvent.getAmount().doubleValue();
+
+        if (depositEvent.isCancelled()) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
-                    "Withdraw cancelled by LightCoinsWithdrawEvent.");
+                    "Deposit cancelled by LightCoinsDepositEvent.");
         }
 
         final BigDecimal formatted = LightNumbers.formatBigDecimal(BigDecimal.valueOf(v));

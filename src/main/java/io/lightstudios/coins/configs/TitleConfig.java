@@ -1,23 +1,30 @@
 package io.lightstudios.coins.configs;
 
+import io.lightstudios.core.player.title.countupdown.AnimatedCountTitle;
 import io.lightstudios.core.player.title.countupdown.AnimatedCountTitleSettings;
 import io.lightstudios.core.util.files.FileManager;
+import lombok.Getter;
+import net.kyori.adventure.text.Component;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 public class TitleConfig {
 
     private final FileConfiguration config;
+    private final FileConfiguration language;
     private Map<String, AnimatedCountTitleSettings> titleSettings = new HashMap<>();
 
-    public TitleConfig(FileManager titleConfig) {
+    public TitleConfig(FileManager titleConfig, FileManager languageConfig) {
         this.config = titleConfig.getConfig();
+        this.language = languageConfig.getConfig();
         readKeys();
     }
 
+    public AnimatedCountTitle getAnimatedCountTitle() { return new AnimatedCountTitle(); }
 
     private void readKeys() {
         // Sichere Sicherstellen, dass der Abschnitt "animated" existiert
@@ -37,6 +44,12 @@ public class TitleConfig {
 
             // Animationseinstellungen erstellen
             AnimatedCountTitleSettings.AnimationSettings animationSettings = new AnimatedCountTitleSettings.AnimationSettings();
+
+            Component upperTitle = Component.text(language.getString("titles.transactions.animated." + path + ".start.upperTitle", ""));
+            Component lowerTitle = Component.text(language.getString("titles.transactions.animated." + path + ".start.lowerTitle", ""));
+
+            animationSettings.setLowerTitle(lowerTitle);
+            animationSettings.setUpperTitle(upperTitle);
 
             // Sounds laden und setzen
             Map<Integer, AnimatedCountTitleSettings.SoundRangeSettings> sounds = new HashMap<>();
@@ -64,6 +77,15 @@ public class TitleConfig {
 
                 endAnimationSettings.setStayTime(config.getLong(endAnimationPath + ".stayTime", 2000));
                 endAnimationSettings.setFadeOutTime(config.getLong(endAnimationPath + ".fadeOutTime", 1000));
+
+                Component upperTitleEnd = Component.text(language.getString("titles.transactions.animated." + path + ".end.upperTitle",
+                        "titles.transactions.animated." + path + ".end.upperTitle"));
+                Component lowerTitleEnd = Component.text(language.getString("titles.transactions.animated." + path + ".end.lowerTitle",
+                        "titles.transactions.animated." + path + ".end.lowerTitle"));
+
+                // title components
+                endAnimationSettings.setLowerTitle(lowerTitleEnd);
+                endAnimationSettings.setUpperTitle(upperTitleEnd);
 
                 // Sounds innerhalb der Endanimation laden
                 Map<Integer, AnimatedCountTitleSettings.SimpleSoundSettings> endSounds = new HashMap<>();
