@@ -59,5 +59,4 @@ public class SettingsConfig {
     public boolean tooMuchPayAdminMustConfirm() { return config.getBoolean("protections.tooMuchPay.adminMustConfirm");}
     public int tooMuchPayAdminMustConfirmTimeout() { return config.getInt("protections.tooMuchPay.adminMustConfirmTimeout");}
 
-
 }

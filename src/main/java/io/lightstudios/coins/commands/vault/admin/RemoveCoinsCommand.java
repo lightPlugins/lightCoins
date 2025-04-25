@@ -5,7 +5,6 @@ import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
-import io.lightstudios.core.player.title.AnimatedTitleSender;
 import io.lightstudios.core.proxy.messaging.SendProxyRequest;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.interfaces.LightCommand;
@@ -339,19 +338,5 @@ public class RemoveCoinsCommand implements LightCommand {
     }
 
     private void sendTitle(Player player,  BigDecimal startValue, BigDecimal newAmount) {
-        // animated title:
-        AnimatedTitleSender titleSender = new AnimatedTitleSender();
-
-        // Oberer Titel mit Platzhalter "#counter#" und Farben
-        Component upperTitle = Component.text("<red>New Title Animations");
-
-        // Unterer Titel mit Platzhalter "#counter#" und Farben
-        Component lowerTitle = Component.text("<gray>Your Balance: <yellow>#counter# <gray>Coins");
-
-        // Dauer der Animation in Millisekunden
-        long animationDuration = 500; // 10 Sekunden
-
-        // Animierten Titel mit benutzerdefiniertem Startwert senden
-        titleSender.sendCountDownTitle(player, upperTitle, lowerTitle, startValue, newAmount, animationDuration);
     }
 }

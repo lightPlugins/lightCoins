@@ -36,6 +36,12 @@ dependencies {
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.9")
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 tasks {
     processResources {
         from(sourceSets.main.get().resources.srcDirs()) {
@@ -53,10 +59,30 @@ tasks {
     compileJava {
         options.encoding = "UTF-8"
     }
+
+    build {
+        dependsOn(shadowJar)
+    }
+
+    shadowJar {
+        archiveClassifier.set("")
+    }
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifact(tasks.shadowJar.get()) {
+                classifier = null
+            }
+            groupId = "com.github.lightPlugins"
+            artifactId = "lightCoins"
+            version = rootProject.version.toString()
+        }
     }
+}
+
+tasks.named("publishMavenPublicationToMavenLocal") {
+    dependsOn(tasks.shadowJar)
+    dependsOn(tasks.jar)
 }

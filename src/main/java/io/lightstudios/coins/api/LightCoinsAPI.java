@@ -5,6 +5,7 @@ import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.VirtualData;
 import io.lightstudios.coins.impl.vault.VaultImplementerSingle;
+import io.lightstudios.core.LightCore;
 import lombok.Getter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -12,10 +13,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -184,4 +183,24 @@ public class LightCoinsAPI {
                     return null;
                 });
     }
+
+    public Map<Integer, CoinsData> getTop(int amountToList) {
+        Map<Integer, CoinsData> top = new HashMap<>();
+
+        // Filtere nur echte Spieler und sortiere nach Coins
+        List<AccountData> sortedAccounts = accountData.values().stream()
+                .filter(account -> account.getName() != null && !account.getName().equalsIgnoreCase("nonplayer_account"))
+                .sorted((a, b) -> b.getCoinsData().getCurrentCoins().compareTo(a.getCoinsData().getCurrentCoins()))
+                .limit(amountToList)
+                .toList();
+
+        // Füge die sortierten CoinsData in die Map ein
+        for (int i = 0; i < sortedAccounts.size(); i++) {
+            CoinsData coinsData = sortedAccounts.get(i).getCoinsData();
+            top.put(i + 1, coinsData);
+        }
+
+        return top;
+    }
+
 }
