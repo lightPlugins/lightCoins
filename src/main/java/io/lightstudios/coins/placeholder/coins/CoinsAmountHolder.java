@@ -6,6 +6,7 @@ import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.placeholder.LightPlaceholder;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 public class CoinsAmountHolder implements LightPlaceholder {

@@ -187,6 +187,34 @@ public class LightCoinsAPI {
     public Map<Integer, CoinsData> getTop(int amountToList) {
         Map<Integer, CoinsData> top = new HashMap<>();
 
+        // MySQL/MariaDB with multiserver enabled
+        if(!LightCore.instance.getSettings().syncType().equalsIgnoreCase("redis") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
+
+            List<CoinsData> coinsDataSynchronized = LightCoins.instance.getCoinsTable().readCoinsData().join();
+
+            if(coinsDataSynchronized == null || coinsDataSynchronized.isEmpty()) {
+                return top;
+            }
+
+            // Filtere nur echte Spieler und sortiere nach Coins
+            List<CoinsData> sortedCoinsData = coinsDataSynchronized.stream()
+                    .filter(coinsData -> coinsData.getName() != null && !coinsData.getName().equalsIgnoreCase("nonplayer_account"))
+                    .sorted((a, b) -> b.getCurrentCoins().compareTo(a.getCurrentCoins()))
+                    .limit(amountToList)
+                    .toList();
+
+            // Füge die sortierten CoinsData in die Map ein
+            for (int i = 0; i < sortedCoinsData.size(); i++) {
+                CoinsData coinsData = sortedCoinsData.get(i);
+                top.put(i + 1, coinsData);
+            }
+
+            return top;
+
+        }
+
+        // Redis with multiserver enabled
         // Filtere nur echte Spieler und sortiere nach Coins
         List<AccountData> sortedAccounts = accountData.values().stream()
                 .filter(account -> account.getName() != null && !account.getName().equalsIgnoreCase("nonplayer_account"))

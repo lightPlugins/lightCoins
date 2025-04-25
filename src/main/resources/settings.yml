@@ -106,21 +106,21 @@ loseCoinsOnDeath:
     # The worlds where the player can't lose coins.
     worlds:
       - 'DisabledWorld'
-topListPlaceholder:
+topPlaceholderFormat:
     # The placeholder for the top placeholder %coins_top_<place>%.
     # This is the placeholder used by PlaceholderAPI
     # HINT: You can use custom placeholders '#place#', '#name#', '#coins#' and '#currency#' in this placeholder.
     # 'default': If no custom place placeholder is set below, this placeholder will be used.
-    place:
-      'default':
-        valid: '<dark_gray>● <yellow><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
-        invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
-      '1':
-        valid: '<dark_gray>● <gold><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
-        invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
-      '2':
-        valid: '<dark_gray>● <yellow><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
-        invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
-      '3':
-        valid: '<dark_gray>● <red><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
-        invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
+  default:
+    valid: '<dark_gray>● <yellow><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+    invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
+  custom:
+    '1':
+      valid: '<dark_gray>● <gold><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+      invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
+    '2':
+      valid: '<dark_gray>● <yellow><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+      invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
+    '3':
+      valid: '<dark_gray>● <red><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+      invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'

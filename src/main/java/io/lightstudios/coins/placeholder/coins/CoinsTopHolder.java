@@ -2,59 +2,64 @@ package io.lightstudios.coins.placeholder.coins;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsData;
-import io.lightstudios.core.LightCore;
 import io.lightstudios.core.placeholder.LightPlaceholder;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
 public class CoinsTopHolder implements LightPlaceholder {
 
-
     @Override
     public String onRequest(OfflinePlayer offlinePlayer, @NotNull String s) {
-
-        // placeholder: %coins_top_<place>%
-        // example: %coins_top_1%
-        if(!s.contains("coins_top")) {
+        if (!s.contains("coins_top")) {
             return null;
         }
 
         String[] split = s.split("_");
-
-        if(split.length != 3) {
+        if (split.length != 3 || !split[1].equalsIgnoreCase("top")) {
             return "<red>Wrong placeholder format for top";
         }
 
-        if(!split[1].equalsIgnoreCase("top")) {
-            return null;
-        }
-
+        int place;
         try {
-
-            int place = Integer.parseInt(split[2]);
-
-            if(place < 1) {
+            place = Integer.parseInt(split[2]);
+            if (place < 1) {
                 return "<red>Place is less than 1";
             }
-
-            Map<Integer, CoinsData> coinsTop = LightCoins.instance.getLightCoinsAPI().getTop(10);
-
-            if(coinsTop == null) {
-                return "<dark_red>No top data found";
-            }
-
-            if(coinsTop.get(place) == null) {
-                return "#" + place + " <red>not found";
-            }
-
-            return LightCoins.instance.getSettingsConfig().placeholderFormat()
-                    .replace("#coins#", coinsTop.get(place).getFormattedCoins())
-                    .replace("#currency#", coinsTop.get(place).getFormattedCurrency());
-
         } catch (NumberFormatException e) {
             return "<red>Place is not a number";
         }
+
+        Map<Integer, CoinsData> coinsTop = LightCoins.instance.getLightCoinsAPI().getTop(10);
+        if (coinsTop == null || coinsTop.isEmpty()) {
+            return "<dark_red>No top data found";
+        }
+
+        ConfigurationSection customSection = LightCoins.instance.getSettingsConfig().topPlaceholderFormatCustom();
+        ConfigurationSection defaultSection = LightCoins.instance.getSettingsConfig().topPlaceholderFormatDefault();
+        if (defaultSection == null) {
+            return "<dark_red>Top placeholder format not found";
+        }
+
+        String defaultFormatValid = defaultSection.getString("valid",
+                "<dark_gray>● <yellow><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#");
+        String defaultFormatInvalid = defaultSection.getString("invalid",
+                "<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-");
+
+        String customFormatValid = customSection != null ? customSection.getString(place + ".valid", defaultFormatValid) : defaultFormatValid;
+        String customFormatInvalid = customSection != null ? customSection.getString(place + ".invalid", defaultFormatInvalid) : defaultFormatInvalid;
+
+        CoinsData data = coinsTop.get(place);
+        if (data == null) {
+            return customFormatInvalid.replace("#place#", String.valueOf(place));
+        }
+
+        return customFormatValid
+                .replace("#place#", String.valueOf(place))
+                .replace("#name#", data.getName())
+                .replace("#amount#", data.getFormattedCoins())
+                .replace("#currency#", data.getFormattedCurrency());
     }
 }

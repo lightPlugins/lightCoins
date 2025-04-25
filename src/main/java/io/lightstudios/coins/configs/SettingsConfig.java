@@ -2,6 +2,7 @@ package io.lightstudios.coins.configs;
 
 import io.lightstudios.core.util.files.FileManager;
 import io.lightstudios.core.util.libs.jedis.gears.resps.StreamTriggerInfo;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.math.BigDecimal;
@@ -59,4 +60,10 @@ public class SettingsConfig {
     public boolean tooMuchPayAdminMustConfirm() { return config.getBoolean("protections.tooMuchPay.adminMustConfirm");}
     public int tooMuchPayAdminMustConfirmTimeout() { return config.getInt("protections.tooMuchPay.adminMustConfirmTimeout");}
 
+    public ConfigurationSection topPlaceholderFormatDefault() {
+        return config.getConfigurationSection("topPlaceholderFormat.default");
+    }
+    public ConfigurationSection topPlaceholderFormatCustom() {
+        return config.getConfigurationSection("topPlaceholderFormat.custom");
+    }
 }

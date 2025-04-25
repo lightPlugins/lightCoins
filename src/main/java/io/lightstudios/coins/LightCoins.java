@@ -18,7 +18,6 @@ import io.lightstudios.coins.commands.virtual.admin.VirtualSetCommand;
 import io.lightstudios.coins.commands.virtual.defaults.VirtualShowCommand;
 import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
-import io.lightstudios.coins.configs.TitleConfig;
 import io.lightstudios.coins.impl.events.OnPlayerDeath;
 import io.lightstudios.coins.impl.events.OnPlayerJoin;
 import io.lightstudios.coins.impl.vault.VaultImplementerSQL;
@@ -30,7 +29,6 @@ import io.lightstudios.coins.synchronisation.subscriber.UpdateCoinsBalance;
 import io.lightstudios.coins.synchronisation.subscriber.UpdateVirtualBalance;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.commands.manager.CommandManager;
-import io.lightstudios.core.player.title.countupdown.AnimatedCountTitleSettings;
 import io.lightstudios.core.util.ConsolePrinter;
 import io.lightstudios.core.util.files.FileManager;
 import io.lightstudios.core.util.files.MultiFileManager;
@@ -39,6 +37,7 @@ import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -59,7 +58,7 @@ public final class LightCoins extends JavaPlugin {
 
     private MessageConfig messageConfig;
     private SettingsConfig settingsConfig;
-    private TitleConfig titleConfig;
+    // private TitleConfig titleConfig;
 
     private MultiFileManager virtualCurrencyFiles;
 
@@ -78,6 +77,16 @@ public final class LightCoins extends JavaPlugin {
 
         instance = this;
         this.consolePrinter = new ConsolePrinter("§7[§rLight§eCoins§7] §r");
+
+        Plugin lightCore = Bukkit.getPluginManager().getPlugin("LightCore");
+        if(lightCore == null |! lightCore.isEnabled()) {
+            consolePrinter.printError(List.of(
+                    "LightCore is not installed. Please install it to use LightCore.",
+                    "You can download it here: https://github.com/lightPlugins/lightCore/releases"
+            ));
+            throw new IllegalArgumentException("LightCore is not installed. Please install it to use LightCore.");
+        }
+
         consolePrinter.printInfo("Starting LightCoins...");
         this.vaultImplementer = new VaultImplementerSingle();
         this.vaultImplementerSQL = new VaultImplementerSQL();
@@ -124,6 +133,9 @@ public final class LightCoins extends JavaPlugin {
     @Override
     public void onDisable() {
 
+        consolePrinter.printInfo("Stopping LightCoins...");
+        consolePrinter.printInfo("Successfully stopped LightCoins.");
+
     }
 
     public void loadDefaults() {
@@ -141,7 +153,7 @@ public final class LightCoins extends JavaPlugin {
         this.settings = new FileManager(this, "settings.yml", true);
         this.titles = new FileManager(this, "titles.yml", true);
         this.settingsConfig = new SettingsConfig(this.settings);
-        this.titleConfig = new TitleConfig(this.titles);
+        // this.titleConfig = new TitleConfig(this.titles);
     }
     /**
      * Reads the virtual currencies from the virtual-currency folder and
