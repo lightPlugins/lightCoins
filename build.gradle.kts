@@ -1,10 +1,13 @@
 plugins {
     java
     id("io.freefair.lombok") version "8.11"
+    id("com.gradleup.shadow") version "8.3.5"
+    id("maven-publish")
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.16"
 }
 
 group = "io.lightstudios.coins"
-version = "0.1.0"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -24,11 +27,12 @@ repositories {
 }
 
 dependencies {
+    paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
         exclude(group = "org.bukkit", module = "bukkit")
     }
-    compileOnly("com.github.lightPlugins:lightCore:0.3.8")
+    compileOnly(files("C:/Users/phili/IdeaProjects/lightCore/build/libs/lightCore-0.5.3.jar"))
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.9")
 }
 
@@ -52,5 +56,7 @@ tasks {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }

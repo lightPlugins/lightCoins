@@ -62,8 +62,35 @@ public class TransferCommand implements LightCommand {
     @Override
     public boolean performAsConsole(ConsoleCommandSender consoleCommandSender, String[] args) {
 
+        LightEconomyTable oldEconomyTable = new LightEconomyTable();
+
+        if(args[1].equalsIgnoreCase("cancel")) {
+
+            if(step == 0) {
+                LightCoins.instance.getConsolePrinter().printError("No transfer in progress.");
+                return false;
+            }
+
+            step = 0;
+
+            try {
+                oldEconomyTable.disconnect();
+                LightCoins.instance.getConsolePrinter().printInfo("Transfer successfully cancelled.");
+                return false;
+            } catch (SQLException e) {
+                LightCoins.instance.getConsolePrinter().printError(List.of(
+                        "Failed to disconnect from target database.",
+                        "Please restart your Server!"
+                ));
+            }
+        }
+
         if (step != 0) {
-            LightCoins.instance.getConsolePrinter().printError("Transfer already in progress.");
+            LightCoins.instance.getConsolePrinter().printInfo(List.of(
+                    "Transfer already in progress. Please wait",
+                    "If you want to cancel the transfer, please use '/lightcoins transfer cancel'"
+
+            ));
             return false;
         }
 
@@ -72,7 +99,7 @@ public class TransferCommand implements LightCommand {
             return false;
         }
 
-        LightEconomyTable oldEconomyTable = new LightEconomyTable();
+
 
         if(args[2].equalsIgnoreCase("sqlite")) {
             try {

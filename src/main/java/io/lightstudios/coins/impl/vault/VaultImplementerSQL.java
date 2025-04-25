@@ -3,7 +3,6 @@ package io.lightstudios.coins.impl.vault;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.CoinsData;
-import io.lightstudios.coins.impl.events.custom.LightCoinsDepositEvent;
 import io.lightstudios.coins.impl.events.custom.LightCoinsWithdrawEvent;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.hooks.towny.TownyInterface;
@@ -147,7 +146,6 @@ public class VaultImplementerSQL implements Economy {
 
     @Override
     public EconomyResponse withdrawPlayer(String input, double v) {
-        LightCoins.instance.getConsolePrinter().printError("WITHDRAW: " + input + " - " + v);
         UUID uuid = checkUUID(input);
         if (uuid == null) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,
@@ -209,7 +207,6 @@ public class VaultImplementerSQL implements Economy {
      */
     @Override
     public EconomyResponse depositPlayer(String input, double v) {
-        LightCoins.instance.getConsolePrinter().printError("DEPOSIT: " + input + " - " + v);
         UUID uuid = checkUUID(input);
         if (uuid == null) {
             return new EconomyResponse(v, v, EconomyResponse.ResponseType.FAILURE,

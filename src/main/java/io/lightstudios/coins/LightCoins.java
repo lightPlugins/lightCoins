@@ -18,6 +18,8 @@ import io.lightstudios.coins.commands.virtual.admin.VirtualSetCommand;
 import io.lightstudios.coins.commands.virtual.defaults.VirtualShowCommand;
 import io.lightstudios.coins.configs.MessageConfig;
 import io.lightstudios.coins.configs.SettingsConfig;
+import io.lightstudios.coins.configs.TitleConfig;
+import io.lightstudios.coins.impl.events.OnPlayerDeath;
 import io.lightstudios.coins.impl.events.OnPlayerJoin;
 import io.lightstudios.coins.impl.vault.VaultImplementerSQL;
 import io.lightstudios.coins.impl.vault.VaultImplementerSingle;
@@ -28,13 +30,15 @@ import io.lightstudios.coins.synchronisation.subscriber.UpdateCoinsBalance;
 import io.lightstudios.coins.synchronisation.subscriber.UpdateVirtualBalance;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.commands.manager.CommandManager;
-import io.lightstudios.core.database.model.DatabaseTypes;
+import io.lightstudios.core.player.title.countupdown.AnimatedCountTitleSettings;
 import io.lightstudios.core.util.ConsolePrinter;
 import io.lightstudios.core.util.files.FileManager;
 import io.lightstudios.core.util.files.MultiFileManager;
+import io.lightstudios.core.util.libs.bstats.bukkit.Metrics;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -55,16 +59,19 @@ public final class LightCoins extends JavaPlugin {
 
     private MessageConfig messageConfig;
     private SettingsConfig settingsConfig;
+    private TitleConfig titleConfig;
 
     private MultiFileManager virtualCurrencyFiles;
 
     private FileManager settings;
     private FileManager message;
+    private FileManager titles;
 
     private CommandManager vaultCommands;
     private CommandManager virtualCommands;
     private CommandManager balTopCommands;
     private CommandManager payCommands;
+    private final List<Player> onCheck = new ArrayList<>();
 
     @Override
     public void onLoad() {
@@ -109,6 +116,9 @@ public final class LightCoins extends JavaPlugin {
         } else {
             consolePrinter.printError("PlaceholderAPI not found. Placeholder will not be registered and cant be used.");
         }
+        // bStats metrics for LightCoins -> ID: 24557
+        consolePrinter.printInfo("Starting new bStats metrics instance ...");
+        new Metrics(this, 24557);
     }
 
     @Override
@@ -129,7 +139,9 @@ public final class LightCoins extends JavaPlugin {
      */
     private void readAndWriteConfigs() {
         this.settings = new FileManager(this, "settings.yml", true);
+        this.titles = new FileManager(this, "titles.yml", true);
         this.settingsConfig = new SettingsConfig(this.settings);
+        this.titleConfig = new TitleConfig(this.titles);
     }
     /**
      * Reads the virtual currencies from the virtual-currency folder and
@@ -153,6 +165,7 @@ public final class LightCoins extends JavaPlugin {
     private void registerEvents() {
         // creates a new player data object for a player when they join the server
         getServer().getPluginManager().registerEvents(new OnPlayerJoin(), this);
+        getServer().getPluginManager().registerEvents(new OnPlayerDeath(), this);
     }
 
     /**
@@ -302,6 +315,12 @@ public final class LightCoins extends JavaPlugin {
         }
 
         this.messageConfig = new MessageConfig(this.message);
+
+    }
+
+    private void readTitles() {
+
+
 
     }
 }

@@ -46,10 +46,13 @@ onlyConsole: "<red>This command can only be executed by the console!"
 coinsShow: "<gray>You have <yellow>#coins#<gray> #currency#."
 coinsShowTarget: "<gray>The player <yellow>#player#<gray> has <yellow>#coins# <gray>#currency#"
 coinsAdd: "<gray>You have added <yellow>#coins# <gray>#currency# to <yellow>#player#<gray>."
+coinsAddTarget: "<gray>The player <yellow>#player# <gray>has added <yellow>#coins# <gray>#currency# to you."
 coinsAddAll: "<gray>You have added <yellow>#coins# <gray>#currency# to <yellow>#amount# players<gray>."
 coinsAddAllFailed: "<red>Failed to add <dark_red>#coins# <red>#currency# to <dark_red>#amount# players<red>."
 coinsSet: "<gray>You have set the balance of <yellow>#player#<gray> to <yellow>#coins# <gray>#currency#."
+coinsSetTarget: "<gray>The player <yellow>#player# <gray>has set your balance to <yellow>#coins# <gray>#currency#."
 coinsRemove: "<gray>You have removed <yellow>#coins# <gray>#currency# from <yellow>#player#<gray>."
+coinsRemoveTarget: "<gray>The player <yellow>#player# <gray>has removed <yellow>#coins# <gray>#currency# from you."
 # Player Commands
 pay: "<gray>You have paid <yellow>#coins# <gray>#currency# to <yellow>#target#<gray>."
 payTarget: "<gray>The player <yellow>#target#<gray> has paid you <yellow>#coins# <gray>#currency#."
@@ -117,3 +120,39 @@ helpCommand:
     - '<gray>● <yellow>/baltop <gray>- List the players with the 10 largest balances'
     - ' '
     - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+loseCoinsOnDeath: "<gray>You have lost <yellow>#coins# <gray>#currency# due to your death."
+# titles
+titles:
+  transactions:
+    static:
+      onDeposit:
+        upperTitle: "<gray>You <green>received"
+        lowerTitle: "<green>#amount# <gray>#currency#"
+      onWithdraw:
+        upperTitle: "<gray>You <red>payed"
+        lowerTitle: "<red>#amount# <gray>#currency#"
+      onPay:
+        upperTitle: "<yellow>#target# <gray>payed you"
+        lowerTitle: "<yellow>#amount# <gray>#currency#"
+    animated:
+      onDeposit:
+        start:
+          upperTitle: "<green>DEPOSIT"
+          lowerTitle: "<gray>Your Balance: <green>#counter# <gray>#currency#"
+        end:
+          upperTitle: "<gray>You <green>received"
+          lowerTitle: "<green>#amount# <gray>#currency#"
+      onWithdraw:
+        start:
+          upperTitle: "<red>WITHDRAW"
+          lowerTitle: "<gray>Your Balance: <red>#counter# <gray>#currency#"
+        end:
+          upperTitle: "<gray>You <red>payed"
+          lowerTitle: "<red>#amount# <gray>#currency#"
+      onPay:
+        start:
+          upperTitle: "<green>PAYMENT"
+          lowerTitle: "<gray>Your Balance: <green>#counter# <gray>#currency#"
+        end:
+          upperTitle: "<yellow>#target# <gray>payed you"
+          lowerTitle: "<yellow>#amount# <gray>#currency#"

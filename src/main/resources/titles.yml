@@ -1,0 +1,127 @@
+#   ########################################################################################  #
+#
+# This file is generated with LightCore used in LightCoins
+#
+#    ___       ___  ________  ___  ___  _________  ________  ________  ________  _______
+#   |\  \     |\  \|\   ____\|\  \|\  \|\___   ___\\   ____\|\   __  \|\   __  \|\  ___ \
+#   \ \  \    \ \  \ \  \___|\ \  \\\  \|___ \  \_\ \  \___|\ \  \|\  \ \  \|\  \ \   __/|
+#    \ \  \    \ \  \ \  \  __\ \   __  \   \ \  \ \ \  \    \ \  \\\  \ \   _  _\ \  \_|/__
+#     \ \  \____\ \  \ \  \|\  \ \  \ \  \   \ \  \ \ \  \____\ \  \\\  \ \  \\  \\ \  \_|\ \
+#      \ \_______\ \__\ \_______\ \__\ \__\   \ \__\ \ \_______\ \_______\ \__\\ _\\ \_______\
+#       \|_______|\|__|\|_______|\|__|\|__|    \|__|  \|_______|\|_______|\|__|\|__|\|_______|
+#
+# -> powered LightCoins - A simple and lightweight coins /virtual currency plugin for your server.
+#    Copyright © 2024 LightStudios
+#
+#   ########################################################################################  #
+#
+# In this file, you can customize the title system from LightCoins
+# This is the Settings section, where you can adjust animation modifiers
+settings:
+  # What title style do you want to use
+  # 'static' - just a normal title with some text and sound (more performance efficiency)
+  # 'animated' - LightCoins own animated titles
+  # 'none' - disables the titles completely
+  titleStyle: animated # ("animated", "static")
+
+# The 'static' simple title style settings
+static:
+
+  onDeposit:
+    enable: true
+    fadeIn: 500
+    stay: 1000
+    fadeOut: 500
+    sound: minecraft:entity_arrow_hit_player
+    volume: 1.0
+    pitch: 1.0
+
+  onWithdraw:
+    enable: true
+    fadeIn: 500
+    stay: 1000
+    fadeOut: 500
+    sound: minecraft:entity_arrow_hit_player
+    volume: 1.0
+    pitch: 1.0
+
+  onPay:
+    enable: true
+    fadeIn: 500
+    stay: 1000
+    fadeOut: 500
+    sound: minecraft:entity_arrow_hit_player
+    volume: 1.0
+    pitch: 1.0
+
+# The 'animated' title style settings
+animated:
+
+  onDeposit:
+    enable: true
+    minAmountTrigger: 15000
+    sounds:
+      '0':
+        sound: minecraft:block_note_block_bit
+        volume: 0.5
+        startPitch: 0.0
+        endPitch: 1.0
+      '1':
+        sound: minecraft:entity_arrow_hit_player
+        volume: 0.3
+        startPitch: 0.0
+        endPitch: 1.0
+    endOfAnimation:
+      stayTime: 2000
+      fadeOutTime: 1000
+      sounds:
+        '0':
+          sound: minecraft:block_note_block_bit
+          volume: 1.0
+          pitch: 1.0
+
+  onWithdraw:
+    enable: true
+    minAmountTrigger: 15000
+    sounds:
+      '0':
+        sound: minecraft:block_note_block_bit
+        volume: 0.5
+        startPitch: 1.0
+        endPitch: 0.0
+      '1':
+        sound: minecraft:entity_arrow_hit_player
+        volume: 0.3
+        startPitch: 1.0
+        endPitch: 0.0
+    endOfAnimation:
+      stayTime: 2000
+      fadeOutTime: 1000
+      sounds:
+        '0':
+          sound: minecraft:block_note_block_bit
+          volume: 1.0
+          pitch: 1.0
+
+  onPay:
+    enable: true
+    minAmountTrigger: -1
+    sounds:
+      '0':
+        sound: minecraft:block_note_block_bit
+        volume: 0.5
+        startPitch: 1.0
+        endPitch: 0.0
+      '1':
+        sound: minecraft:entity_arrow_hit_player
+        volume: 0.3
+        startPitch: 1.0
+        endPitch: 0.0
+    endOfAnimation:
+      stayTime: 2000
+      fadeOutTime: 1000
+      sounds:
+        '0':
+          sound: minecraft:block_note_block_bit
+          volume: 1.0
+          pitch: 1.0

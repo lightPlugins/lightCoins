@@ -40,8 +40,10 @@ public class VirtualHelpCommand implements LightCommand {
     @Override
     public TabCompleter registerTabCompleter() {
         return (sender, command, alias, args) -> {
-            if(args.length == 1) {
-                return getSubcommand();
+            if(sender.hasPermission(getPermission())) {
+                if(args.length == 1) {
+                    return getSubcommand();
+                }
             }
             return null;
         };

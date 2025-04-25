@@ -4,7 +4,7 @@ import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.synchronisation.TransactionCoins;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
-import io.lightstudios.core.util.relocations.jedis.Jedis;
+import io.lightstudios.core.util.libs.jedis.Jedis;
 import lombok.Getter;
 import lombok.Setter;
 import net.milkbowl.vault.economy.EconomyResponse;

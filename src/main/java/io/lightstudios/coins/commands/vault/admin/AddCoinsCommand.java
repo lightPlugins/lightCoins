@@ -5,8 +5,13 @@ import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
+import io.lightstudios.core.player.title.AnimatedTitleSender;
+import io.lightstudios.core.player.title.countupdown.AnimatedCountTitle;
+import io.lightstudios.core.player.title.countupdown.AnimatedCountTitleSettings;
+import io.lightstudios.core.proxy.messaging.SendProxyRequest;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.interfaces.LightCommand;
+import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -49,21 +54,22 @@ public class AddCoinsCommand implements LightCommand {
     public TabCompleter registerTabCompleter() {
         return (sender, command, alias, args) -> {
 
-            if(args.length == 1) {
-                return getSubcommand();
-            }
+            if(sender.hasPermission(getPermission())) {
+                if(args.length == 1) {
+                    return getSubcommand();
+                }
 
-            if(args.length == 2) {
-                if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
-                        LightCore.instance.getSettings().multiServerEnabled()) {
-                    // only support offline players from the target server !
-                    return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList();
-                } else {
-                    // support all players from the network
-                    return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
+                if(args.length == 2) {
+                    if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                            LightCore.instance.getSettings().multiServerEnabled()) {
+                        // only support offline players from the target server !
+                        return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList();
+                    } else {
+                        // support all players from the network
+                        return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
+                    }
                 }
             }
-
             return null;
         };
     }
@@ -109,7 +115,6 @@ public class AddCoinsCommand implements LightCommand {
                     .findFirst()
                     .orElse(null);
 
-
             if(target == null) {
                 LightCore.instance.getMessageSender().sendPlayerMessage(
                         player,
@@ -119,7 +124,6 @@ public class AddCoinsCommand implements LightCommand {
                                 ).collect(Collectors.joining()));
                 return false;
             }
-
 
             CoinsData coinsPlayer = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(target.getUniqueId()).join();
 
@@ -133,6 +137,7 @@ public class AddCoinsCommand implements LightCommand {
                 return false;
             }
 
+            BigDecimal currentCoins = coinsPlayer.getCurrentCoins();
             EconomyResponse response = coinsPlayer.addCoins(amount);
 
             if(response.transactionSuccess()) {
@@ -148,6 +153,38 @@ public class AddCoinsCommand implements LightCommand {
                                         ).collect(Collectors.joining())
                         )
                 );
+                // send a message to the target player if he is online on the same server
+                if(LightCoins.instance.getSettingsConfig().sendTargetMessages()) {
+                    if(target.isOnline()) {
+                        LightCore.instance.getMessageSender().sendPlayerMessage(
+                                target.getPlayer(),
+                                List.of(
+                                        LightCoins.instance.getMessageConfig().prefix() +
+                                                LightCoins.instance.getMessageConfig().coinsAddTarget().stream().map(str -> str
+                                                        .replace("#coins#", LightNumbers.formatForMessages(amount,
+                                                                LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
+                                                        .replace("#currency#", coinsPlayer.getFormattedCurrency())
+                                                        .replace("#player#", coinsPlayer.getName())
+                                                ).collect(Collectors.joining())
+                                )
+                        );
+
+                        sendTitle(target.getPlayer(), currentCoins, (currentCoins.add(amount)));
+
+
+                    } else {
+                        // try to send a message to the target player on another server via proxy.
+                        SendProxyRequest.sendMessageToPlayer(player, target.getUniqueId(),
+                                LightCoins.instance.getMessageConfig().prefix() +
+                                        LightCoins.instance.getMessageConfig().coinsAddTarget().stream().map(str -> str
+                                                .replace("#coins#", LightNumbers.formatForMessages(amount,
+                                                        LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
+                                                .replace("#currency#", coinsPlayer.getFormattedCurrency())
+                                                .replace("#player#", coinsPlayer.getName())
+                                        ).collect(Collectors.joining())
+                        );
+                    }
+                }
                 return true;
             } else {
                 LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -172,6 +209,7 @@ public class AddCoinsCommand implements LightCommand {
         }
 
         CoinsData coinsPlayer = playerData.getCoinsData();
+        BigDecimal currentCoins = coinsPlayer.getCurrentCoins();
         EconomyResponse response = coinsPlayer.addCoins(amount);
 
         if(response.transactionSuccess()) {
@@ -187,6 +225,37 @@ public class AddCoinsCommand implements LightCommand {
                                     ).collect(Collectors.joining())
                     )
             );
+            // send a message to the target player if he is online on the same server
+            if(LightCoins.instance.getSettingsConfig().sendTargetMessages()) {
+                OfflinePlayer target = Bukkit.getOfflinePlayer(coinsPlayer.getUuid());
+
+                if(target.isOnline()) {
+                    LightCore.instance.getMessageSender().sendPlayerMessage(
+                            target.getPlayer(),
+                            List.of(
+                                    LightCoins.instance.getMessageConfig().prefix() +
+                                            LightCoins.instance.getMessageConfig().coinsAddTarget().stream().map(str -> str
+                                                    .replace("#coins#", LightNumbers.formatForMessages(amount,
+                                                            LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
+                                                    .replace("#currency#", coinsPlayer.getFormattedCurrency())
+                                                    .replace("#player#", coinsPlayer.getName())
+                                            ).collect(Collectors.joining())
+                            )
+                    );
+                    sendTitle(target.getPlayer(), currentCoins, (currentCoins.add(amount)));
+                } else {
+                    // try to send a message to the target player on another server via proxy.
+                    SendProxyRequest.sendMessageToPlayer(player, target.getUniqueId(),
+                            LightCoins.instance.getMessageConfig().prefix() +
+                                    LightCoins.instance.getMessageConfig().coinsAddTarget().stream().map(str -> str
+                                            .replace("#coins#", LightNumbers.formatForMessages(amount,
+                                                    LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces()))
+                                            .replace("#currency#", coinsPlayer.getFormattedCurrency())
+                                            .replace("#player#", coinsPlayer.getName())
+                                    ).collect(Collectors.joining())
+                    );
+                }
+            }
             return true;
         } else {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -201,7 +270,83 @@ public class AddCoinsCommand implements LightCommand {
     }
 
     @Override
-    public boolean performAsConsole(ConsoleCommandSender consoleCommandSender, String[] strings) {
-        return false;
+    public boolean performAsConsole(ConsoleCommandSender consoleCommandSender, String[] args) {
+
+        if(args.length != 3) {
+            LightCoins.instance.getConsolePrinter().printError("Wrong syntax. Please use: " + getSyntax());
+            return false;
+        }
+
+        String targetName = args[1];
+
+        BigDecimal amount = LightNumbers.parseMoney(args[2]);
+
+        if(amount == null) {
+            LightCoins.instance.getConsolePrinter().printError("Please enter a valid number!");
+            return false;
+        }
+
+        if(amount.compareTo(BigDecimal.ZERO) <= 0) {
+            LightCoins.instance.getConsolePrinter().printError("Please enter a positive number!");
+            return false;
+        }
+
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
+
+            OfflinePlayer target = Arrays.stream(Bukkit.getServer().getOfflinePlayers())
+                    .filter(offlinePlayer -> offlinePlayer.getName() != null && offlinePlayer.getName().equalsIgnoreCase(args[1]))
+                    .findFirst()
+                    .orElse(null);
+
+
+            if(target == null) {
+                LightCoins.instance.getConsolePrinter().printError("Could not find player: " + targetName);
+                return false;
+            }
+
+
+            CoinsData coinsPlayer = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(target.getUniqueId()).join();
+
+            if(coinsPlayer == null) {
+                LightCoins.instance.getConsolePrinter().printError("Could not find data from: " + targetName);
+                return false;
+            }
+
+            EconomyResponse response = coinsPlayer.addCoins(amount);
+
+            if(response.transactionSuccess()) {
+                LightCoins.instance.getConsolePrinter().printInfo(
+                        "Added " + amount + " " + coinsPlayer.getFormattedCurrency() + " to " + coinsPlayer.getName());
+                return true;
+            } else {
+                LightCoins.instance.getConsolePrinter().printError("Transaction failed with reason: " + response.errorMessage);
+            }
+        }
+
+        AccountData playerData = LightCoins.instance.getLightCoinsAPI().getAccountData(targetName);
+        if(playerData == null) {
+            LightCoins.instance.getConsolePrinter().printError("Could not find player data");
+            return false;
+        }
+
+        CoinsData coinsPlayer = playerData.getCoinsData();
+        EconomyResponse response = coinsPlayer.addCoins(amount);
+
+        if(response.transactionSuccess()) {
+            LightCoins.instance.getConsolePrinter().printInfo(
+                    "Added " + amount + " " + coinsPlayer.getFormattedCurrency() + " to " + coinsPlayer.getName());
+            return true;
+        } else {
+            LightCoins.instance.getConsolePrinter().printError("Transaction failed with reason: " + response.errorMessage);
+            return false;
+        }
+    }
+
+    private void sendTitle(Player player,  BigDecimal startValue, BigDecimal newAmount) {
+
+        AnimatedCountTitle animatedCountTitle = new AnimatedCountTitle();
+        AnimatedCountTitleSettings settings = new AnimatedCountTitleSettings();
+        AnimatedCountTitleSettings.AnimationSettings
     }
 }

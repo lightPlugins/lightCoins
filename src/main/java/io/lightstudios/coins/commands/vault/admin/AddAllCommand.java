@@ -48,11 +48,11 @@ public class AddAllCommand implements LightCommand {
         return (sender, command, alias, args) -> {
 
             if (args.length == 1) {
-                return getSubcommand();
+                if(sender.hasPermission(getPermission())) {
+                    return getSubcommand();
+                }
             }
-
             return null;
-
         };
     }
 
@@ -85,6 +85,12 @@ public class AddAllCommand implements LightCommand {
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().noNegativ());
             return false;
+        }
+
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
+
+
         }
 
         HashMap<UUID, AccountData> accounts = LightCoins.instance.getLightCoinsAPI().getAccountData();

@@ -8,6 +8,7 @@ import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.interfaces.LightCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.data.type.Light;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
@@ -45,18 +46,20 @@ public class ShowCoinsCommand implements LightCommand {
     @Override
     public TabCompleter registerTabCompleter() {
         return (sender, command, alias, args) -> {
-            if(args.length == 1) {
-                return getSubcommand();
-            }
 
-            if(args.length == 2) {
-                if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
-                        LightCore.instance.getSettings().multiServerEnabled()) {
-                    // only support offline players from the target server !
-                    return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList());
-                } else {
-                    // support all players from the network
-                    return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
+            if(sender.hasPermission(getPermission())) {
+                if(args.length == 1) {
+                    return getSubcommand();
+                }
+                if(args.length == 2) {
+                    if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                            LightCore.instance.getSettings().multiServerEnabled()) {
+                        // only support offline players from the target server !
+                        return Arrays.stream(Bukkit.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList());
+                    } else {
+                        // support all players from the network
+                        return LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
+                    }
                 }
             }
             return null;
@@ -223,7 +226,59 @@ public class ShowCoinsCommand implements LightCommand {
     }
 
     @Override
-    public boolean performAsConsole(ConsoleCommandSender consoleCommandSender, String[] strings) {
+    public boolean performAsConsole(ConsoleCommandSender consoleCommandSender, String[] args) {
+
+        if(args.length != 2) {
+            LightCoins.instance.getConsolePrinter().printError("Wrong syntax! Please use: " + getSyntax());
+            return false;
+        }
+
+        if(LightCore.instance.getSettings().syncType().equalsIgnoreCase("mysql") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
+
+            OfflinePlayer target = Arrays.stream(Bukkit.getServer().getOfflinePlayers())
+                    .filter(offlinePlayer -> offlinePlayer.getName() != null && offlinePlayer.getName().equalsIgnoreCase(args[1]))
+                    .findFirst()
+                    .orElse(null);
+
+
+            if(target == null) {
+                LightCoins.instance.getConsolePrinter().printError("Could not find player " + args[1]);
+                return false;
+            }
+
+            CoinsData dataFromDatabase = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(target.getUniqueId()).join();
+
+            if(dataFromDatabase == null) {
+                LightCoins.instance.getConsolePrinter().printError("Could not find " + args[0] + "´s data");
+                return false;
+            }
+
+            LightCoins.instance.getConsolePrinter().printInfo(
+                    "Player " + dataFromDatabase.getName() + " has " + dataFromDatabase.getFormattedCoins() +
+                            " " + dataFromDatabase.getFormattedCurrency());
+
+            return false;
+        }
+
+        AccountData targetData = LightCoins.instance.getLightCoinsAPI().getAccountData(args[1]);
+
+        if(targetData == null) {
+            LightCoins.instance.getConsolePrinter().printError("Could not find player " + args[1]);
+            return false;
+        }
+
+        CoinsData coinsPlayer = targetData.getCoinsData();
+
+        if(coinsPlayer == null) {
+            LightCoins.instance.getConsolePrinter().printError("Could not found your coins data");
+            return false;
+        }
+
+        LightCoins.instance.getConsolePrinter().printInfo(
+                "Player " + coinsPlayer.getName() + " has " + coinsPlayer.getFormattedCoins() +
+                        " " + coinsPlayer.getFormattedCurrency());
+
         return false;
     }
 }

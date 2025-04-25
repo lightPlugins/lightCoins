@@ -7,6 +7,7 @@ import io.lightstudios.core.util.LightNumbers;
 
 import java.io.File;
 import java.sql.*;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -49,12 +50,15 @@ public class LightEconomyTable {
 
                 if(!isPlayer) {
                     userName = "nonplayer_account";
-                    accountUUID = LightCore.instance.getHookManager().getTownyInterface().getTownyObjectUUID(name);
+                    // check if towny is installed and enabled, before trying to get towny object
+                    if(LightCore.instance.getHookManager().isExistTowny()) {
+                        accountUUID = LightCore.instance.getHookManager().getTownyInterface().getTownyObjectUUID(name);
+                    }
                 }
 
                 if(accountUUID == null) {
                     failed.getAndIncrement();
-                    LightCoins.instance.getConsolePrinter().printError("Could not found Towny uuid for town: " + name + " -> skipping ...");
+                    LightCoins.instance.getConsolePrinter().printError("Could not find valid UUID from target account. Skipping -> " + name);
                     continue;
                 }
 
