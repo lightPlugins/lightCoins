@@ -121,6 +121,22 @@ helpCommand:
     - ' '
     - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
 loseCoinsOnDeath: "<gray>You have lost <yellow>#coins# <gray>#currency# due to your death."
+# debug command
+debugCommand:
+  - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>DEBUG INFO <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+  - ' '
+  - '<gray>● <gray>Server: <yellow>#server-version# <gray>/ <yellow>#server-type#'
+  - '<gray>● <gray>Performance: <yellow>#tps-1#<gray>/<yellow>#tps-5#<gray>/#<yellow>#tps-15# <gray>with average <yellow>#current-mspt# <gray>mspt'
+  - '<gray>● <gray>OS: <yellow>#os# #os-version# <gray>/ <yellow>#os-arch#'
+  - '<gray>● <gray>CPU: <yellow>#cpu# <gray>/ <yellow>#cpu-cores# <gray>cores'
+  - '<gray>● <gray>RAM:  <yellow>#ram-usage# <gray>/ <yellow>#ram# <gray>MB'
+  - '<gray>● <gray>Java: <yellow>#java-version# <gray>/ <yellow>#java-vendor#'
+  - '<gray>● <gray>LightCoins/Core Versions: <yellow>#coins-version#<gray>/ <yellow>#core-version#'
+  - '<gray>● <gray>Database connection: <yellow>#database-type#<gray>/ <yellow>#database-status# <gray>while multisync is #multisync#'
+  - '<gray>● <gray>Redis connection: <yellow>#redis-status# <gray>/ <yellow>#redis-test#'
+  - '<gray>● <gray>Registered accounts: <yellow>#accounts#'
+  - ' '
+  - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
 # titles
 titles:
   transactions:

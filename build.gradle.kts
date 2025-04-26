@@ -31,7 +31,7 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
         exclude(group = "org.bukkit", module = "bukkit")
     }
-    compileOnly(files("C:/Users/phili/IdeaProjects/lightCore/build/libs/lightCore-0.5.3.jar"))
+    compileOnly(files("C:/Users/philipp/IdeaProjects/lightCore/build/libs/lightCore-0.5.3.jar"))
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.9")
 }
 
@@ -46,7 +46,7 @@ tasks {
         from(sourceSets.main.get().resources.srcDirs()) {
             filesMatching("plugin.yml") {
                 expand(
-                    "name" to rootProject.name,
+                    "name" to "LightCoins",
                     "version" to rootProject.version
                 )
 

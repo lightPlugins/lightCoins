@@ -4,6 +4,7 @@ import io.lightstudios.coins.api.LightCoinsAPI;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.VirtualData;
+import io.lightstudios.coins.commands.overall.admin.DebugCommand;
 import io.lightstudios.coins.commands.overall.admin.DefaultHelpCommand;
 import io.lightstudios.coins.commands.overall.admin.ReloadCommand;
 import io.lightstudios.coins.commands.transfer.TransferCommand;
@@ -79,7 +80,7 @@ public final class LightCoins extends JavaPlugin {
         this.consolePrinter = new ConsolePrinter("§7[§rLight§eCoins§7] §r");
 
         Plugin lightCore = Bukkit.getPluginManager().getPlugin("LightCore");
-        if(lightCore == null |! lightCore.isEnabled()) {
+        if(lightCore == null) {
             consolePrinter.printError(List.of(
                     "LightCore is not installed. Please install it to use LightCore.",
                     "You can download it here: https://github.com/lightPlugins/lightCore/releases"
@@ -295,7 +296,8 @@ public final class LightCoins extends JavaPlugin {
         new CommandManager(new ArrayList<>(List.of(
                 new ReloadCommand(),
                 new DefaultHelpCommand(),
-                new TransferCommand()
+                new TransferCommand(),
+                new DebugCommand()
         )), "lightcoins");
     }
 

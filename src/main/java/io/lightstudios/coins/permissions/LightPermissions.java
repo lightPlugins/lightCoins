@@ -25,6 +25,7 @@ public enum LightPermissions {
     VIRTUAL_REMOVE_COMMAND("lightcoins.command.admin.virtual.remove"),
     VIRTUAL_HELP_COMMAND("lightcoins.command.admin.virtual.help"),
     PAY_ADMIN_MENU("lightcoins.command.admin.pay.menu"),
+    DEBUG_COMMAND("lightcoins.command.admin.debug"),
 
 
     /*
