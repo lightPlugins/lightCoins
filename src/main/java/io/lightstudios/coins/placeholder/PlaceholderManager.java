@@ -1,10 +1,7 @@
 package io.lightstudios.coins.placeholder;
 
 import io.lightstudios.coins.placeholder.coins.*;
-import io.lightstudios.coins.placeholder.virtual.VirtualAmountFormattedHolder;
-import io.lightstudios.coins.placeholder.virtual.VirtualAmountHolder;
-import io.lightstudios.coins.placeholder.virtual.VirtualCurrencyHolder;
-import io.lightstudios.coins.placeholder.virtual.VirtualRawAmountHolder;
+import io.lightstudios.coins.placeholder.virtual.*;
 import io.lightstudios.core.placeholder.LightPlaceholder;
 import io.lightstudios.core.placeholder.PlaceholderRegistrar;
 
@@ -38,7 +35,8 @@ public class PlaceholderManager {
                 new VirtualAmountHolder(),
                 new VirtualCurrencyHolder(),
                 new VirtualRawAmountHolder(),
-                new VirtualAmountFormattedHolder()
+                new VirtualAmountFormattedHolder(),
+                new VirtualTopHolder()
         )));
     }
 

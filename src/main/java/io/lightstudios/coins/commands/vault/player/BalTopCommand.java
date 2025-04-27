@@ -24,12 +24,12 @@ public class BalTopCommand implements LightCommand {
 
     @Override
     public String getDescription() {
-        return "";
+        return "Shows a top list of players with the most coins.";
     }
 
     @Override
     public String getSyntax() {
-        return "";
+        return "/baltop";
     }
 
     @Override

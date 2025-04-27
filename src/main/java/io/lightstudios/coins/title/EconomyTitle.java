@@ -1,0 +1,81 @@
+package io.lightstudios.coins.title;
+
+import io.lightstudios.coins.LightCoins;
+import io.lightstudios.coins.api.models.CoinsData;
+import io.lightstudios.core.LightCore;
+import io.lightstudios.core.util.LightNumbers;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+
+public class EconomyTitle {
+
+    public static void sendEconomyTitle(UUID uuid, TitleType type, BigDecimal amount, String currency) {
+
+        ConfigurationSection section =
+                LightCoins.instance.getSettingsConfig().titleEconomyStatic().getConfigurationSection(
+                        type.getType());
+
+        if(section == null) {
+            LightCoins.instance.getConsolePrinter().printConfigError(List.of(
+                    "An error occurred while trying to send a title to player " + uuid,
+                    "Please check if the title economy static section is present in the settings.yml file."
+            ));
+            return;
+        }
+
+        boolean enabled = section.getBoolean("enabled", true);
+        int fadeIn = section.getInt("fadeIn", 20);
+        int stay = section.getInt("stay", 40);
+        int fadeOut = section.getInt("fadeOut", 20);
+
+        Player player = Bukkit.getPlayer(uuid);
+
+        if(player == null) {
+            LightCoins.instance.getConsolePrinter().printError(List.of(
+                    "An error occurred while trying to send a title to player " + uuid,
+                    "Failed to send the title, because the player is not online/valid.",
+                    "Please contact the developer!"
+            ));
+            return;
+        }
+
+        int decimalPlaces = LightCoins.instance.getSettingsConfig().defaultCurrencyDecimalPlaces();
+
+        if(type.getPath() == null) {
+            LightCoins.instance.getConsolePrinter().printError(List.of(
+                    "An error occurred while trying to send a title to player " + uuid,
+                    "Failed to split TitleType with '.' on type: " + type.getType(),
+                    "Please contact the developer!"
+            ));
+            return;
+        }
+
+        String upperTitle = section.getString(type.getPath() + ".upper", "Upper Title")
+                .replace("#currency#", currency)
+                .replace("#amount#", LightNumbers.formatForMessages(amount, decimalPlaces));
+        String lowerTitle = section.getString(type.getPath() + ".lower", "Lower Title")
+                .replace("#currency#", currency)
+                .replace("#amount#", LightNumbers.formatForMessages(amount, decimalPlaces));;
+
+        Component upperTitleComponent = Component.text(upperTitle);
+        Component lowerTitleComponent = Component.text(lowerTitle);
+
+        if(!enabled) {
+            return;
+        }
+
+        LightCore.instance.getTitleSender().sendTitle(
+                player,
+                upperTitleComponent,
+                lowerTitleComponent,
+                fadeIn,
+                stay,
+                fadeOut);
+    }
+}

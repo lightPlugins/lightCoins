@@ -80,6 +80,28 @@ defaultCurrency:
   maxBalance: 999999999999999999999999.99
   # Should the target player receive a message when he gets money via add/remove/set command ?
   sendTargetMessages: true
+title:
+  static:
+    enable: true
+    fadeIn: 20
+    stay: 40
+    fadeOut: 20
+    virtual:
+      onDeposit:
+          upper: '<green>Deposit'
+          lower: '<green>#amount# <gray>#currency#'
+      onWithdraw:
+          upper: '<red>Withdraw'
+          lower: '<red>#amount# <gray>#currency#'
+    coins:
+      onDeposit:
+        upper: '<green>Deposit'
+        lower: '<green>#amount# <gray>#currency#'
+      onWithdraw:
+        upper: '<red>Withdraw'
+        lower: '<red>#amount# <gray>#currency#'
+  # Animated titles in development.
+  animated: { }
 # Lose Coins System - Only for Vault currency.
 # This system allows you to lose a percentage of your coins when the player dies.
 loseCoinsOnDeath:
@@ -111,16 +133,32 @@ topPlaceholderFormat:
     # This is the placeholder used by PlaceholderAPI
     # HINT: You can use custom placeholders '#place#', '#name#', '#coins#' and '#currency#' in this placeholder.
     # 'default': If no custom place placeholder is set below, this placeholder will be used.
-  default:
-    valid: '<dark_gray>● <yellow><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
-    invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
-  custom:
-    '1':
-      valid: '<dark_gray>● <gold><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
-      invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
-    '2':
+  virtual:
+    'gems':
+      default:
+        valid: '<dark_gray>● <yellow><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+        invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
+      custom:
+        '1':
+          valid: '<dark_gray>● <gold><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+          invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
+        '2':
+          valid: '<dark_gray>● <yellow><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+          invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
+        '3':
+          valid: '<dark_gray>● <red><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+          invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
+  coins:
+    default:
       valid: '<dark_gray>● <yellow><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
       invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
-    '3':
-      valid: '<dark_gray>● <red><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
-      invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
+    custom:
+      '1':
+        valid: '<dark_gray>● <gold><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+        invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
+      '2':
+        valid: '<dark_gray>● <yellow><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+        invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
+      '3':
+        valid: '<dark_gray>● <red><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+        invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'

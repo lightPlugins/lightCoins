@@ -1,4 +1,4 @@
-package io.lightstudios.coins.impl.events;
+package io.lightstudios.coins.impl.events.listener;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.AccountData;

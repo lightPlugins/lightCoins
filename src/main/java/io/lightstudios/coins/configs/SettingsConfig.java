@@ -61,9 +61,18 @@ public class SettingsConfig {
     public int tooMuchPayAdminMustConfirmTimeout() { return config.getInt("protections.tooMuchPay.adminMustConfirmTimeout");}
 
     public ConfigurationSection topPlaceholderFormatDefault() {
-        return config.getConfigurationSection("topPlaceholderFormat.default");
+        return config.getConfigurationSection("topPlaceholderFormat.coins.default");
     }
     public ConfigurationSection topPlaceholderFormatCustom() {
-        return config.getConfigurationSection("topPlaceholderFormat.custom");
+        return config.getConfigurationSection("topPlaceholderFormat.coins.custom");
+    }
+    public ConfigurationSection topPlaceholderFormatVirtualDefault() {
+        return config.getConfigurationSection("topPlaceholderFormat.virtual");
+    }
+    public ConfigurationSection titleEconomyStatic() {
+        return config.getConfigurationSection("title.static");
+    }
+    public ConfigurationSection titleEconomyAnimated() {
+        return config.getConfigurationSection("title.animated");
     }
 }

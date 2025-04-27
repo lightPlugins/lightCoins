@@ -1,7 +1,7 @@
-package io.lightstudios.coins.placeholder.coins;
+package io.lightstudios.coins.placeholder.virtual;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.models.CoinsData;
+import io.lightstudios.coins.api.models.VirtualData;
 import io.lightstudios.core.placeholder.LightPlaceholder;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -9,22 +9,25 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public class CoinsTopHolder implements LightPlaceholder {
-
+public class VirtualTopHolder implements LightPlaceholder {
     @Override
     public String onRequest(OfflinePlayer offlinePlayer, @NotNull String s) {
-        if (!s.contains("coins_top")) {
+
+        // %lightcoins_virtual_top_<currency>_<place>%
+        if (!s.contains("virtual_top")) {
             return null;
         }
 
         String[] split = s.split("_");
-        if (split.length != 3 || !split[1].equalsIgnoreCase("top")) {
+        if (split.length != 4 || !split[1].equalsIgnoreCase("top")) {
             return "<red>Wrong placeholder format for top";
         }
 
+        String currencyName = split[2];
+
         int place;
         try {
-            place = Integer.parseInt(split[2]);
+            place = Integer.parseInt(split[3]);
             if (place < 1) {
                 return "<red>Place is less than 1";
             }
@@ -32,15 +35,22 @@ public class CoinsTopHolder implements LightPlaceholder {
             return "<red>Place is not a number";
         }
 
-        Map<Integer, CoinsData> coinsTop = LightCoins.instance.getLightCoinsAPI().getTopCoins(10);
-        if (coinsTop == null || coinsTop.isEmpty()) {
-            return "<dark_red>No top data found";
+        Map<Integer, VirtualData> virtualTop = LightCoins.instance.getLightCoinsAPI().getTopVirtual(currencyName, 10);
+        if (virtualTop == null || virtualTop.isEmpty()) {
+            return "<dark_red>No top virtual data found for " + currencyName;
         }
 
-        ConfigurationSection customSection = LightCoins.instance.getSettingsConfig().topPlaceholderFormatCustom();
-        ConfigurationSection defaultSection = LightCoins.instance.getSettingsConfig().topPlaceholderFormatDefault();
-        if (defaultSection == null) {
-            return "<dark_red>Top placeholder format not found";
+        ConfigurationSection defaultSection =
+                LightCoins.instance.getSettingsConfig().topPlaceholderFormatVirtualDefault().getConfigurationSection(
+                        currencyName + ".default");
+        ConfigurationSection customSection =
+                LightCoins.instance.getSettingsConfig().topPlaceholderFormatVirtualDefault().getConfigurationSection(
+                        currencyName + ".custom");
+
+        if(defaultSection == null) {
+            LightCoins.instance.getConsolePrinter().printError(
+                    "Could not find placeholder format section for: " + currencyName + " in settings.yml ");
+            return "<dark_red>Virtual currency format not found";
         }
 
         String defaultFormatValid = defaultSection.getString("valid",
@@ -51,15 +61,16 @@ public class CoinsTopHolder implements LightPlaceholder {
         String customFormatValid = customSection != null ? customSection.getString(place + ".valid", defaultFormatValid) : defaultFormatValid;
         String customFormatInvalid = customSection != null ? customSection.getString(place + ".invalid", defaultFormatInvalid) : defaultFormatInvalid;
 
-        CoinsData data = coinsTop.get(place);
+        VirtualData data = virtualTop.get(place);
         if (data == null) {
             return customFormatInvalid.replace("#place#", String.valueOf(place));
         }
 
+
         return customFormatValid
                 .replace("#place#", String.valueOf(place))
-                .replace("#name#", data.getName())
-                .replace("#amount#", data.getFormattedCoins())
-                .replace("#currency#", data.getFormattedCurrency());
+                .replace("#name#", data.getPlayerName())
+                .replace("#amount#", data.getFormattedBalance())
+                .replace("#currency#", data.getDisplayName());
     }
 }

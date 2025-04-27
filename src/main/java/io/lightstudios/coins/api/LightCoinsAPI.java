@@ -13,7 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -184,7 +183,58 @@ public class LightCoinsAPI {
                 });
     }
 
-    public Map<Integer, CoinsData> getTop(int amountToList) {
+    public Map<Integer, VirtualData> getTopVirtual(String currencyName, int amountToList) {
+
+        Map<Integer, VirtualData> top = new HashMap<>();
+
+        // MySQL/MariaDB with multiserver enabled
+        if(!LightCore.instance.getSettings().syncType().equalsIgnoreCase("redis") &&
+                LightCore.instance.getSettings().multiServerEnabled()) {
+
+            List<VirtualData> virtualDataSynchronized = LightCoins.instance.getVirtualDataTable().readVirtualData().join();
+
+            if(virtualDataSynchronized == null || virtualDataSynchronized.isEmpty()) {
+                return top;
+            }
+
+            // Filtere nur echte Spieler und sortiere nach Coins
+            List<VirtualData> sortedVirtualData = virtualDataSynchronized.stream()
+                    .filter(virtualData -> virtualData.getPlayerName() != null && !virtualData.getPlayerName().equalsIgnoreCase("nonplayer_account"))
+                    .filter(virtualData -> virtualData.getCurrencyName().equalsIgnoreCase(currencyName))
+                    .sorted((a, b) -> b.getCurrentBalance().compareTo(a.getCurrentBalance()))
+                    .limit(amountToList)
+                    .toList();
+
+            // Füge die sortierten CoinsData in die Map ein
+            for (int i = 0; i < sortedVirtualData.size(); i++) {
+                VirtualData virtualData = sortedVirtualData.get(i);
+                top.put(i + 1, virtualData);
+            }
+
+            return top;
+
+        }
+
+        // Redis with multiserver enabled
+        // Filtere nur echte Spieler und sortiere nach Coins
+        List<AccountData> sortedAccounts = accountData.values().stream()
+                .filter(account -> account.getName() != null && !account.getName().equalsIgnoreCase("nonplayer_account"))
+                .filter(account -> account.getVirtualCurrencyByName(currencyName) != null)
+                .sorted((a, b) -> b.getVirtualCurrencyByName(currencyName).getCurrentBalance().compareTo(a.getVirtualCurrencyByName(currencyName).getCurrentBalance()))
+                .limit(amountToList)
+                .toList();
+
+        // Füge die sortierten CoinsData in die Map ein
+        for (int i = 0; i < sortedAccounts.size(); i++) {
+            VirtualData virtualData = sortedAccounts.get(i).getVirtualCurrencyByName(currencyName);
+            top.put(i + 1, virtualData);
+        }
+
+        return top;
+
+    }
+
+    public Map<Integer, CoinsData> getTopCoins(int amountToList) {
         Map<Integer, CoinsData> top = new HashMap<>();
 
         // MySQL/MariaDB with multiserver enabled

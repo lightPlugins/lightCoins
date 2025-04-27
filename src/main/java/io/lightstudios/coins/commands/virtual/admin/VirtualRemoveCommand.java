@@ -147,7 +147,7 @@ public class VirtualRemoveCommand implements LightCommand {
                         player,
                         LightCoins.instance.getMessageConfig().prefix() +
                                 LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
-                                        .replace("#info#", response.errorMessage)
+                                        .replace("#info#", response.errorMessage())
                                 ).collect(Collectors.joining()));
                 return false;
             }
@@ -196,7 +196,7 @@ public class VirtualRemoveCommand implements LightCommand {
                     player,
                     LightCoins.instance.getMessageConfig().prefix() +
                             LightCoins.instance.getMessageConfig().somethingWentWrong().stream().map(str -> str
-                                    .replace("#info#", response.errorMessage)
+                                    .replace("#info#", response.errorMessage())
                             ).collect(Collectors.joining()));
             return false;
         }
@@ -260,7 +260,7 @@ public class VirtualRemoveCommand implements LightCommand {
             VirtualResponse response = virtualData.removeBalance(amount);
 
             if(!response.transactionSuccess()) {
-                LightCoins.instance.getConsolePrinter().printError("Transaction failed: " + response.errorMessage);
+                LightCoins.instance.getConsolePrinter().printError("Transaction failed: " + response.errorMessage());
                 return false;
             }
 
@@ -298,7 +298,7 @@ public class VirtualRemoveCommand implements LightCommand {
         VirtualResponse response = virtualData.removeBalance(amount);
 
         if(!response.transactionSuccess()) {
-            LightCoins.instance.getConsolePrinter().printError("Transaction failed: " + response.errorMessage);
+            LightCoins.instance.getConsolePrinter().printError("Transaction failed: " + response.errorMessage());
             return false;
         }
 

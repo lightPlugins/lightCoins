@@ -2,6 +2,8 @@ package io.lightstudios.coins.api.models;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.synchronisation.TransactionCoins;
+import io.lightstudios.coins.title.EconomyTitle;
+import io.lightstudios.coins.title.TitleType;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.libs.jedis.Jedis;
@@ -98,6 +100,8 @@ public class CoinsData {
             transactionManager.addTransaction(this);
         }
 
+        EconomyTitle.sendEconomyTitle(uuid, TitleType.DEPOSIT_COINS, coins, getFormattedCurrency());
+
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
     }
@@ -130,6 +134,8 @@ public class CoinsData {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
             transactionManager.addTransaction(this);
         }
+
+        EconomyTitle.sendEconomyTitle(uuid, TitleType.WITHDRAW_COINS, coins, getFormattedCurrency());
 
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
