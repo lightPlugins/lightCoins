@@ -1,6 +1,7 @@
 package io.lightstudios.coins.api.models;
 
 import io.lightstudios.coins.LightCoins;
+import io.lightstudios.coins.api.types.EconomyReason;
 import io.lightstudios.coins.synchronisation.TransactionCoins;
 import io.lightstudios.coins.title.EconomyTitle;
 import io.lightstudios.coins.title.TitleType;
@@ -51,7 +52,7 @@ public class CoinsData {
      * @param coins The amount of coins to set.
      * @return The response of the transaction.
      */
-    public EconomyResponse setCoins(BigDecimal coins) {
+    public EconomyResponse setCoins(BigDecimal coins, EconomyReason reason) {
         EconomyResponse defaultResponse = checkDefaults(coins);
         if(!defaultResponse.transactionSuccess()) {
             return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
@@ -77,7 +78,7 @@ public class CoinsData {
      * @param coins The amount of coins to add.
      * @return The response of the transaction.
      */
-    public EconomyResponse addCoins(BigDecimal coins) {
+    public EconomyResponse addCoins(BigDecimal coins, EconomyReason reason) {
 
         EconomyResponse defaultResponse = checkDefaults(coins);
         if(!defaultResponse.transactionSuccess()) {
@@ -100,7 +101,11 @@ public class CoinsData {
             transactionManager.addTransaction(this);
         }
 
-        EconomyTitle.sendEconomyTitle(uuid, TitleType.DEPOSIT_COINS, coins, getFormattedCurrency());
+        // send only title on common actions (pay transaction titles are handled in the command itself)
+        if(!reason.equals(EconomyReason.PAY_COMMAND)) {
+            EconomyTitle.sendEconomyTitle(uuid, TitleType.DEPOSIT_COINS, coins, getFormattedCurrency(), reason.getName(), reason.getName());
+        }
+
 
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");
@@ -111,7 +116,7 @@ public class CoinsData {
      * @param coins The amount of coins to remove.
      * @return The response of the transaction.
      */
-    public EconomyResponse removeCoins(BigDecimal coins) {
+    public EconomyResponse removeCoins(BigDecimal coins, EconomyReason reason) {
 
         EconomyResponse defaultResponse = checkDefaults(coins);
 
@@ -135,7 +140,10 @@ public class CoinsData {
             transactionManager.addTransaction(this);
         }
 
-        EconomyTitle.sendEconomyTitle(uuid, TitleType.WITHDRAW_COINS, coins, getFormattedCurrency());
+        // send only title on common actions (pay transaction titles are handled in the command itself)
+        if(!reason.equals(EconomyReason.PAY_COMMAND)) {
+            EconomyTitle.sendEconomyTitle(uuid, TitleType.WITHDRAW_COINS, coins, getFormattedCurrency(), reason.getName(), reason.getName());
+        }
 
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
                 EconomyResponse.ResponseType.SUCCESS, "");

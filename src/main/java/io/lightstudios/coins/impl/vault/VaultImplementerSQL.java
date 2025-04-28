@@ -3,6 +3,7 @@ package io.lightstudios.coins.impl.vault;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.CoinsData;
+import io.lightstudios.coins.api.types.EconomyReason;
 import io.lightstudios.coins.impl.events.custom.LightCoinsWithdrawEvent;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.hooks.towny.TownyInterface;
@@ -165,7 +166,7 @@ public class VaultImplementerSQL implements Economy {
         CompletableFuture<CoinsData> coinsDataFuture = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(uuid);
         try {
             CoinsData result = coinsDataFuture.get(); // Block until the result is available
-            return result.removeCoins(formatted);
+            return result.removeCoins(formatted, EconomyReason.IMPLEMENTER_WITHDRAW);
         } catch (Exception e) {
             LightCoins.instance.getConsolePrinter().printError(List.of(
                     "An error occurred while reading coins data from the database!",
@@ -226,7 +227,7 @@ public class VaultImplementerSQL implements Economy {
         CompletableFuture<CoinsData> coinsDataFuture = LightCoins.instance.getCoinsTable().findCoinsDataByUUID(uuid);
         try {
             CoinsData result = coinsDataFuture.get(); // Block until the result is available
-            return result.addCoins(formatted);
+            return result.addCoins(formatted, EconomyReason.IMPLEMENTER_DEPOSIT);
         } catch (Exception e) {
             LightCoins.instance.getConsolePrinter().printError(List.of(
                     "An error occurred while reading coins data from the database!",

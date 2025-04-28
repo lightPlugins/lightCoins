@@ -3,9 +3,10 @@ package io.lightstudios.coins.commands.vault.admin;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
+import io.lightstudios.coins.api.types.EconomyReason;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
-import io.lightstudios.core.proxy.messaging.SendProxyRequest;
+import io.lightstudios.core.proxy.messaging.backend.sender.SendProxyRequest;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.interfaces.LightCommand;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -134,7 +135,7 @@ public class AddCoinsCommand implements LightCommand {
             }
 
             BigDecimal currentCoins = coinsPlayer.getCurrentCoins();
-            EconomyResponse response = coinsPlayer.addCoins(amount);
+            EconomyResponse response = coinsPlayer.addCoins(amount, EconomyReason.ADD_COMMAND);
 
             if(response.transactionSuccess()) {
                 LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -206,7 +207,7 @@ public class AddCoinsCommand implements LightCommand {
 
         CoinsData coinsPlayer = playerData.getCoinsData();
         BigDecimal currentCoins = coinsPlayer.getCurrentCoins();
-        EconomyResponse response = coinsPlayer.addCoins(amount);
+        EconomyResponse response = coinsPlayer.addCoins(amount, EconomyReason.ADD_COMMAND);
 
         if(response.transactionSuccess()) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -309,7 +310,7 @@ public class AddCoinsCommand implements LightCommand {
                 return false;
             }
 
-            EconomyResponse response = coinsPlayer.addCoins(amount);
+            EconomyResponse response = coinsPlayer.addCoins(amount, EconomyReason.ADD_COMMAND_CONSOLE);
 
             if(response.transactionSuccess()) {
                 LightCoins.instance.getConsolePrinter().printInfo(
@@ -327,7 +328,7 @@ public class AddCoinsCommand implements LightCommand {
         }
 
         CoinsData coinsPlayer = playerData.getCoinsData();
-        EconomyResponse response = coinsPlayer.addCoins(amount);
+        EconomyResponse response = coinsPlayer.addCoins(amount, EconomyReason.ADD_COMMAND_CONSOLE);
 
         if(response.transactionSuccess()) {
             LightCoins.instance.getConsolePrinter().printInfo(

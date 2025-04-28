@@ -88,18 +88,25 @@ title:
     fadeOut: 20
     virtual:
       onDeposit:
-          upper: '<green>Deposit'
-          lower: '<green>#amount# <gray>#currency#'
+        upper: <gray>Received a <green>Deposit
+        lower: <green>#amount# <dark_gray>#currency# <gray>from <green>#sender#
       onWithdraw:
-          upper: '<red>Withdraw'
-          lower: '<red>#amount# <gray>#currency#'
+        upper: <gray>Receive a <red>Withdraw
+        lower: <red>#amount# <dark_gray>#currency# <gray>from <red>#sender#
     coins:
       onDeposit:
-        upper: '<green>Deposit'
-        lower: '<green>#amount# <gray>#currency#'
+        upper: <gray>Received a <green>Deposit
+        lower: <green>#amount# <dark_gray>#currency# <gray>from <green>#sender#
       onWithdraw:
-        upper: '<red>Withdraw'
-        lower: '<red>#amount# <gray>#currency#'
+        upper: <gray>Receive a <red>Withdraw
+        lower: <red>#amount# <dark_gray>#currency# <gray>from <red>#sender#
+      onPay:
+        sender:
+          upper: <red>Sent a Payment
+          lower: <green>#amount# <dark_gray>#currency# <gray>to <yellow>#target#
+        target:
+          upper: <green>Received a Payment
+          lower: <green>#amount# <dark_gray>#currency# <gray>from <yellow>#sender#
   # Animated titles in development.
   animated: { }
 # Lose Coins System - Only for Vault currency.

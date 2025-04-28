@@ -3,9 +3,10 @@ package io.lightstudios.coins.commands.vault.admin;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.CoinsData;
+import io.lightstudios.coins.api.types.EconomyReason;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
-import io.lightstudios.core.proxy.messaging.SendProxyRequest;
+import io.lightstudios.core.proxy.messaging.backend.sender.SendProxyRequest;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.interfaces.LightCommand;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -134,7 +135,7 @@ public class SetCoinsCommand implements LightCommand {
                 return false;
             }
 
-            EconomyResponse response = coinsPlayer.setCoins(amount);
+            EconomyResponse response = coinsPlayer.setCoins(amount, EconomyReason.SET_COMMAND);
 
             if(response.transactionSuccess()) {
                 LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -201,7 +202,7 @@ public class SetCoinsCommand implements LightCommand {
         }
 
         CoinsData coinsPlayer = playerData.getCoinsData();
-        EconomyResponse response = coinsPlayer.setCoins(amount);
+        EconomyResponse response = coinsPlayer.setCoins(amount, EconomyReason.SET_COMMAND);
 
         if(response.transactionSuccess()) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -303,7 +304,7 @@ public class SetCoinsCommand implements LightCommand {
                 return false;
             }
 
-            EconomyResponse response = coinsPlayer.setCoins(amount);
+            EconomyResponse response = coinsPlayer.setCoins(amount, EconomyReason.SET_COMMAND_CONSOLE);
 
             if(response.transactionSuccess()) {
                 LightCoins.instance.getConsolePrinter().printInfo(
@@ -322,7 +323,7 @@ public class SetCoinsCommand implements LightCommand {
         }
 
         CoinsData coinsPlayer = playerData.getCoinsData();
-        EconomyResponse response = coinsPlayer.setCoins(amount);
+        EconomyResponse response = coinsPlayer.setCoins(amount, EconomyReason.SET_COMMAND_CONSOLE);
 
         if(response.transactionSuccess()) {
             LightCoins.instance.getConsolePrinter().printInfo(

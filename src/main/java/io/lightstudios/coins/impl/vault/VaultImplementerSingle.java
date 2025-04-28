@@ -3,6 +3,7 @@ package io.lightstudios.coins.impl.vault;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
+import io.lightstudios.coins.api.types.EconomyReason;
 import io.lightstudios.coins.impl.events.custom.LightCoinsDepositEvent;
 import io.lightstudios.coins.impl.events.custom.LightCoinsWithdrawEvent;
 import io.lightstudios.core.LightCore;
@@ -178,7 +179,7 @@ public class VaultImplementerSingle implements Economy {
                     "Failed to withdraw coins. Coins Data not found for " + uuid);
         }
 
-        return coinsData.removeCoins(formatted);
+        return coinsData.removeCoins(formatted, EconomyReason.IMPLEMENTER_WITHDRAW);
     }
 
     @Override
@@ -241,7 +242,7 @@ public class VaultImplementerSingle implements Economy {
                     "Failed to deposit coins. Coins Data not found for " + uuid);
         }
 
-        return coinsData.addCoins(formatted);
+        return coinsData.addCoins(formatted, EconomyReason.IMPLEMENTER_DEPOSIT);
     }
 
     @Override

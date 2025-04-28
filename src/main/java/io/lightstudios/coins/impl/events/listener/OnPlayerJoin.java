@@ -4,6 +4,7 @@ import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.VirtualData;
+import io.lightstudios.coins.api.types.EconomyReason;
 import io.lightstudios.core.LightCore;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -62,7 +63,7 @@ public class OnPlayerJoin implements Listener {
         playerData.setOfflinePlayer(event.getPlayer());
         LightCoins.instance.getLightCoinsAPI().getAccountData().put(uuid, playerData);
 
-        EconomyResponse response = newCoinsData.addCoins(starterCoins);
+        EconomyResponse response = newCoinsData.addCoins(starterCoins, EconomyReason.NEW_ACCOUNT);
         if (response.transactionSuccess()) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
                     event.getPlayer(),

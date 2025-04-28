@@ -4,6 +4,7 @@ import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.VirtualResponse;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.VirtualData;
+import io.lightstudios.coins.api.types.VirtualReason;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
@@ -140,7 +141,7 @@ public class VirtualRemoveCommand implements LightCommand {
                 return false;
             }
 
-            VirtualResponse response = virtualData.removeBalance(amount);
+            VirtualResponse response = virtualData.removeBalance(amount, VirtualReason.REMOVE_COMMAND);
 
             if(!response.transactionSuccess()) {
                 LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -189,7 +190,7 @@ public class VirtualRemoveCommand implements LightCommand {
             return false;
         }
 
-        VirtualResponse response = virtualData.removeBalance(amount);
+        VirtualResponse response = virtualData.removeBalance(amount, VirtualReason.REMOVE_COMMAND);
 
         if(!response.transactionSuccess()) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -257,7 +258,7 @@ public class VirtualRemoveCommand implements LightCommand {
                 return false;
             }
 
-            VirtualResponse response = virtualData.removeBalance(amount);
+            VirtualResponse response = virtualData.removeBalance(amount, VirtualReason.REMOVE_COMMAND);
 
             if(!response.transactionSuccess()) {
                 LightCoins.instance.getConsolePrinter().printError("Transaction failed: " + response.errorMessage());
@@ -295,7 +296,7 @@ public class VirtualRemoveCommand implements LightCommand {
             return false;
         }
 
-        VirtualResponse response = virtualData.removeBalance(amount);
+        VirtualResponse response = virtualData.removeBalance(amount, VirtualReason.REMOVE_COMMAND);
 
         if(!response.transactionSuccess()) {
             LightCoins.instance.getConsolePrinter().printError("Transaction failed: " + response.errorMessage());

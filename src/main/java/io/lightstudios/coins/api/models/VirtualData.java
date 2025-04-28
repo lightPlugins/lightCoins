@@ -2,6 +2,7 @@ package io.lightstudios.coins.api.models;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.VirtualResponse;
+import io.lightstudios.coins.api.types.VirtualReason;
 import io.lightstudios.coins.synchronisation.TransactionVirtual;
 import io.lightstudios.coins.title.EconomyTitle;
 import io.lightstudios.coins.title.TitleType;
@@ -102,7 +103,7 @@ public class VirtualData {
      * @param amount the balance to set
      * @return VirtualResponse of the transaction
      */
-    public VirtualResponse addBalance(BigDecimal amount) {
+    public VirtualResponse addBalance(BigDecimal amount, VirtualReason reason) {
         VirtualResponse defaultResponse = checkDefaults(amount);
 
         if(!defaultResponse.transactionSuccess()) {
@@ -124,7 +125,7 @@ public class VirtualData {
             transactionVirtual.addTransaction(this);
         }
 
-        EconomyTitle.sendEconomyTitle(playerUUID, TitleType.DEPOSIT_VIRTUAL, amount, getFormattedBalance());
+        EconomyTitle.sendEconomyTitle(playerUUID, TitleType.DEPOSIT_VIRTUAL, amount, getFormattedBalance(), reason.getName(), reason.getName());
         return new VirtualResponse(amount, this.currentBalance, defaultResponse.type(), defaultResponse.errorMessage());
     }
 
@@ -133,7 +134,7 @@ public class VirtualData {
      * @param amount the balance to set
      * @return VirtualResponse of the transaction
      */
-    public VirtualResponse removeBalance(BigDecimal amount) {
+    public VirtualResponse removeBalance(BigDecimal amount, VirtualReason reason) {
         VirtualResponse defaultResponse = checkDefaults(amount);
 
         if(!defaultResponse.transactionSuccess()) {
@@ -154,7 +155,7 @@ public class VirtualData {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
             transactionVirtual.addTransaction(this);
         }
-        EconomyTitle.sendEconomyTitle(playerUUID, TitleType.WITHDRAW_VIRTUAL, amount, getFormattedBalance());
+        EconomyTitle.sendEconomyTitle(playerUUID, TitleType.WITHDRAW_VIRTUAL, amount, getFormattedBalance(), reason.getName(), reason.getName());
         return new VirtualResponse(amount, this.currentBalance, defaultResponse.type(), defaultResponse.errorMessage());
     }
 

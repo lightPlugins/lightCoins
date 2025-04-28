@@ -11,15 +11,14 @@ import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class EconomyTitle {
 
-    public static void sendEconomyTitle(UUID uuid, TitleType type, BigDecimal amount, String currency) {
+    public static void sendEconomyTitle(UUID uuid, TitleType type, BigDecimal amount, String currency, String sender, String target) {
 
-        ConfigurationSection section =
-                LightCoins.instance.getSettingsConfig().titleEconomyStatic().getConfigurationSection(
-                        type.getType());
+        ConfigurationSection section = LightCoins.instance.getSettingsConfig().titleEconomyStatic();
 
         if(section == null) {
             LightCoins.instance.getConsolePrinter().printConfigError(List.of(
@@ -31,7 +30,7 @@ public class EconomyTitle {
 
         boolean enabled = section.getBoolean("enabled", true);
         int fadeIn = section.getInt("fadeIn", 20);
-        int stay = section.getInt("stay", 40);
+        int stay = section.getInt("stay", 80);
         int fadeOut = section.getInt("fadeOut", 20);
 
         Player player = Bukkit.getPlayer(uuid);
@@ -56,10 +55,14 @@ public class EconomyTitle {
             return;
         }
 
-        String upperTitle = section.getString(type.getPath() + ".upper", "Upper Title")
+        String upperTitle = section.getString(type.getType() + ".upper", "Upper Title")
+                .replace("#sender#", sender)
+                .replace("#target#", target)
                 .replace("#currency#", currency)
                 .replace("#amount#", LightNumbers.formatForMessages(amount, decimalPlaces));
-        String lowerTitle = section.getString(type.getPath() + ".lower", "Lower Title")
+        String lowerTitle = section.getString(type.getType() + ".lower", "Lower Title")
+                .replace("#sender#", sender)
+                .replace("#target#", target)
                 .replace("#currency#", currency)
                 .replace("#amount#", LightNumbers.formatForMessages(amount, decimalPlaces));;
 

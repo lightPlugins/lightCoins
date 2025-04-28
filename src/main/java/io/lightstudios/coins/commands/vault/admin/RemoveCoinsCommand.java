@@ -3,12 +3,12 @@ package io.lightstudios.coins.commands.vault.admin;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
+import io.lightstudios.coins.api.types.EconomyReason;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
-import io.lightstudios.core.proxy.messaging.SendProxyRequest;
+import io.lightstudios.core.proxy.messaging.backend.sender.SendProxyRequest;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.interfaces.LightCommand;
-import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -135,7 +135,7 @@ public class RemoveCoinsCommand implements LightCommand {
             }
 
             BigDecimal currentCoins = coinsPlayer.getCurrentCoins();
-            EconomyResponse response = coinsPlayer.removeCoins(amount);
+            EconomyResponse response = coinsPlayer.removeCoins(amount, EconomyReason.REMOVE_COMMAND);
 
             if(response.transactionSuccess()) {
                 LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -205,7 +205,7 @@ public class RemoveCoinsCommand implements LightCommand {
 
         CoinsData coinsPlayer = playerData.getCoinsData();
         BigDecimal currentCoins = coinsPlayer.getCurrentCoins();
-        EconomyResponse response = coinsPlayer.removeCoins(amount);
+        EconomyResponse response = coinsPlayer.removeCoins(amount, EconomyReason.REMOVE_COMMAND);
 
         if(response.transactionSuccess()) {
             LightCore.instance.getMessageSender().sendPlayerMessage(
@@ -306,7 +306,7 @@ public class RemoveCoinsCommand implements LightCommand {
                 return false;
             }
 
-            EconomyResponse response = coinsPlayer.removeCoins(amount);
+            EconomyResponse response = coinsPlayer.removeCoins(amount, EconomyReason.REMOVE_COMMAND_CONSOLE);
 
             if(response.transactionSuccess()) {
                 LightCoins.instance.getConsolePrinter().printInfo(
@@ -325,7 +325,7 @@ public class RemoveCoinsCommand implements LightCommand {
         }
 
         CoinsData coinsPlayer = playerData.getCoinsData();
-        EconomyResponse response = coinsPlayer.removeCoins(amount);
+        EconomyResponse response = coinsPlayer.removeCoins(amount, EconomyReason.REMOVE_COMMAND_CONSOLE);
 
         if(response.transactionSuccess()) {
             LightCoins.instance.getConsolePrinter().printInfo(

@@ -3,9 +3,10 @@ package io.lightstudios.coins.commands.vault.player;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.coins.api.models.AccountData;
+import io.lightstudios.coins.api.types.EconomyReason;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
-import io.lightstudios.core.proxy.messaging.SendProxyRequest;
+import io.lightstudios.core.proxy.messaging.backend.sender.SendProxyRequest;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.LightTimers;
 import io.lightstudios.core.util.interfaces.LightCommand;
@@ -188,8 +189,8 @@ public class PayCommand implements LightCommand {
                 return false;
             }
 
-            EconomyResponse playerResponse = coinsPlayer.removeCoins(amount);
-            EconomyResponse targetResponse = coinsTarget.addCoins(amount);
+            EconomyResponse playerResponse = coinsPlayer.removeCoins(amount, EconomyReason.PAY_COMMAND);
+            EconomyResponse targetResponse = coinsTarget.addCoins(amount, EconomyReason.PAY_COMMAND);
 
             if(playerResponse.transactionSuccess() && targetResponse.transactionSuccess()) {
 
@@ -274,7 +275,7 @@ public class PayCommand implements LightCommand {
         CoinsData coinsPlayer = playerData.getCoinsData();
         CoinsData targetCoinsPlayer = targetData.getCoinsData();
 
-        EconomyResponse playerResponse = coinsPlayer.removeCoins(amount);
+        EconomyResponse playerResponse = coinsPlayer.removeCoins(amount, EconomyReason.PAY_COMMAND);
 
 
         Player target = Bukkit.getServer().getPlayer(targetName);
@@ -282,7 +283,7 @@ public class PayCommand implements LightCommand {
 
         if(playerResponse.transactionSuccess()) {
             // first remove the coins from the player, then add them to the target
-            EconomyResponse targetResponse = targetCoinsPlayer.addCoins(amount);
+            EconomyResponse targetResponse = targetCoinsPlayer.addCoins(amount, EconomyReason.PAY_COMMAND);
 
             if(targetResponse.transactionSuccess()) {
 
@@ -331,7 +332,7 @@ public class PayCommand implements LightCommand {
                 return false;
             } else {
 
-                EconomyResponse transferBack = coinsPlayer.addCoins(amount);
+                EconomyResponse transferBack = coinsPlayer.addCoins(amount, EconomyReason.PAY_COMMAND);
 
                 if(transferBack.transactionSuccess()) {
                     LightCore.instance.getMessageSender().sendPlayerMessage(

@@ -8,6 +8,8 @@ public enum TitleType {
 
     DEPOSIT_COINS("coins.onDeposit"),
     WITHDRAW_COINS("coins.onWithdraw"),
+    PAY_SENDER_COINS("coins.onPay.sender"),
+    PAY_TARGET_COINS("coins.onPay.target"),
 
     DEPOSIT_VIRTUAL("virtual.onDeposit"),
     WITHDRAW_VIRTUAL("virtual.onWithdraw"),
@@ -22,10 +24,14 @@ public enum TitleType {
 
     @Nullable
     public String getPath() {
-        String[] path = TitleType.class.getName().split("\\.");
+        String[] path = this.type.split("\\.");
 
-        if(path.length > 1) {
+        if(path.length == 2) {
             return path[1];
+        }
+
+        if(path.length == 3) {
+            return path[1] + "." + path[2];
         }
         return null;
     }

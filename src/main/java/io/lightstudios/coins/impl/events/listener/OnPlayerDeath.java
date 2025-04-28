@@ -3,6 +3,7 @@ package io.lightstudios.coins.impl.events.listener;
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.models.CoinsData;
+import io.lightstudios.coins.api.types.EconomyReason;
 import io.lightstudios.coins.impl.events.custom.LightCoinsLoseCoinsEvent;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
@@ -184,7 +185,7 @@ public class OnPlayerDeath implements Listener {
                 return;
             }
 
-            EconomyResponse response = coinsData.removeCoins(BigDecimal.valueOf(coinsToLose));
+            EconomyResponse response = coinsData.removeCoins(BigDecimal.valueOf(coinsToLose), EconomyReason.ON_DEATH);
 
             if(response.transactionSuccess()) {
 

@@ -2,6 +2,7 @@ package io.lightstudios.coins.commands.vault.admin;
 
 import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.models.AccountData;
+import io.lightstudios.coins.api.types.EconomyReason;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
@@ -106,7 +107,7 @@ public class AddAllCommand implements LightCommand {
                 }
             }
 
-            EconomyResponse response = account.getCoinsData().addCoins(amount);
+            EconomyResponse response = account.getCoinsData().addCoins(amount, EconomyReason.ADD_ALL_COMMAND);
             if(!response.transactionSuccess()) {
                 failedTransactions++;
                 LightCoins.instance.getConsolePrinter().printError(List.of(
