@@ -66,7 +66,7 @@ defaultCurrency:
   # currency when a new player joins the server.
   # HINT: Compatible with multiserver setups.
   startBalance: 200.00
-  # The decimal places for this currency.
+  # The decimal places for this currency.w
   # 2 means 0.00, 3 means 0.000 and so on.
   # HINT: If you set this to 0, the currency will be displayed without decimal places.
   decimalPlaces: 2
@@ -80,12 +80,23 @@ defaultCurrency:
   maxBalance: 999999999999999999999999.99
   # Should the target player receive a message when he gets money via add/remove/set command ?
   sendTargetMessages: true
+# These are the title settings for some transaction types
+# HINT: Titles will never be overwritten by another one.
+#       Instead, each triggered title will be added to the queue.
 title:
+  # animated: { } IN DEVELOPMENT!
+  # The default static non-animated title settings
   static:
+    # Enable or disable the title system.
+    # HINT: Make sure only one title system is enabled.
     enable: true
+    # Fade in time in ticks (20 ticks = 1 second)
     fadeIn: 20
+    # Stay time in ticks (40 ticks = 2 second)
     stay: 40
+    # Fade out time in ticks (20 ticks = 1 second)
     fadeOut: 20
+    # Title translations for LightCoins virtual currency
     virtual:
       onDeposit:
         upper: <gray>Received a <green>Deposit
@@ -93,6 +104,7 @@ title:
       onWithdraw:
         upper: <gray>Receive a <red>Withdraw
         lower: <red>#amount# <dark_gray>#currency# <gray>from <red>#sender#
+    # Title translations for the vault currency
     coins:
       onDeposit:
         upper: <gray>Received a <green>Deposit
@@ -107,8 +119,6 @@ title:
         target:
           upper: <green>Received a Payment
           lower: <green>#amount# <dark_gray>#currency# <gray>from <yellow>#sender#
-  # Animated titles in development.
-  animated: { }
 # Lose Coins System - Only for Vault currency.
 # This system allows you to lose a percentage of your coins when the player dies.
 loseCoinsOnDeath:
@@ -135,17 +145,24 @@ loseCoinsOnDeath:
     # The worlds where the player can't lose coins.
     worlds:
       - 'DisabledWorld'
+# The placeholder for the top placeholder %coins_top_<place>% and %virtual_top_<currency>_<place>%
+# HINT: You can use custom placeholders '#place#', '#name#', '#coins#' and '#currency#' in this placeholder.
+#       'default': If no custom place placeholder is set below, this placeholder will be used.
+#       '1', '2', '3': is a specific place placeholder. For example, you want different colors for the first, second and third place.
+#       You can also use 4, 5, and so on.
 topPlaceholderFormat:
-    # The placeholder for the top placeholder %coins_top_<place>%.
-    # This is the placeholder used by PlaceholderAPI
-    # HINT: You can use custom placeholders '#place#', '#name#', '#coins#' and '#currency#' in this placeholder.
-    # 'default': If no custom place placeholder is set below, this placeholder will be used.
+  # Placeholder section for the virtual currency
   virtual:
+    # You can specify for each single virtual currency a custom placeholder format here.
+    # In this Case 'gems' represents the name of the virtual currency used for the placeholder.
     'gems':
+      # The default placeholder format for the virtual currency.
+      # In this case, with the beginning after the 3rd place, the default placeholder format will be used.
       default:
         valid: '<dark_gray>● <yellow><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
         invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
       custom:
+        # Place #1-3 custom Placeholders (virtual currency)
         '1':
           valid: '<dark_gray>● <gold><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
           invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
@@ -155,6 +172,7 @@ topPlaceholderFormat:
         '3':
           valid: '<dark_gray>● <red><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
           invalid: '<gold>#place#<gray># <dark_gray>●  <gray>-<red>x<gray>-'
+  # Placeholder section for the vault based currency (default currency used by many vault based plugins)
   coins:
     default:
       valid: '<dark_gray>● <yellow><bold>#place#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'

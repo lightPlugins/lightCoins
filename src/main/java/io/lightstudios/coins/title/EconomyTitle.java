@@ -1,7 +1,6 @@
 package io.lightstudios.coins.title;
 
 import io.lightstudios.coins.LightCoins;
-import io.lightstudios.coins.api.models.CoinsData;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
 import net.kyori.adventure.text.Component;
@@ -11,12 +10,11 @@ import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class EconomyTitle {
 
-    public static void sendEconomyTitle(UUID uuid, TitleType type, BigDecimal amount, String currency, String sender, String target) {
+    public static void sendEconomyTitle(UUID uuid, EconomyTitleType type, BigDecimal amount, String currency, String sender, String receiver) {
 
         ConfigurationSection section = LightCoins.instance.getSettingsConfig().titleEconomyStatic();
 
@@ -57,12 +55,12 @@ public class EconomyTitle {
 
         String upperTitle = section.getString(type.getType() + ".upper", "Upper Title")
                 .replace("#sender#", sender)
-                .replace("#target#", target)
+                .replace("#target#", receiver)
                 .replace("#currency#", currency)
                 .replace("#amount#", LightNumbers.formatForMessages(amount, decimalPlaces));
         String lowerTitle = section.getString(type.getType() + ".lower", "Lower Title")
                 .replace("#sender#", sender)
-                .replace("#target#", target)
+                .replace("#target#", receiver)
                 .replace("#currency#", currency)
                 .replace("#amount#", LightNumbers.formatForMessages(amount, decimalPlaces));;
 

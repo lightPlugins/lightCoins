@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
-public enum TitleType {
+public enum EconomyTitleType {
 
     DEPOSIT_COINS("coins.onDeposit"),
     WITHDRAW_COINS("coins.onWithdraw"),
@@ -18,7 +18,7 @@ public enum TitleType {
 
     private final String type;
 
-    TitleType(String type) {
+    EconomyTitleType(String type) {
         this.type = type;
     }
 

@@ -166,9 +166,6 @@ public class AddCoinsCommand implements LightCommand {
                                 )
                         );
 
-                        sendTitle(target.getPlayer(), currentCoins, (currentCoins.add(amount)));
-
-
                     } else {
                         // try to send a message to the target player on another server via proxy.
                         SendProxyRequest.sendMessageToPlayer(player, target.getUniqueId(),
@@ -206,7 +203,6 @@ public class AddCoinsCommand implements LightCommand {
         }
 
         CoinsData coinsPlayer = playerData.getCoinsData();
-        BigDecimal currentCoins = coinsPlayer.getCurrentCoins();
         EconomyResponse response = coinsPlayer.addCoins(amount, EconomyReason.ADD_COMMAND);
 
         if(response.transactionSuccess()) {
@@ -239,7 +235,6 @@ public class AddCoinsCommand implements LightCommand {
                                             ).collect(Collectors.joining())
                             )
                     );
-                    sendTitle(target.getPlayer(), currentCoins, (currentCoins.add(amount)));
                 } else {
                     // try to send a message to the target player on another server via proxy.
                     SendProxyRequest.sendMessageToPlayer(player, target.getUniqueId(),
@@ -338,8 +333,5 @@ public class AddCoinsCommand implements LightCommand {
             LightCoins.instance.getConsolePrinter().printError("Transaction failed with reason: " + response.errorMessage);
             return false;
         }
-    }
-
-    private void sendTitle(Player player,  BigDecimal startValue, BigDecimal newAmount) {
     }
 }

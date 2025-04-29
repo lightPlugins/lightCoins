@@ -5,7 +5,7 @@ import io.lightstudios.coins.api.VirtualResponse;
 import io.lightstudios.coins.api.types.VirtualReason;
 import io.lightstudios.coins.synchronisation.TransactionVirtual;
 import io.lightstudios.coins.title.EconomyTitle;
-import io.lightstudios.coins.title.TitleType;
+import io.lightstudios.coins.title.EconomyTitleType;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.libs.jedis.Jedis;
@@ -125,7 +125,7 @@ public class VirtualData {
             transactionVirtual.addTransaction(this);
         }
 
-        EconomyTitle.sendEconomyTitle(playerUUID, TitleType.DEPOSIT_VIRTUAL, amount, getFormattedBalance(), reason.getName(), reason.getName());
+        EconomyTitle.sendEconomyTitle(playerUUID, EconomyTitleType.DEPOSIT_VIRTUAL, amount, getFormattedBalance(), reason.getName(), reason.getName());
         return new VirtualResponse(amount, this.currentBalance, defaultResponse.type(), defaultResponse.errorMessage());
     }
 
@@ -155,7 +155,7 @@ public class VirtualData {
             if(LightCore.instance.isRedis) { sendUpdateToRedis(); }
             transactionVirtual.addTransaction(this);
         }
-        EconomyTitle.sendEconomyTitle(playerUUID, TitleType.WITHDRAW_VIRTUAL, amount, getFormattedBalance(), reason.getName(), reason.getName());
+        EconomyTitle.sendEconomyTitle(playerUUID, EconomyTitleType.WITHDRAW_VIRTUAL, amount, getFormattedBalance(), reason.getName(), reason.getName());
         return new VirtualResponse(amount, this.currentBalance, defaultResponse.type(), defaultResponse.errorMessage());
     }
 

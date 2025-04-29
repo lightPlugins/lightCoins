@@ -4,7 +4,7 @@ import io.lightstudios.coins.LightCoins;
 import io.lightstudios.coins.api.types.EconomyReason;
 import io.lightstudios.coins.synchronisation.TransactionCoins;
 import io.lightstudios.coins.title.EconomyTitle;
-import io.lightstudios.coins.title.TitleType;
+import io.lightstudios.coins.title.EconomyTitleType;
 import io.lightstudios.core.LightCore;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.libs.jedis.Jedis;
@@ -102,8 +102,12 @@ public class CoinsData {
         }
 
         // send only title on common actions (pay transaction titles are handled in the command itself)
-        if(!reason.equals(EconomyReason.PAY_COMMAND)) {
-            EconomyTitle.sendEconomyTitle(uuid, TitleType.DEPOSIT_COINS, coins, getFormattedCurrency(), reason.getName(), reason.getName());
+        if(reason.equals(EconomyReason.PAY_COMMAND) || reason.equals(EconomyReason.NEW_ACCOUNT)) {
+            // No title is sent for PAY_COMMAND or NEW_ACCOUNT reasons
+            return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
+                    EconomyResponse.ResponseType.SUCCESS, "");
+        } else {
+            EconomyTitle.sendEconomyTitle(uuid, EconomyTitleType.DEPOSIT_COINS, coins, getFormattedCurrency(), reason.getName(), reason.getName());
         }
 
 
@@ -141,8 +145,12 @@ public class CoinsData {
         }
 
         // send only title on common actions (pay transaction titles are handled in the command itself)
-        if(!reason.equals(EconomyReason.PAY_COMMAND)) {
-            EconomyTitle.sendEconomyTitle(uuid, TitleType.WITHDRAW_COINS, coins, getFormattedCurrency(), reason.getName(), reason.getName());
+        if(reason.equals(EconomyReason.PAY_COMMAND) || reason.equals(EconomyReason.NEW_ACCOUNT)) {
+            // No action is required for PAY_COMMAND or NEW_ACCOUNT reasons
+            return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
+                    EconomyResponse.ResponseType.SUCCESS, "");
+        } else {
+            EconomyTitle.sendEconomyTitle(uuid, EconomyTitleType.WITHDRAW_COINS, coins, getFormattedCurrency(), reason.getName(), reason.getName());
         }
 
         return new EconomyResponse(coins.doubleValue(), this.currentCoins.doubleValue(),
