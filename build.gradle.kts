@@ -31,7 +31,7 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
         exclude(group = "org.bukkit", module = "bukkit")
     }
-    compileOnly(files("C:/Users/phili/IdeaProjects/lightCore/build/libs/lightCore-0.5.3.jar"))
+    compileOnly(files("C:/Users/phili/IdeaProjects/lightCore/build/libs/lightCore-1.0.0.jar"))
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.9")
 }
 
