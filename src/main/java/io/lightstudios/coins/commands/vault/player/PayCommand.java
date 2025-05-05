@@ -8,7 +8,7 @@ import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.coins.title.EconomyTitle;
 import io.lightstudios.coins.title.EconomyTitleType;
 import io.lightstudios.core.LightCore;
-import io.lightstudios.core.proxy.messaging.backend.sender.SendProxyRequest;
+import io.lightstudios.core.proxy.messaging.sender.SendProxyRequest;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.LightTimers;
 import io.lightstudios.core.util.interfaces.LightCommand;
@@ -83,7 +83,7 @@ public class PayCommand implements LightCommand {
 
     private boolean validateArguments(Player player, String[] args) {
         if (args.length != 2) {
-            sendMessage(player, LightCoins.instance.getMessageConfig().wrongSyntax(), getSyntax());
+            sendMessage(player, LightCoins.instance.getMessageConfig().wrongSyntax(), "#syntax#", getSyntax());
             return false;
         }
         return true;
@@ -91,7 +91,7 @@ public class PayCommand implements LightCommand {
 
     private boolean validateTransaction(Player player, String targetName, BigDecimal amount) {
         if (targetName.equalsIgnoreCase(player.getName())) {
-            sendMessage(player, LightCoins.instance.getMessageConfig().payNotYourself(), player.getName());
+            sendMessage(player, LightCoins.instance.getMessageConfig().payNotYourself());
             return false;
         }
 
@@ -131,7 +131,7 @@ public class PayCommand implements LightCommand {
         List<String> availableAccounts = LightCoins.instance.getLightCoinsAPI().getAccountDataPlayerNames();
 
         if (!availableAccounts.contains(targetName)) {
-            sendMessage(player, LightCoins.instance.getMessageConfig().playerNotFound(), "#target#", targetName);
+            sendMessage(player, LightCoins.instance.getMessageConfig().playerNotFound(), "#player#", targetName);
             return false;
         }
 

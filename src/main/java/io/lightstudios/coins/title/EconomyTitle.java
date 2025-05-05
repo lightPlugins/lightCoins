@@ -78,5 +78,6 @@ public class EconomyTitle {
                 fadeIn,
                 stay,
                 fadeOut);
+        LightCore.instance.getConsolePrinter().printWarning("Sent title to player " + player.getName() + " with UUID " + player.getUniqueId() + " with type: " + type.getType());
     }
 }

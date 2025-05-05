@@ -6,7 +6,7 @@ import io.lightstudios.coins.api.models.AccountData;
 import io.lightstudios.coins.api.types.EconomyReason;
 import io.lightstudios.coins.permissions.LightPermissions;
 import io.lightstudios.core.LightCore;
-import io.lightstudios.core.proxy.messaging.backend.sender.SendProxyRequest;
+import io.lightstudios.core.proxy.messaging.sender.SendProxyRequest;
 import io.lightstudios.core.util.LightNumbers;
 import io.lightstudios.core.util.interfaces.LightCommand;
 import net.milkbowl.vault.economy.EconomyResponse;
