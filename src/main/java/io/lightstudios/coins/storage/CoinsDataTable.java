@@ -176,6 +176,13 @@ public class CoinsDataTable {
                     return false;
                 }
             }
+        }).exceptionally(e -> {
+            LightCoins.instance.getConsolePrinter().printError(List.of(
+                    "An error occurred while deleting a player from the database!",
+                    "Please check the error logs for more information."
+            ));
+            e.printStackTrace();
+            throw new RuntimeException(e);
         });
     }
 

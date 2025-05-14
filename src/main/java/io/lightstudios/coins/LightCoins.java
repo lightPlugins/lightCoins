@@ -44,6 +44,10 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 public final class LightCoins extends JavaPlugin {
@@ -72,6 +76,8 @@ public final class LightCoins extends JavaPlugin {
     private CommandManager balTopCommands;
     private CommandManager payCommands;
     private final List<Player> onCheck = new ArrayList<>();
+    private final ExecutorService executor = Executors.newFixedThreadPool(4);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
 
     @Override
     public void onLoad() {
@@ -120,6 +126,8 @@ public final class LightCoins extends JavaPlugin {
         new UpdateCoinsBalance();
         new UpdateVirtualBalance();
 
+
+
         if(LightCore.instance.getHookManager().isExistPlaceholderAPI()) {
             consolePrinter.printInfo("Registering placeholder for LightCoins...");
             this.placeholderManager = new PlaceholderManager();
@@ -135,6 +143,22 @@ public final class LightCoins extends JavaPlugin {
     public void onDisable() {
 
         consolePrinter.printInfo("Stopping LightCoins...");
+
+        executor.shutdown();
+        scheduler.shutdown();
+        try {
+            if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+
+            if (!scheduler.awaitTermination(60, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+            scheduler.shutdownNow();
+        }
+
         consolePrinter.printInfo("Successfully stopped LightCoins.");
 
     }

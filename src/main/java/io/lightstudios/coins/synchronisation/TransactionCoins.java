@@ -20,17 +20,27 @@ public class TransactionCoins {
     private long period = 500L;
     private long delay = 500L;
 
-    private final ConcurrentLinkedQueue<Transaction> transactionQueue = new ConcurrentLinkedQueue<>();
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(poolSize);
+    private final BlockingQueue<Transaction> transactionQueue = new LinkedBlockingQueue<>(1000);
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss:SSS");
 
     public void startTransactions() {
-        scheduler.scheduleAtFixedRate(this::processTransactions, delay, period, TimeUnit.MILLISECONDS);
+        LightCoins.instance.getScheduler().scheduleAtFixedRate(this::processTransactions, delay, period, TimeUnit.MILLISECONDS);
     }
 
     public void addTransaction(CoinsData coinsData) {
         String timestamp = LocalDateTime.now().format(formatter);
-        transactionQueue.add(new Transaction(coinsData, timestamp));
+
+        monitorQueue();
+
+        if (!transactionQueue.offer(new Transaction(coinsData, timestamp))) {
+            LightCoins.instance.getConsolePrinter().printError(List.of(
+                    "Transaction queue for Coins is full! Could not add transaction.",
+                    "Consider increasing the pool size or reducing the transaction frequency.",
+                    "Transaction Timestamp: " + timestamp,
+                    "For UUID: " + coinsData.getUuid(),
+                    "Final Amount: " + coinsData.getCurrentCoins()
+            ));
+        }
     }
 
     private synchronized void processTransactions() {
@@ -68,26 +78,64 @@ public class TransactionCoins {
                                 "Failed [" + timestamp + "] vault transaction for " + uuid + ": " + amount);
                     }
                     // Remove the processed transaction from the queue
-                    transactionQueue.remove(finalLastTransaction);
+                    if(!transactionQueue.remove(finalLastTransaction)) {
+                        LightCoins.instance.getConsolePrinter().printWarning("Could not remove transaction from queue: " + finalLastTransaction.timestamp);
+                    }
                 }).exceptionally(throwable -> {
                     LightCoins.instance.getConsolePrinter().printError(List.of(
                             "Failed to write last vault transaction for " + uuid,
                             "Amount: " + amount,
                             "Timestamp: " + timestamp));
+                    if(!transactionQueue.remove(finalLastTransaction)) {
+                        LightCoins.instance.getConsolePrinter().printWarning(List.of(
+                                "Something went wrong on writeCoinsData to Database.",
+                                "CompletionException: Could not remove transaction from queue",
+                                "Transaction Timestamp: " + finalLastTransaction.timestamp,
+                                "Error: " + throwable.getMessage()
+                        ));
+                    }
                     throwable.printStackTrace();
-                    transactionQueue.remove(finalLastTransaction);
                     return null;
                 });
-            }).exceptionally(throwable -> {
+            }, LightCoins.instance.getExecutor()).exceptionally(throwable -> {
                 LightCoins.instance.getConsolePrinter().printError("Failed to process last vault transaction for " + uuid);
+                if(!transactionQueue.remove(finalLastTransaction)) {
+                    LightCoins.instance.getConsolePrinter().printWarning(List.of(
+                            "Something went wrong on processing processTransactions.",
+                            "CompletionException: Could not remove transaction from queue",
+                            "Transaction Timestamp: " + finalLastTransaction.timestamp,
+                            "Error: " + throwable.getMessage()
+                    ));
+                }
                 throwable.printStackTrace();
-                transactionQueue.remove(finalLastTransaction);
                 return null;
             });
         }
     }
 
     private record Transaction(CoinsData coinsData, String timestamp) {
+
+    }
+
+    public void monitorQueue() {
+        LightCoins.instance.getConsolePrinter().printInfo("Transaction queue size: " + transactionQueue.size());
+
+        if(transactionQueue.remainingCapacity() < 800) {
+            LightCoins.instance.getConsolePrinter().printInfo("Current Transaction queue size: " + transactionQueue.size());
+        }
+
+        if (transactionQueue.remainingCapacity() < 500) {
+            LightCoins.instance.getConsolePrinter().printWarning(List.of(
+                    "Transaction queue for Coins is getting full! Remaining capacity: " + transactionQueue.remainingCapacity() + " / 1000",
+                    "Consider increasing the pool size or reducing the transaction frequency."
+            ));
+        }
+        if (transactionQueue.remainingCapacity() < 15) {
+            LightCoins.instance.getConsolePrinter().printError(List.of(
+                    "Transaction queue for Coins is almost full! Remaining capacity: " + transactionQueue.remainingCapacity() + " / 1000",
+                    "Consider increasing the pool size or reducing the transaction frequency."
+            ));
+        }
 
     }
 }

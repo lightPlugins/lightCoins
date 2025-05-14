@@ -34,11 +34,6 @@ public class EconomyTitle {
         Player player = Bukkit.getPlayer(uuid);
 
         if(player == null) {
-            LightCoins.instance.getConsolePrinter().printError(List.of(
-                    "An error occurred while trying to send a title to player " + uuid,
-                    "Failed to send the title, because the player is not online/valid.",
-                    "Please contact the developer!"
-            ));
             return;
         }
 
@@ -78,6 +73,5 @@ public class EconomyTitle {
                 fadeIn,
                 stay,
                 fadeOut);
-        LightCore.instance.getConsolePrinter().printWarning("Sent title to player " + player.getName() + " with UUID " + player.getUniqueId() + " with type: " + type.getType());
     }
 }
