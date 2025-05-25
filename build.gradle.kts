@@ -3,11 +3,11 @@ plugins {
     id("io.freefair.lombok") version "8.11"
     id("com.gradleup.shadow") version "8.3.5"
     id("maven-publish")
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.16"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
 }
 
 group = "io.lightstudios.coins"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -31,7 +31,7 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
         exclude(group = "org.bukkit", module = "bukkit")
     }
-    compileOnly(files("C:/Users/phili/Documents/05 Minecraft Plugins/plugins/LightCore/core-backend/build/libs/LightCore-1.0.0.jar"))
+    compileOnly(files("C:/Users/phili/Documents/05 Minecraft Plugins/plugins/LightCore/core-backend/build/libs/LightCore-1.0.1.jar"))
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.9")
 }
 
