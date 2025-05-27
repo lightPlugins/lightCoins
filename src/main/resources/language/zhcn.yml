@@ -1,0 +1,173 @@
+# 该文件由 LightCore 生成，用于 LightCoins
+#
+#    ___       ___  ________  ___  ___  _________  ________  ________  ________  _______
+#   |\  \     |\  \|\   ____\|\  \|\  \|\___   ___\\   ____\|\   __  \|\   __  \|\  ___ \
+#   \ \  \    \ \  \ \  \___|\ \  \\\  \|___ \  \_\ \  \___|\ \  \|\  \ \  \|\  \ \   __/|
+#    \ \  \    \ \  \ \  \  __\ \   __  \   \ \  \ \ \  \    \ \  \\\  \ \   _  _\ \  \_|/__
+#     \ \  \____\ \  \ \  \|\  \ \  \ \  \   \ \  \ \ \  \____\ \  \\\  \ \  \\  \\ \  \_|\ \
+#      \ \_______\ \__\ \_______\ \__\ \__\   \ \__\ \ \_______\ \_______\ \__\\ _\\ \_______\
+#       \|_______|\|__|\|_______|\|__|\|__|    \|__|  \|_______|\|_______|\|__|\|__|\|_______|
+#
+# -> powered LightCoins - 简单易用的服务器金币/虚拟货币插件.
+#    Copyright © 2024 LightStudios
+#
+# 你可以在这里将插件语言译为你想要的内容.
+# 若你需要使用不同语言, 请创建一个 "language/xx.yml" 文件, "xx" 表示插件语言代码.
+# 复制默认的 en.yml 内容并将其黏贴在新文件中. 之后即可开始着手翻译消息文件.
+# 这之后你就可以在 config.yml 文件中切换使用的语言
+#
+# 须知: 请勿在消息中使用诸如 '&7' 或 '#ffdc73' 的颜色代码!
+#       控制台会因此报错, 插件不会正常工作.
+#       你应当使用现代的 MiniMessage 格式, 如: "<gray>文本" 或 "<yellow>文本"
+#       你可以在这里浏览所有可用格式: https://docs.advntr.dev/minimessage/format.html
+#       这个系统同样支持悬浮提示框文本及点击动作等. 查阅文档可获知详情.
+# 提示: 所有消息都会自动解析 PlaceholderAPI 变量, 你可以在所有消息中使用它们.
+# 提示: 如果翻译后的消息太长而难以在编辑器内完整显示, 你可以将它们的值从字符串变成字符串列表.
+#       示例: -> 所有方法显示的消息均相同.
+#         noPermission: '<red>你没有权限这么做! 你需要权限 <dark_red>#permission#<red>!'
+#         noPermission:
+#           - '<red>你没有权限'
+#           - '这么做! 你需要权限 <dark_red>#permission#<red>!'
+#       result: '<red>你没有权限这么做! 你需要权限 <dark_red>#permission#<red>!'
+#
+version: 1 # 请勿触碰此项 :( (否则插件不会正常工作, 也许吧 :o)
+prefix: "<yellow><bold><italic>light<gray>Coins <dark_gray>● <reset>"
+noPermission: "<red>你没有权限这么做! 你需要权限 <dark_red>#permission#<red>!"
+wrongSyntax: "<red>命令格式错误. <gray>请使用命令 <red>#syntax#"
+noNumber: "<red>这不是有效数字! 请正确输入数字."
+noNegativ: "<red>你不能填入负数!"
+playerNotFound: "<red>玩家 <dark_red>#player#<red> 不存在!"
+somethingWentWrong: "<red>出错了! 相关信息: #info#"
+reloadSuccess: "<gray>插件<yellow>成功<gray>重载!"
+starterCoins: "<gray>你收到了 <yellow>#coins# <gray>#currency# 的新手奖励!"
+playerDeleted: "<gray>你删除了玩家 <yellow>#player#<gray>."
+onlyConsole: "<red>这条命令只能在控制台执行!"
+# Vault 经济
+coinsShow: "<gray>你拥有 <yellow>#coins#<gray> #currency#."
+coinsShowTarget: "<gray>玩家 <yellow>#player#<gray> 拥有 <yellow>#coins# <gray>#currency#"
+coinsAdd: "<gray>你给予了玩家 <yellow>#player#<gray> <yellow>#coins# <gray>#currency#."
+coinsAddTarget: "<gray>玩家 <yellow>#player# <gray>给予了你 <yellow>#coins# <gray>#currency#."
+coinsAddAll: "<gray>你给予了所有 <yellow>#amount#<gray> 名玩家 <yellow>#coins# <gray>#currency#."
+coinsAddAllFailed: "<red>未能成功给予 <dark_red>#amount# 名玩家<red> <dark_red>#coins# <red>#currency#<red>."
+coinsSet: "<gray>你将玩家 <yellow>#player#<gray> 的 <gray>#currency# 数量设置为了 <yellow>#coins#."
+coinsSetTarget: "<gray>玩家 <yellow>#player# <gray>将你的 <gray>#currency# 数量设置为了 <yellow>#coins#."
+coinsRemove: "<gray>你从玩家 <yellow>#player#<gray> 的钱包中取走了 <yellow>#coins# <gray>#currency#."
+coinsRemoveTarget: "<gray>玩家 <yellow>#player# <gray>从你的钱包中取走了 <yellow>#coins# <gray>#currency#."
+# 玩家命令
+pay: "<gray>你付给了 <yellow>#target#<gray> <yellow>#coins# <gray>#currency#."
+payTarget: "<gray>玩家 <yellow>#target#<gray> 付给了你 <yellow>#coins# <gray>#currency#."
+payCooldown: "<red>你需要等待 <yellow>#time# <red>秒才可再次支付!"
+payOnlyOnlinePlayer:
+  - "<red>目标玩家 <dark_red>#target# <red>不在线或不存在! "
+  - "<red>出于安全考虑, 你只能对<dark_red>当前服务器内玩家<red>转账!"
+payNotYourself: "<red>你不能对自己<dark_red>转账<red>!"
+baltop:
+  header:
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+    - ' <gray>财富榜排名前十玩家'
+    - ' '
+    - '<dark_gray>● <yellow><bold>全局<reset> <gray>- <yellow>#overall# <gray>#currency#'
+    - ' '
+  content: '<dark_gray>● <yellow><bold>#number#<reset><gray># <dark_gray>● <yellow>#name# <gray>- <yellow>#amount# <gray>#currency#'
+  footer:
+    - ' '
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+# 虚拟货币
+virtualShow: "<gray>玩家 <yellow>#player# <gray>拥有 <yellow>#amount# <gray>#currency#."
+virtualCurrencyNotFound: "<red>没有找到名为 <dark_red>#currency# <red>的货币!"
+virtualCurrencyAdd: "<gray>你给予了玩家 <yellow>#player#<gray> <yellow>#amount# <gray>#currency#."
+virtualCurrencySet: "<gray>你将玩家 <yellow>#player#<gray>  的 <yellow>#currency#<gray> 数量设置为了 <yellow>#amount#<gray>."
+virtualCurrencyRemove: "<gray>你从玩家 <yellow>#player#<gray> 的钱包中取出了 <yellow>#amount# <gray>#currency#."
+# 所有模块的帮助消息
+helpCommand:
+  coins:
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+    - ' '
+    - '  <gray>管理员与控制台命令:'
+    - '<gray>● <yellow>/coins show <gray>[<yellow>玩家名称<gray>] <gray>- 显示玩家余额'
+    - '<gray>● <yellow>/coins add/set/remove <gray>[<yellow>玩家名称<gray>] <gray>[<yellow>数量<gray>] <gray>- 修改玩家余额'
+    - '<gray>● <yellow>/coins help <gray>- 显示所有帮助命令'
+    - ' '
+    - '  <gray>玩家命令:'
+    - '<gray>● <yellow>/pay <gray>[<yellow>玩家名称<gray>] <gray>[<yellow>数量<gray>] <gray>- 向其他玩家转账'
+    - '<gray>● <yellow>/baltop <gray>- 列出前十排行榜'
+    - '<gray>● <yellow>/coins <gray>- 显示你的钱包余额'
+    - ' '
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+  virtual:
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+    - ' '
+    - '  <gray>管理员与控制台命令:'
+    - '<gray>● <yellow>/virtual show <gray>[<yellow>货币类型<gray>] <gray>- 显示指定玩家的钱包余额'
+    - '<gray>● <yellow>/virtual set/add/remove <gray>[<yellow>货币类型<gray>] <gray>[<yellow>玩家名称<gray>] <gray>[<yellow>数量<gray>] <gray>- 修改玩家钱包余额'
+    - ' '
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+  default:
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+    - ' '
+    - '  <gray>管理员与控制台命令:'
+    - '<gray>● <yellow>/lightcoins reload <gray>- 重载配置与消息文本.'
+    - '<gray>● <yellow>/lightcoins help <gray>- 显示所有可用命令.'
+    - ' '
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+  player:
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>light<gray>Coins <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+    - ' '
+    - '  <gray>玩家命令:'
+    - '<gray>● <yellow>/coins <gray>- 显示你的钱包余额'
+    - '<gray>● <yellow>/pay <gray>[<yellow>玩家名称<gray>] <gray>[<yellow>数量<gray>] <gray>- 向其他玩家转账'
+    - '<gray>● <yellow>/baltop <gray>- 列出前十排行榜'
+    - ' '
+    - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+loseCoinsOnDeath: "<gray>你因死亡而失去了 <yellow>#coins# <gray>#currency#."
+# 调试命令
+debugCommand:
+  - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <yellow><bold><italic>DEBUG INFO <reset><gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+  - ' '
+  - '<gray>● <gray>服务器: <yellow>#server-version# <gray>/ <yellow>#server-type#'
+  - '<gray>● <gray>性能: <yellow>#tps-1#<gray>/<yellow>#tps-5#<gray>/#<yellow>#tps-15# <gray>均值为 <yellow>#current-mspt# <gray>mspt'
+  - '<gray>● <gray>操作系统: <yellow>#os# #os-version# <gray>/ <yellow>#os-arch#'
+  - '<gray>● <gray>CPU: <yellow>#cpu# <gray>/ <yellow>#cpu-cores# <gray>cores'
+  - '<gray>● <gray>内存:  <yellow>#ram-usage# <gray>/ <yellow>#ram# <gray>MB'
+  - '<gray>● <gray>Java: <yellow>#java-version# <gray>/ <yellow>#java-vendor#'
+  - '<gray>● <gray>LightCoins/Core 版本: <yellow>#coins-version#<gray>/ <yellow>#core-version#'
+  - '<gray>● <gray>数据库连接: <yellow>#database-type#<gray>/ <yellow>#database-status# <gray>多端同步状态为 #multisync#'
+  - '<gray>● <gray>Redis 连接: <yellow>#redis-status# <gray>/ <yellow>#redis-test#'
+  - '<gray>● <gray>注册账户: <yellow>#accounts#'
+  - ' '
+  - '<gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray>⏺<yellow>●<gray><strikethrough>-----</strikethrough> <gray><strikethrough>-----</strikethrough><yellow>●<gray><strikethrough>-----</strikethrough>'
+# 标题
+titles:
+  transactions:
+    static:
+      onDeposit:
+        upperTitle: "<gray>你 <green>获得了"
+        lowerTitle: "<green>#amount# <gray>#currency#"
+      onWithdraw:
+        upperTitle: "<gray>你 <red>支付了"
+        lowerTitle: "<red>#amount# <gray>#currency#"
+      onPay:
+        upperTitle: "<yellow>#target# <gray>付给了你"
+        lowerTitle: "<yellow>#amount# <gray>#currency#"
+    animated:
+      onDeposit:
+        start:
+          upperTitle: "<green>存入"
+          lowerTitle: "<gray>当前余额: <green>#counter# <gray>#currency#"
+        end:
+          upperTitle: "<gray>你 <green>获得了"
+          lowerTitle: "<green>#amount# <gray>#currency#"
+      onWithdraw:
+        start:
+          upperTitle: "<red>取出"
+          lowerTitle: "<gray>当前余额: <red>#counter# <gray>#currency#"
+        end:
+          upperTitle: "<gray>你 <red>支付了"
+          lowerTitle: "<red>#amount# <gray>#currency#"
+      onPay:
+        start:
+          upperTitle: "<green>支付"
+          lowerTitle: "<gray>当前余额: <green>#counter# <gray>#currency#"
+        end:
+          upperTitle: "<yellow>#target# <gray>付给了你"
+          lowerTitle: "<yellow>#amount# <gray>#currency#"
